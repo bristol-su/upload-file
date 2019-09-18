@@ -1,0 +1,38 @@
+{
+    "name": "bristol-su/upload-file",
+    "description": "",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Toby Twigger",
+            "email": "toby.twigger@bristol.ac.uk"
+        }
+    ],
+    "require": {
+        "php": "^7.2",
+        "bristol-su/support": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "BristolSU\\Module\\UploadFile\\": "/src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BristolSU\\Module\\UploadFile\\Tests\\": "tests/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "../../support"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [
+                "BristolSU\\Module\\UploadFile\\ModuleServiceProvider"
+            ]
+        }
+    }
+}
