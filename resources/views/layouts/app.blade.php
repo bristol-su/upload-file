@@ -12,9 +12,9 @@
 
 
 @push('styles')
-    <link href="{{ asset('modules/uploadfile/css/app.css') }}" rel="stylesheet">
+    <link href="{{ asset('modules/uploadfile/css/module.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')
-    <script src="{{ asset('modules/uploadfile/js/app.js') }}"></script>
+    <script src="{{ asset('modules/uploadfile/js/module.js') }}"></script>
 @endpush

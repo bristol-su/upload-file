@@ -7,13 +7,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12" style="text-align: center;">
-                    <h2 class="">Welcome</h2>
-                    <p class="">
-                        Welcome to your module! This is the participant side
-
-                        <example-component></example-component>
-
-                    </p>
+                    @inject('moduleInstance', 'BristolSU\Support\ModuleInstance\ModuleInstance')
+                    <h2 class="">{{settings('title')}}</h2>
+                    <p class="">{!! settings('description') !!}</p>
+                    
+                    
+                    <upload-file-root></upload-file-root>
                 </div>
             </div>
         </div>

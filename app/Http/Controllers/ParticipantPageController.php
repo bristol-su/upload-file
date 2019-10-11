@@ -7,7 +7,8 @@ class ParticipantPageController extends Controller
 
     public function index()
     {
-        $this->authorize('uploadfile.view-page');
+        $this->authorize('view-page');
+        
         return view('uploadfile::participant');
     }
     
