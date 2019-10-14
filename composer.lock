@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d645fc7df57fb62d2a9e6d601aca413c",
+    "content-hash": "dd54e0f0339b62a57bdad35358594b4a",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -113,10 +113,16 @@
         {
             "name": "bristol-su/support",
             "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bristol-su/support.git",
+                "reference": "f174b0ac0fdb488e2792427353067aede5f6b437"
+            },
             "dist": {
-                "type": "path",
-                "url": "../../support/support",
-                "reference": "fce6eec39c20bf955003d795c00585d21365df13"
+                "type": "zip",
+                "url": "https://api.github.com/repos/bristol-su/support/zipball/f174b0ac0fdb488e2792427353067aede5f6b437",
+                "reference": "f174b0ac0fdb488e2792427353067aede5f6b437",
+                "shasum": ""
             },
             "require": {
                 "brianium/paratest": "^3.0",
@@ -148,11 +154,7 @@
                     "database/factories/"
                 ]
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "BristolSU\\Support\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -161,7 +163,8 @@
                     "name": "Toby Twigger",
                     "email": "toby.twigger@bristol.ac.uk"
                 }
-            ]
+            ],
+            "time": "2019-10-14T01:40:00+00:00"
         },
         {
             "name": "composer/semver",
@@ -790,16 +793,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.117",
+            "version": "v0.118",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "ae2f0f6f626db67d83ea0a0cd15100b9d083874b"
+                "reference": "3db3c3097dcfb2e2cd578053f28be20fe4ad8e01"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/ae2f0f6f626db67d83ea0a0cd15100b9d083874b",
-                "reference": "ae2f0f6f626db67d83ea0a0cd15100b9d083874b",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/3db3c3097dcfb2e2cd578053f28be20fe4ad8e01",
+                "reference": "3db3c3097dcfb2e2cd578053f28be20fe4ad8e01",
                 "shasum": ""
             },
             "require": {
@@ -823,7 +826,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2019-10-07T00:23:24+00:00"
+            "time": "2019-10-14T00:24:06+00:00"
         },
         {
             "name": "google/auth",
@@ -1492,16 +1495,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "1.0.55",
+            "version": "1.0.56",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "33c91155537c6dc899eacdc54a13ac6303f156e6"
+                "reference": "90e3f83cb10ef6b058d70f95267030e7a6236518"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/33c91155537c6dc899eacdc54a13ac6303f156e6",
-                "reference": "33c91155537c6dc899eacdc54a13ac6303f156e6",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/90e3f83cb10ef6b058d70f95267030e7a6236518",
+                "reference": "90e3f83cb10ef6b058d70f95267030e7a6236518",
                 "shasum": ""
             },
             "require": {
@@ -1572,7 +1575,7 @@
                 "sftp",
                 "storage"
             ],
-            "time": "2019-08-24T11:17:19+00:00"
+            "time": "2019-10-12T13:05:59+00:00"
         },
         {
             "name": "league/flysystem-cached-adapter",
@@ -2112,22 +2115,22 @@
         },
         {
             "name": "orchestra/testbench",
-            "version": "v4.1.0",
+            "version": "v4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/testbench.git",
-                "reference": "1ff8b79821e6b7624d056fd365e54415241d0146"
+                "reference": "cbfb79054bb7cf1fc713acc03504aac92aafe6a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/testbench/zipball/1ff8b79821e6b7624d056fd365e54415241d0146",
-                "reference": "1ff8b79821e6b7624d056fd365e54415241d0146",
+                "url": "https://api.github.com/repos/orchestral/testbench/zipball/cbfb79054bb7cf1fc713acc03504aac92aafe6a1",
+                "reference": "cbfb79054bb7cf1fc713acc03504aac92aafe6a1",
                 "shasum": ""
             },
             "require": {
-                "laravel/framework": "^6.1",
+                "laravel/framework": "^6.2",
                 "mockery/mockery": "^1.2.3",
-                "orchestra/testbench-core": "^4.1",
+                "orchestra/testbench-core": "^4.2",
                 "php": ">=7.2",
                 "phpunit/phpunit": "^8.3"
             },
@@ -2158,20 +2161,20 @@
                 "orchestral",
                 "testing"
             ],
-            "time": "2019-10-06T13:23:45+00:00"
+            "time": "2019-10-11T01:58:15+00:00"
         },
         {
             "name": "orchestra/testbench-core",
-            "version": "v4.1.0",
+            "version": "v4.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/orchestral/testbench-core.git",
-                "reference": "ce1b8b329967c022a43a5efae4fdd9080eca3a6b"
+                "reference": "4f098fe9bc64c23ea0b7c4ae12c0e26cb270e8e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/orchestral/testbench-core/zipball/ce1b8b329967c022a43a5efae4fdd9080eca3a6b",
-                "reference": "ce1b8b329967c022a43a5efae4fdd9080eca3a6b",
+                "url": "https://api.github.com/repos/orchestral/testbench-core/zipball/4f098fe9bc64c23ea0b7c4ae12c0e26cb270e8e7",
+                "reference": "4f098fe9bc64c23ea0b7c4ae12c0e26cb270e8e7",
                 "shasum": ""
             },
             "require": {
@@ -2179,13 +2182,13 @@
                 "php": ">=7.2"
             },
             "require-dev": {
-                "laravel/framework": "^6.1",
+                "laravel/framework": "^6.2",
                 "laravel/laravel": "dev-master",
                 "mockery/mockery": "^1.2.3",
                 "phpunit/phpunit": "^8.3"
             },
             "suggest": {
-                "laravel/framework": "Required for testing (^6.1).",
+                "laravel/framework": "Required for testing (^6.2).",
                 "mockery/mockery": "Allow using Mockery for testing (^1.2.3).",
                 "orchestra/testbench-browser-kit": "Allow using legacy Laravel BrowserKit for testing (^4.0).",
                 "orchestra/testbench-dusk": "Allow using Laravel Dusk for testing (^4.0).",
@@ -2223,7 +2226,7 @@
                 "orchestral",
                 "testing"
             ],
-            "time": "2019-10-06T13:17:34+00:00"
+            "time": "2019-10-11T01:50:36+00:00"
         },
         {
             "name": "paragonie/random_compat",
