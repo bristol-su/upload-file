@@ -22,7 +22,7 @@ class CreateUploadfileFilesTable extends Migration
             $table->integer('size');
             $table->unsignedInteger('uploaded_by');
             $table->unsignedInteger('module_instance_id');
-            $table->enum('resource_type', ['group', 'user']);
+            $table->enum('resource_type', ['group', 'user', 'role']);
             $table->unsignedInteger('resource_id');
             $table->timestamps();
             $table->softDeletes();

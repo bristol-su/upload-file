@@ -2,55 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="47c043ff-03de-4e0c-a4f9-23f3fcf48e5f" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/app/Events/DocumentUploaded.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/FileController.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Http/Controllers/Controller.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Http/Controllers/DownloadFileController.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/Models/File.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/factories/FileFactory.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/database/migrations/2019_10_01_215120_create_uploadfile_files_table.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/phpunit.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/js/components/Upload/UploadTabContent.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/js/components/View/ViewTabContent.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/Integration/Http/Controllers/AdminPageControllerTest.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/Integration/Http/Controllers/Api/FileControllerTest.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/Integration/Http/Controllers/DownloadFileControllerTest.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/Integration/Http/Controllers/ParticipantPageControllerTest.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/TestCase.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/Unit/Models/FileTest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/upload-file.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/upload-file.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/config.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/config.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.phpunit.result.cache" beforeDir="false" afterPath="$PROJECT_DIR$/.phpunit.result.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Api/FileController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/FileController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/migrations/2019_10_01_215120_create_uploadfile_files_table.php" beforeDir="false" afterPath="$PROJECT_DIR$/database/migrations/2019_10_01_215120_create_uploadfile_files_table.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/mix-manifest.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/modules/uploadfile/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/resources/sass/module.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/modules/uploadfile/js/app.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/report.20190919.204401.14621.001.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/report.20190919.204440.14656.001.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/report.20190919.204524.14706.001.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/report.20190919.204600.14762.001.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/module.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/ExampleComponent.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/UploadFileRoot.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/sass/app.scss" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/layouts/app.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/layouts/app.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/participant.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/participant.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/participant.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/participant.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Http/Controllers/.gitkeep" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/.gitkeep" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Http/Controllers/AdminPageController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/AdminPageController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Http/Controllers/Api/Controller.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Http/Controllers/Api/UserController.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Http/Controllers/Controller.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Http/Controllers/ParticipantPageController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/ParticipantPageController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Http/Middleware/.gitkeep" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/.gitkeep" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Http/Requests/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Models/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ModuleServiceProvider.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/ModuleServiceProvider.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webpack.mix.js" beforeDir="false" afterPath="$PROJECT_DIR$/webpack.mix.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/modules/uploadfile/js/module.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/modules/uploadfile/js/module.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -251,6 +209,8 @@
       <workItem from="1570723727390" duration="12607000" />
       <workItem from="1570741046518" duration="1104000" />
       <workItem from="1570805847984" duration="221000" />
+      <workItem from="1571005306757" duration="262000" />
+      <workItem from="1571005779680" duration="143000" />
     </task>
     <servers />
   </component>

@@ -9,6 +9,7 @@ use BristolSU\Support\Activity\Activity;
 use BristolSU\Support\Authentication\Contracts\Authentication;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FileController extends Controller
 {
@@ -35,7 +36,6 @@ class FileController extends Controller
     public function index(Request $request)
     {
         $this->authorize('file.index');
-        
         return File::forResource()->with('uploadedBy')->get();
     }
     
