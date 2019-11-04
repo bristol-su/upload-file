@@ -85,12 +85,13 @@ class FileControllerTest extends TestCase
     /** @test */
     public function index_returns_all_files_belonging_to_the_resource(){
         $this->bypassAuthorization();
-        $files = factory(File::class, 5)->create(['resource_id' => $this->user->id, 'resource_type' => 'user']);
-        $otherFiles = factory(File::class, 5)->create(['resource_id' => 1, 'resource_type' => 'group']);
+        $files = factory(File::class, 5)->create(['uploaded_by' => $this->user->id, 'resource_id' => $this->user->id, 'resource_type' => 'user']);
+        $otherFiles = factory(File::class, 5)->create(['uploaded_by' => $this->user->id, 'resource_id' => 1, 'resource_type' => 'group']);
+        
         $response = $this->get($this->apiUrl('files'));
-
-        $response->assertJson($files->load('uploadedBy')->toArray());
-        $response->assertJsonMissing($otherFiles->load('uploadedBy')->toArray());
+        
+        $response->assertJson($files->toArray());
+        $response->assertJsonMissing($otherFiles->toArray());
     }
     
 }

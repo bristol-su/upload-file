@@ -30,13 +30,13 @@ class FileController extends Controller
             'module_instance_id' => $moduleInstance->id,
         ]);
         event(new DocumentUploaded($file));
-        return $file->load('uploadedBy');
+        return $file;
     }
 
     public function index(Request $request)
     {
         $this->authorize('file.index');
-        return File::forResource()->with('uploadedBy')->get();
+        return File::forResource()->get();
     }
     
 }

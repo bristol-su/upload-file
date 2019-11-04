@@ -63,6 +63,7 @@ class ModuleServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
+        
         Route::bind('uploadfile_file', function($id) {
             return File::findOrFail($id);
         });

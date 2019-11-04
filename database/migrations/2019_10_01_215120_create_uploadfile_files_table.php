@@ -28,9 +28,6 @@ class CreateUploadfileFilesTable extends Migration
             $table->softDeletes();
         });
         
-        Schema::table('uploadfile_files', function(Blueprint $table) {
-            $table->foreign('uploaded_by')->references('id')->on('users');
-        });
         
     }
 

@@ -25,6 +25,12 @@
             "BristolSU\\Module\\Tests\\UploadFile\\": "tests/"
         }
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../../support/support"
+        }
+    ],
     "extra": {
         "laravel": {
             "providers": [

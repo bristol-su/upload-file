@@ -12,8 +12,7 @@ class DownloadFileControllerTest extends TestCase
 
     /** @test */
     public function download_authorizes_against_ability() {
-        $this->be(factory(User::class)->create());
-        $file = factory(File::class)->create();
+        $file = factory(File::class)->create(['uploaded_by' => $this->user->id, 'resource_id' => $this->user->id]);
         Storage::fake('uploadfile');
         Storage::put($file->path, 'File content');
         
@@ -24,7 +23,7 @@ class DownloadFileControllerTest extends TestCase
     public function download_returns_the_response_of_the_storage_download_function()
     {
         $this->bypassAuthorization();
-        $file = factory(File::class)->create();
+        $file = factory(File::class)->create(['uploaded_by' => $this->user->id, 'resource_id' => $this->user->id]);
         Storage::fake('uploadfile');
         Storage::put($file->path, 'File content');
         
@@ -38,7 +37,7 @@ class DownloadFileControllerTest extends TestCase
     /** @test */
     public function download_returns_a_404_error_if_file_not_found(){
         $this->bypassAuthorization();
-        $file = factory(File::class)->create();
+        $file = factory(File::class)->create(['uploaded_by' => $this->user->id, 'resource_id' => $this->user->id]);
 
         $response = $this->get($this->userUrl('/files/ ' . $file->id . '/download'));
         $response->assertStatus(404);

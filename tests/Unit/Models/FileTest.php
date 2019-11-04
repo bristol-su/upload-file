@@ -11,9 +11,9 @@ class FileTest extends TestCase
 {
 
     /** @test */
-    public function a_file_can_be_created(){
-        $this->be(factory(User::class)->create());
-        $file = factory(File::class)->create();
+    public function a_file_can_be_created()
+    {
+        $file = factory(File::class)->create(['uploaded_by' => $this->user->id, 'resource_id' => $this->user->id]);
         $this->assertDatabaseHas('uploadfile_files', [
             'title' => $file->title,
             'id' => $file->id
@@ -23,25 +23,26 @@ class FileTest extends TestCase
     /** @test */
     public function moduleInstance_returns_the_file_module_instance()
     {
-        $this->be(factory(User::class)->create());
         $moduleInstance = factory(ModuleInstance::class)->create();
         $file = factory(File::class)->create([
-            'module_instance_id' => $moduleInstance->id
+            'module_instance_id' => $moduleInstance->id,
+            'uploaded_by' => $this->user->id,
+            'resource_id' => $this->user->id
         ]);
-        
+
         $this->assertModelEquals($moduleInstance, $file->moduleInstance);
     }
 
     /** @test */
     public function uploadedBy_returns_the_user_who_uploaded_the_file()
     {
-        $this->be(factory(User::class)->create());
-        $user = factory(User::class)->create();
+        $this->beUser($this->user);
         $file = factory(File::class)->create([
-            'uploaded_by' => $user->id
+            'uploaded_by' => $this->user->id,
+            'resource_id' => $this->user->id
         ]);
 
-        $this->assertModelEquals($user, $file->uploadedBy);
+        $this->assertEquals($this->user, $file->uploaded_by);
     }
-    
+
 }

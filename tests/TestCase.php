@@ -5,7 +5,7 @@ namespace BristolSU\Module\Tests\UploadFile;
 use BristolSU\Module\UploadFile\ModuleServiceProvider;
 use BristolSU\Support\Testing\TestCase as BaseTestCase;
 
-class TestCase extends BaseTestCase
+abstract class TestCase extends BaseTestCase
 {
 
     public function setUp(): void
