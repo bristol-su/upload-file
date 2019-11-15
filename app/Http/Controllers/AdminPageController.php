@@ -12,7 +12,7 @@ class AdminPageController extends Controller
     public function index(PermissionStore $permission)
     {
         $this->authorize('admin.view-page');
-        return view('uploadfile::admin');
+        return view(alias() . '::admin');
     }
     
 }

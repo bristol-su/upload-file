@@ -55,6 +55,11 @@ class ModuleServiceProvider extends ServiceProvider
         return 'uploadfile';
     }
 
+    public function namespace()
+    {
+        return '\BristolSU\Module\UploadFile\Http\Controllers';
+    }
+    
     public function baseDirectory()
     {
         return __DIR__ . '/..';
@@ -64,7 +69,7 @@ class ModuleServiceProvider extends ServiceProvider
     {
         parent::boot();
         
-        Route::bind('uploadfile_file', function($id) {
+        Route::bind($this->alias() . '_file', function($id) {
             return File::findOrFail($id);
         });
     }

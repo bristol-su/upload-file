@@ -18,7 +18,7 @@ class FileController extends Controller
         $this->authorize('file.store');
 
         $file = $request->file('file');
-        $path = $file->store('uploadfile');
+        $path = $file->store(alias());
 
         $file = File::create([
             'title' => $request->get('title'),

@@ -18,9 +18,8 @@ class Controller
 
     public function authorize($ability, $arguments = [])
     {
-        $moduleInstance = app()->make(ModuleInstance::class);
         return $this->baseAuthorize(
-            $moduleInstance->alias . '.' . $ability,
+            alias() . '.' . $ability,
             $arguments
         );
     }

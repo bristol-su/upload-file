@@ -9,7 +9,7 @@ class ParticipantPageController extends Controller
     {
         $this->authorize('view-page');
         
-        return view('uploadfile::participant');
+        return view(alias() . '::participant');
     }
     
 }
