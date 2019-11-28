@@ -117,12 +117,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/bristol-su/support.git",
-                "reference": "cffc0c3fdb14243cae8cdbb602b51e11afd33845"
+                "reference": "a6e118f15d45169bfb5a922c5099fdf23d4b567b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bristol-su/support/zipball/cffc0c3fdb14243cae8cdbb602b51e11afd33845",
-                "reference": "cffc0c3fdb14243cae8cdbb602b51e11afd33845",
+                "url": "https://api.github.com/repos/bristol-su/support/zipball/a6e118f15d45169bfb5a922c5099fdf23d4b567b",
+                "reference": "a6e118f15d45169bfb5a922c5099fdf23d4b567b",
                 "shasum": ""
             },
             "require": {
@@ -169,7 +169,7 @@
                     "email": "toby.twigger@bristol.ac.uk"
                 }
             ],
-            "time": "2019-11-28T11:08:10+00:00"
+            "time": "2019-11-28T11:31:17+00:00"
         },
         {
             "name": "composer/semver",
