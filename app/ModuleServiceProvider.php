@@ -43,7 +43,7 @@ class ModuleServiceProvider extends ServiceProvider
     protected $events = [
         DocumentUploaded::class => [
             'name' => 'Document Uploaded',
-            'description' => 'When a document is uploaded'u 
+            'description' => 'When a document is uploaded'
         ]
     ];
     
