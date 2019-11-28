@@ -2,11 +2,11 @@
 
 namespace BristolSU\Module\UploadFile;
 
+use BristolSU\Module\UploadFile\CompletionConditions\NumberOfDocumentsApproved;
 use BristolSU\Module\UploadFile\Events\DocumentUploaded;
 use BristolSU\Module\UploadFile\Models\File;
-use BristolSU\Support\EventStore\Contracts\StorableEvent;
+use BristolSU\Support\Completion\Contracts\CompletionConditionManager;
 use BristolSU\Support\Module\ModuleServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Route;
 
 class ModuleServiceProvider extends ServiceProvider
 {
@@ -68,6 +68,11 @@ class ModuleServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
+        
+        // TODO Move into module service provider
+        $this->app->make(CompletionConditionManager::class)->register(
+            $this->alias(), 'number_of_files_approved', NumberOfDocumentsApproved::class
+        );
         
         Route::bind($this->alias() . '_file', function($id) {
             return File::findOrFail($id);
