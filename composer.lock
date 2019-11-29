@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd54e0f0339b62a57bdad35358594b4a",
+    "content-hash": "6560b9b05d7c3924013e792b1cd0e303",
     "packages": [
         {
             "name": "brianium/habitat",
@@ -117,12 +117,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/bristol-su/support.git",
-                "reference": "a6e118f15d45169bfb5a922c5099fdf23d4b567b"
+                "reference": "d93072f024ef7ffb23475df105e006378fd5a39e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bristol-su/support/zipball/a6e118f15d45169bfb5a922c5099fdf23d4b567b",
-                "reference": "a6e118f15d45169bfb5a922c5099fdf23d4b567b",
+                "url": "https://api.github.com/repos/bristol-su/support/zipball/d93072f024ef7ffb23475df105e006378fd5a39e",
+                "reference": "d93072f024ef7ffb23475df105e006378fd5a39e",
                 "shasum": ""
             },
             "require": {
@@ -169,7 +169,7 @@
                     "email": "toby.twigger@bristol.ac.uk"
                 }
             ],
-            "time": "2019-11-28T11:31:17+00:00"
+            "time": "2019-11-29T14:05:42+00:00"
         },
         {
             "name": "composer/semver",
@@ -2062,16 +2062,16 @@
         },
         {
             "name": "opis/closure",
-            "version": "3.4.1",
+            "version": "3.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/opis/closure.git",
-                "reference": "e79f851749c3caa836d7ccc01ede5828feb762c7"
+                "reference": "27fdc275b7963492d0bf0852525da57ff2be67a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/opis/closure/zipball/e79f851749c3caa836d7ccc01ede5828feb762c7",
-                "reference": "e79f851749c3caa836d7ccc01ede5828feb762c7",
+                "url": "https://api.github.com/repos/opis/closure/zipball/27fdc275b7963492d0bf0852525da57ff2be67a0",
+                "reference": "27fdc275b7963492d0bf0852525da57ff2be67a0",
                 "shasum": ""
             },
             "require": {
@@ -2084,7 +2084,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.3.x-dev"
+                    "dev-master": "3.4.x-dev"
                 }
             },
             "autoload": {
@@ -2119,7 +2119,7 @@
                 "serialization",
                 "serialize"
             ],
-            "time": "2019-10-19T18:38:51+00:00"
+            "time": "2019-11-29T11:33:32+00:00"
         },
         {
             "name": "orchestra/testbench",

@@ -2,7 +2,7 @@
 
 namespace BristolSU\Module\UploadFile;
 
-use BristolSU\Module\UploadFile\CompletionConditions\NumberOfDocumentsApproved;
+use BristolSU\Module\UploadFile\CompletionConditions\NumberOfDocumentsSubmitted;
 use BristolSU\Module\UploadFile\Events\DocumentUploaded;
 use BristolSU\Module\UploadFile\Models\File;
 use BristolSU\Support\Completion\Contracts\CompletionConditionManager;
@@ -72,7 +72,7 @@ class ModuleServiceProvider extends ServiceProvider
         
         // TODO Move into module service provider
         $this->app->make(CompletionConditionManager::class)->register(
-            $this->alias(), 'number_of_files_approved', NumberOfDocumentsApproved::class
+            $this->alias(), 'number_of_files_submitted', NumberOfDocumentsSubmitted::class
         );
         
         Route::bind($this->alias() . '_file', function($id) {

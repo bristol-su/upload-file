@@ -7,12 +7,11 @@ use BristolSU\Support\ActivityInstance\ActivityInstance;
 use BristolSU\Support\Completion\Contracts\CompletionCondition;
 use BristolSU\Support\ModuleInstance\Contracts\ModuleInstance;
 
-class NumberOfDocumentsApproved implements CompletionCondition
+class NumberOfDocumentsSubmitted extends CompletionCondition
 {
-
+    
     public function isComplete($settings, ActivityInstance $activityInstance, ModuleInstance $moduleInstance): bool
     {
-        // TODO Where approved
         return File::forResource($activityInstance->id, $moduleInstance->id())->count() >= $settings['number_of_files'];
     }
 
@@ -22,5 +21,19 @@ class NumberOfDocumentsApproved implements CompletionCondition
             'number_of_files' => 1
         ];
     }
-    
+
+    public function name(): string
+    {
+        return 'A number of documents have been submitted';
+    }
+
+    public function description(): string
+    {
+        return 'Complete when a given number of documents have been submitted';
+    }
+
+    public function alias(): string
+    {
+        return 'number_of_files_submitted';
+    }
 }
