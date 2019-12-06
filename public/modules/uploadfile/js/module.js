@@ -210,6 +210,13 @@ __webpack_require__.r(__webpack_exports__);
     UploadTabContent: _Upload_UploadTabContent__WEBPACK_IMPORTED_MODULE_0__["default"],
     ViewTabContent: _View_ViewTabContent__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
+  props: {
+    canUpload: {
+      type: Boolean,
+      required: true,
+      "default": false
+    }
+  },
   data: function data() {
     return {
       files: []
@@ -34630,16 +34637,18 @@ var render = function() {
       _c(
         "b-tabs",
         [
-          _c(
-            "b-tab",
-            { attrs: { title: "Upload", active: "" } },
-            [
-              _c("upload-tab-content", {
-                on: { "file-uploaded": _vm.pushFile }
-              })
-            ],
-            1
-          ),
+          _vm.canUpload
+            ? _c(
+                "b-tab",
+                { attrs: { title: "Upload", active: "" } },
+                [
+                  _c("upload-tab-content", {
+                    on: { "file-uploaded": _vm.pushFile }
+                  })
+                ],
+                1
+              )
+            : _vm._e(),
           _vm._v(" "),
           _c(
             "b-tab",

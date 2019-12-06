@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-tabs>
-            <b-tab title="Upload" active>
+            <b-tab title="Upload" v-if="canUpload" active>
                 <upload-tab-content @file-uploaded="pushFile"></upload-tab-content>
             </b-tab>
             <b-tab title="View">
@@ -21,6 +21,14 @@
         components: {
             UploadTabContent,
             ViewTabContent,
+        },
+        
+        props: {
+            canUpload: {
+                type: Boolean,
+                required: true,
+                default: false
+            }
         },
         
         data() {

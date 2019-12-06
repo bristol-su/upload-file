@@ -7,12 +7,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12" style="text-align: center;">
-                    @inject('moduleInstance', 'BristolSU\Support\ModuleInstance\ModuleInstance')
                     <h2 class="">{{settings('title')}}</h2>
                     <p class="">{!! settings('description') !!}</p>
                     
-                    
-                    <upload-file-root></upload-file-root>
+                    <upload-file-root
+                        :can-upload="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.store')?'true':'false')}}"></upload-file-root>
                 </div>
             </div>
         </div>
