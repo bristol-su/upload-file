@@ -1,6 +1,8 @@
 <?php
 
-namespace BristolSU\Module\UploadFile\Http\Controllers;
+namespace BristolSU\Module\UploadFile\Http\Controllers\Participant;
+
+use BristolSU\Module\UploadFile\Http\Controllers\Controller;
 
 class ParticipantPageController extends Controller
 {

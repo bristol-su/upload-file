@@ -1,8 +1,9 @@
 <?php
 
-namespace BristolSU\Module\UploadFile\Http\Controllers;
+namespace BristolSU\Module\UploadFile\Http\Controllers\Admin;
 
 
+use BristolSU\Module\UploadFile\Http\Controllers\Controller;
 use BristolSU\Support\Permissions\Contracts\PermissionStore;
 use BristolSU\Support\Permissions\Contracts\PermissionTester;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace BristolSU\Module\UploadFile\Http\Controllers\Api;
+namespace BristolSU\Module\UploadFile\Http\Controllers\ParticipantApi;
 
 use BristolSU\Module\UploadFile\Events\DocumentUploaded;
 use BristolSU\Module\UploadFile\Http\Controllers\Controller;

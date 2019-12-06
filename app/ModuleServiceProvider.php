@@ -18,11 +18,6 @@ class ModuleServiceProvider extends ServiceProvider
             'description' => 'View the main page of the module.',
             'admin' => false
         ],
-        'admin.view-page' => [
-            'name' => 'View Admin Page',
-            'description' => 'View the administrator page of the module.',
-            'admin' => true
-        ],
         'file.store' => [
             'name' => 'Upload a new file',
             'description' => 'Allow the ability to upload a file.',
@@ -37,6 +32,26 @@ class ModuleServiceProvider extends ServiceProvider
             'name' => 'See files',
             'description' => 'Allow the user to view files',
             'admin' => false
+        ],
+        'admin.view-page' => [
+            'name' => 'View Admin Page',
+            'description' => 'View the administrator page of the module.',
+            'admin' => true
+        ],
+        'admin.file.index' => [
+            'name' => 'View all files',
+            'description' => 'Allow the user to view all uploaded files',
+            'admin' => true
+        ],
+        'admin.file.download' => [
+            'name' => 'Download files',
+            'description' => 'Allow the user to download any uploaded files',
+            'admin' => true
+        ],
+        'admin.status.create' => [
+            'name' => 'Change document status',
+            'description' => 'Allow the user to change the status of any file',
+            'admin' => true
         ]
     ];
 

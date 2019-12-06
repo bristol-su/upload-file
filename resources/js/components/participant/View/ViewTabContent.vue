@@ -20,12 +20,11 @@
                 default: function() {
                     return [];
                 }
-            }
-        },
-
-        data() {
-            return {
-                fields: ['title', 'size', 'uploaded_by', 'created_at', 'download']
+            },
+            download: {
+                required: true,
+                type: Boolean,
+                default: false
             }
         },
 
@@ -52,6 +51,13 @@
                     file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
                     return file;                    
                 })
+            },
+            fields() {
+                let fields = ['title', 'size', 'uploaded_by', 'created_at'];
+                if(this.download) {
+                    fields.push('download');
+                }
+                return fields;
             }
         }
     }

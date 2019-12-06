@@ -13,3 +13,9 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::namespace('AdminApi')->group(function() {
+    Route::apiResource('file', 'FileController');
+    Route::prefix('file/{uploadfile_file}')->group(function() {
+        Route::apiResource('status', 'FileStatusController');
+    });
+});

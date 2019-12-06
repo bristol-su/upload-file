@@ -48,7 +48,7 @@
                 let formData = new FormData();
                 formData.append('file', this.file);
                 formData.append('title', this.title);
-                this.$http.post('files', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+                this.$http.post('file', formData, {headers: {'Content-Type': 'multipart/form-data'}})
                     .then(response => {
                         this.$notify.success('File uploaded!');
                         this.$emit('file-uploaded', response.data);

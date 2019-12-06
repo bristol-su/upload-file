@@ -4,8 +4,8 @@
             <b-tab title="Upload" v-if="canUpload" active>
                 <upload-tab-content @file-uploaded="pushFile"></upload-tab-content>
             </b-tab>
-            <b-tab title="View">
-                <view-tab-content :files="files"></view-tab-content>
+            <b-tab v-if="canView" title="View">
+                <view-tab-content :download="canDownload" :files="files"></view-tab-content>
             </b-tab>
         </b-tabs>
     </div>
@@ -16,7 +16,7 @@
     import ViewTabContent from './View/ViewTabContent';
     
     export default {
-        name: "UploadFileRoot",
+        name: "UploadFile",
         
         components: {
             UploadTabContent,
@@ -25,6 +25,16 @@
         
         props: {
             canUpload: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+            canView: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+            canDownload: {
                 type: Boolean,
                 required: true,
                 default: false
@@ -47,9 +57,9 @@
             },
             
             loadFiles() {
-                this.$http.get('/files')
+                this.$http.get('file')
                     .then(response => this.files = response.data)
-                    .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message));
+                    .catch(error => this.$notify.alert('Sorry, something went wrong retrieving files: ' + error.message));
             }
         }
     }

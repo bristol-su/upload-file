@@ -1,6 +1,6 @@
 @extends('uploadfile::layouts.app')
 
-@section('title', 'Your Module')
+@section('title', settings('title'))
 
 @section('module-content')
     <div class="py-5">
@@ -11,7 +11,9 @@
                     <p class="">{!! settings('description') !!}</p>
                     
                     <upload-file-root
-                        :can-upload="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.store')?'true':'false')}}"></upload-file-root>
+                        :can-upload="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.store')?'true':'false')}}"
+                        :can-download="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.download')?'true':'false')}}"
+                        :can-view="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.index')?'true':'false')}}"></upload-file-root>
                 </div>
             </div>
         </div>
