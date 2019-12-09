@@ -19,6 +19,7 @@ class File extends Model
     
     protected $fillable = [
         'title',
+        'description',
         'filename',
         'mime',
         'path',
@@ -52,6 +53,11 @@ class File extends Model
             return $this->statuses->last()->status;
         }
         return settings('initial_status');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comments::class);
     }
 
 }

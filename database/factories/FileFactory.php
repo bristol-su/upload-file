@@ -6,6 +6,7 @@ use Faker\Generator as Faker;
 $factory->define(File::class, function (Faker $faker) {
     return [
         'title' => $faker->sentence,
+        'description' => $faker->sentence,
         'filename' => $faker->word,
         'mime' => $faker->mimeType,
         'path' => \Illuminate\Support\Str::random(40),

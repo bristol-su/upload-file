@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUploadfileFileStatusesTable extends Migration
+class CreateUploadfileCommentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateUploadfileFileStatusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('uploadfile_file_statuses', function(Blueprint $table) {
+        Schema::create('uploadfile_comments', function(Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedInteger('file_id');
-            $table->unsignedInteger('created_by');
-            $table->string('status');
+            $table->string('comment');
+            $table->unsignedInteger('posted_by');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -32,6 +32,6 @@ class CreateUploadfileFileStatusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('uploadfile_file_statuses');
+        Schema::dropIfExists('uploadfile_comments');
     }
 }

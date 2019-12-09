@@ -33,6 +33,26 @@ class ModuleServiceProvider extends ServiceProvider
             'description' => 'Allow the user to view files',
             'admin' => false
         ],
+        'file.destroy' => [
+            'name' => 'Delete files',
+            'description' => 'Allow the user to delete files',
+            'admin' => false
+        ],
+        'file.update' => [
+            'name' => 'Edit files',
+            'description' => 'Allow the user to edit files',
+            'admin' => false
+        ],
+        'comment.index' => [
+            'name' => 'See comments',
+            'description' => 'Allow the user to see comments',
+            'admin' => false
+        ],
+        'comment.store' => [
+            'name' => 'Comment',
+            'description' => 'Allow the user to comment in files',
+            'admin' => false
+        ],
         'admin.view-page' => [
             'name' => 'View Admin Page',
             'description' => 'View the administrator page of the module.',

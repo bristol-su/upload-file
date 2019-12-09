@@ -16,6 +16,7 @@ class CreateUploadfileFilesTable extends Migration
         Schema::create('uploadfile_files', function(Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title');
+            $table->text('description')->nullable();
             $table->string('filename');
             $table->string('mime');
             $table->string('path');
