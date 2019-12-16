@@ -7,6 +7,10 @@ use BristolSU\Module\UploadFile\Events\DocumentUploaded;
 use BristolSU\Module\UploadFile\Models\File;
 use BristolSU\Support\Completion\Contracts\CompletionConditionManager;
 use BristolSU\Support\Module\ModuleServiceProvider as ServiceProvider;
+use FormSchema\Generator\Field;
+use FormSchema\Generator\Form as FormGenerator;
+use FormSchema\Generator\Group;
+use FormSchema\Schema\Form;
 use Illuminate\Support\Facades\Route;
 
 class ModuleServiceProvider extends ServiceProvider
@@ -114,5 +118,35 @@ class ModuleServiceProvider extends ServiceProvider
             return File::findOrFail($id);
         });
     }
-    
+
+    public function settings(): Form
+    {
+
+        return FormGenerator::make()->withGroup(
+            Group::make('Page Design')->withField(
+                Field::input('title')->inputType('text')->label('Module Title')->default('Page Title')
+            )->withField(
+                Field::textArea('description')->label('Description')->hint('This will appear at the top of the page')->rows(4)->default('Description')
+            )
+        )->withGroup(
+            Group::make('New Documents')->withField(
+                Field::input('document_title')->inputType('text')->label('Default document title')->hint('This will be the default title of a new file')->default('Document')
+            )->withField(
+                Field::switch('multiple_files')->label('Multiple Files')->hint('Should multiple files be able to be uploaded at the same time?')
+                    ->textOn('Allow')->textOff('Do not allow')->default(true)
+            )->withField(
+                Field::checkList('allowed_extensions')->label('Allowed file types')->hint('Which file types can be uploaded?')
+                    ->listBox(true)->values($this->app['config']->get($this->alias() . '.file_types'))
+		    ->default(['doc', 'docx', 'odt', 'rtf', 'txt', 'csv', 'ppt', 'pptx', 'pdf', 'xls'])
+            )
+        )->withGroup(
+            Group::make('Status Changes')->withField(
+                Field::input('initial_status')->inputType('select')->label('Initial Status')->hint('What status should all new files have?')
+                        ->default('Awaiting Approval')->values($this->app['config']->get($this->alias() . '.statuses'))
+            )->withField(
+                Field::checkList('statuses')->label('Available Statuses')->hint('A list of available statuses')
+                    ->listBox(true)->values($this->app['config']->get($this->alias() . '.statuses'))
+            )
+        )->getSchema();
+    }
 }
