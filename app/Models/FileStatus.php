@@ -4,7 +4,7 @@
 namespace BristolSU\Module\UploadFile\Models;
 
 
-use BristolSU\Support\Control\Contracts\Repositories\User as UserRepository;
+use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
 use BristolSU\Support\DataPlatform\Contracts\Repositories\User as DataUserRepository;
 use Illuminate\Database\Eloquent\Model;
 

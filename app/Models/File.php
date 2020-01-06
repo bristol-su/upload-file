@@ -3,7 +3,7 @@
 namespace BristolSU\Module\UploadFile\Models;
 
 use BristolSU\Support\Authentication\HasResource;
-use BristolSU\Support\Control\Contracts\Repositories\User as UserRepository;
+use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
 use BristolSU\Support\DataPlatform\Contracts\Repositories\User as DataUserRepository;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
 use Illuminate\Database\Eloquent\Model;

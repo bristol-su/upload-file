@@ -11,19 +11,14 @@ class StoreRequest extends FormRequest
 
     public function rules()
     {
-        return [];
+        return [
+            'file.*' => 'mimes:'.implode(',', settings('allowed_extensions', []))
+        ];
     }
 
     public function validator(Factory $factory)
     {
-        $v = $factory->make($this->validationData(), $this->rules());
-        $v->sometimes('file', 'mimes:'.implode(',', settings('allowed_extensions', [])), function($input) {
-            return !is_array($input);
-        });
-        $v->sometimes('file.*', 'mimes:'.implode(',', settings('allowed_extensions', [])), function($input) {
-            return is_array($input);
-        });
-        return $v;
+        return $factory->make($this->validationData(), $this->rules());
     }
 
     public function authorize()
