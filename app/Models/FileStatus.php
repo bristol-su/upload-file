@@ -23,7 +23,7 @@ class FileStatus extends Model
     public function getCreatedByAttribute($createdById)
     {
         return app()->make(DataUserRepository::class)->getById(
-            app()->make(UserRepository::class)->getById($createdById)->dataPlatformId()
+            app()->make(UserRepository::class)->getById($createdById)->data_provider_id
         );
     }
     

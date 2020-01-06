@@ -24,7 +24,7 @@ class Comments extends Model
     public function getPostedByAttribute($postedById)
     {
         return app()->make(DataUserRepository::class)->getById(
-            app()->make(UserRepository::class)->getById($postedById)->dataPlatformId()
+            app()->make(UserRepository::class)->getById($postedById)->data_provider_id
         );
     }
 

@@ -33,7 +33,7 @@ class File extends Model
     public function getUploadedByAttribute($uploadedById)
     {
         return app()->make(DataUserRepository::class)->getById(
-            app()->make(UserRepository::class)->getById($uploadedById)->dataPlatformId()
+            app()->make(UserRepository::class)->getById($uploadedById)->data_provider_id
         );
     }
     
