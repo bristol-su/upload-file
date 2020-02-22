@@ -5,7 +5,6 @@ namespace BristolSU\Module\UploadFile\Models;
 
 
 use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
-use BristolSU\Support\DataPlatform\Contracts\Repositories\User as DataUserRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class FileStatus extends Model
@@ -22,9 +21,7 @@ class FileStatus extends Model
 
     public function getCreatedByAttribute($createdById)
     {
-        return app()->make(DataUserRepository::class)->getById(
-            app()->make(UserRepository::class)->getById($createdById)->data_provider_id
-        );
+        return app()->make(UserRepository::class)->getById($createdById)->data();
     }
     
     

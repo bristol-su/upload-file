@@ -4,7 +4,6 @@ namespace BristolSU\Module\UploadFile\Models;
 
 use BristolSU\Support\Authentication\HasResource;
 use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
-use BristolSU\Support\DataPlatform\Contracts\Repositories\User as DataUserRepository;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -32,9 +31,7 @@ class File extends Model
 
     public function getUploadedByAttribute($uploadedById)
     {
-        return app()->make(DataUserRepository::class)->getById(
-            app()->make(UserRepository::class)->getById($uploadedById)->data_provider_id
-        );
+        return app()->make(UserRepository::class)->getById($uploadedById)->data();
     }
     
     public function moduleInstance()

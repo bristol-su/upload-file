@@ -2,6 +2,7 @@
 
 namespace BristolSU\Module\UploadFile\Events;
 
+use BristolSU\Module\UploadFile\Models\File;
 use BristolSU\Support\Action\Contracts\TriggerableEvent;
 
 class DocumentUploaded implements TriggerableEvent
@@ -9,7 +10,7 @@ class DocumentUploaded implements TriggerableEvent
 
     private $file;
 
-    public function __construct($file)
+    public function __construct(File $file)
     {
         $this->file = $file;
     }

@@ -11,12 +11,11 @@ use BristolSU\Support\Authentication\Contracts\Authentication;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
 class FileController extends Controller
 {
-    public function store(StoreRequest $request, Authentication $authentication, Activity $activity, ModuleInstance $moduleInstance)
+    public function store(StoreRequest $request, Authentication $authentication)
     {
         $fileMetadata = collect();
         
@@ -24,18 +23,17 @@ class FileController extends Controller
 
             $path = $file->store(alias());
 
-            $fileMetadata->push(File::create([
-                'title' => $request->get('title'),
-                'description' => $request->get('description'),
+            $fileMetadata->push($tempFileMeta = File::create([
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
                 'filename' => $file->getClientOriginalName(),
                 'mime' => $file->getClientMimeType(),
                 'path' => $path,
                 'size' => $file->getSize(),
-                'uploaded_by' => $authentication->getUser()->id,
-                'module_instance_id' => $moduleInstance->id,
+                'uploaded_by' => $authentication->getUser()->id(),
             ]));
             
-            event(new DocumentUploaded($file));
+            event(new DocumentUploaded($tempFileMeta));
         }
 
         return $fileMetadata;

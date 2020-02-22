@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class DownloadFileController extends Controller
 {
 
-    public function download(Request $request, Activity $activity, ModuleInstance $moduleInstance, File $file)
+    public function download(File $file)
     {
         $this->authorize('admin.file.download');
         

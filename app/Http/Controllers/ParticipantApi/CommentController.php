@@ -19,7 +19,7 @@ class CommentController extends Controller
         return $file->comments;
     }
 
-    public function store(Request $request, Activity $activity, ModuleInstance $moduleInstance, File $file)
+    public function store(Request $request, File $file)
     {
         $this->authorize('comment.store');
         
