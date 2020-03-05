@@ -168,11 +168,22 @@ __webpack_require__.r(__webpack_exports__);
         this.$http.post('file/' + this.file.id + '/status', {
           status: this.status
         }).then(function (response) {
-          return _this.$notify.success('Status change successful');
+          _this.$notify.success('Status change successful');
+
+          _this.$emit('statusAdded', response.data);
         })["catch"](function (error) {
           return _this.$notify.alert('Could not change the status of the document');
         });
       }
+    }
+  },
+  computed: {
+    statusItems: function statusItems() {
+      return this.file.statuses.sort(function (a, b) {
+        a = new Date(a.created_at);
+        b = new Date(b.created_at);
+        return a > b ? -1 : a < b ? 1 : 0;
+      });
     }
   }
 });
@@ -189,6 +200,19 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _StatusChange__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./StatusChange */ "./resources/js/components/admin/StatusChange.vue");
+/* harmony import */ var _participant_View_Comments__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../participant/View/Comments */ "./resources/js/components/participant/View/Comments.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -212,9 +236,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "UploadFile",
   components: {
+    Comments: _participant_View_Comments__WEBPACK_IMPORTED_MODULE_1__["default"],
     StatusChange: _StatusChange__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
   props: {
@@ -228,6 +254,16 @@ __webpack_require__.r(__webpack_exports__);
       type: Boolean,
       "default": false
     },
+    canAddComments: {
+      required: true,
+      type: Boolean,
+      "default": false
+    },
+    canSeeComments: {
+      required: true,
+      type: Boolean,
+      "default": false
+    },
     statuses: {
       required: true,
       type: Array
@@ -236,62 +272,66 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       files: [],
-      fileForStatusChange: null
+      fileForStatusChange: null,
+      fileForComments: null,
+      fields: ['title', 'size', 'uploaded_by', 'status', 'created_at', 'actions']
     };
   },
   created: function created() {
     this.loadFiles();
   },
   methods: {
+    addStatus: function addStatus(status) {
+      var _this = this;
+
+      this.$http.get('/file/' + this.fileForStatusChange.id).then(function (response) {
+        return Vue.set(_this.files, _this.files.indexOf(_this.fileForStatusChange), response.data);
+      })["catch"](function (error) {
+        return _this.$notify.alert('Could not update files. Please refresh the page.');
+      }).then(function () {
+        return _this.$bvModal.hide('file-status-change');
+      });
+    },
     pushFile: function pushFile(file) {
       this.files.push(file);
     },
     loadFiles: function loadFiles() {
-      var _this = this;
+      var _this2 = this;
 
       this.$http.get('file').then(function (response) {
-        return _this.files = response.data;
+        return _this2.files = response.data;
       })["catch"](function (error) {
-        return _this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message);
+        return _this2.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message);
       });
     },
     downloadUrl: function downloadUrl(id) {
-      return this.$url + '/files/' + id + '/download';
+      return this.$url + '/file/' + id + '/download';
     },
     presentSize: function presentSize(size) {
       var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
       return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
     },
     presentUploadedBy: function presentUploadedBy(user) {
-      return user.forename + ' ' + user.surname;
+      return user.data.first_name + ' ' + user.data.last_name;
     },
     changeStatus: function changeStatus(file) {
       this.fileForStatusChange = file;
       this.$bvModal.show('file-status-change');
+    },
+    showComments: function showComments(file) {
+      this.fileForComments = file;
+      this.$bvModal.show('comments');
     }
   },
   computed: {
     processedFiles: function processedFiles() {
-      var _this2 = this;
+      var _this3 = this;
 
       return this.files.map(function (file) {
-        file.size = _this2.presentSize(file.size);
-        file.uploaded_by = _this2.presentUploadedBy(file.uploaded_by);
+        file.size = _this3.presentSize(file.size);
+        file.uploaded_by = _this3.presentUploadedBy(file.uploaded_by);
         return file;
       });
-    },
-    fields: function fields() {
-      var fields = ['title', 'size', 'uploaded_by', 'status', 'created_at'];
-
-      if (this.canDownload) {
-        fields.push('download');
-      }
-
-      if (this.canChangeStatus) {
-        fields.push('change_status');
-      }
-
-      return fields;
     },
     statusChangeTitle: function statusChangeTitle() {
       if (this.fileForStatusChange === null) {
@@ -426,7 +466,7 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
       } else {
-        formData.append('file', this.file);
+        formData.append('file[]', this.file);
       }
 
       formData.append('title', this.title);
@@ -637,6 +677,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Comments",
   props: {
@@ -759,6 +802,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "EditFile",
@@ -791,7 +837,7 @@ __webpack_require__.r(__webpack_exports__);
       return this.$url + '/file/' + id + '/download';
     },
     statusText: function statusText(status) {
-      var text = 'Changed to ' + status.status + ' by ' + status.created_by.forename + ' ' + status.created_by.surname;
+      var text = 'Changed to ' + status.status + ' by ' + status.created_by.data.first_name + ' ' + status.created_by.data.last_name;
 
       if (this.hover === status.id) {
         text = text + ' on the ' + moment__WEBPACK_IMPORTED_MODULE_0___default()(status.created_at).format('lll');
@@ -811,6 +857,8 @@ __webpack_require__.r(__webpack_exports__);
         _this2.$notify.success('File updated');
 
         _this2.$emit('fileUpdated', response.data);
+
+        window.location.reload();
       })["catch"](function (error) {
         return _this2.$notify.alert('File could not be updated: ' + error.message);
       });
@@ -834,6 +882,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _EditFile__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./EditFile */ "./resources/js/components/participant/View/EditFile.vue");
 /* harmony import */ var _Comments__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Comments */ "./resources/js/components/participant/View/Comments.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -914,7 +976,7 @@ __webpack_require__.r(__webpack_exports__);
       return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
     },
     presentUploadedBy: function presentUploadedBy(user) {
-      return user.forename + ' ' + user.surname;
+      return user.data.first_name + ' ' + user.data.last_name;
     },
     downloadUrl: function downloadUrl(id) {
       return this.$url + '/file/' + id + '/download';
@@ -53525,7 +53587,7 @@ var render = function() {
       _c("br"),
       _vm._v(" "),
       _c("b-table", {
-        attrs: { items: _vm.file.statuses, fields: _vm.fields },
+        attrs: { items: _vm.statusItems, fields: _vm.fields },
         scopedSlots: _vm._u([
           {
             key: "cell(created_by)",
@@ -53533,9 +53595,9 @@ var render = function() {
               return [
                 _vm._v(
                   "\n            " +
-                    _vm._s(data.item.created_by.forename) +
+                    _vm._s(data.item.created_by.data.first_name) +
                     " " +
-                    _vm._s(data.item.created_by.surname) +
+                    _vm._s(data.item.created_by.data.last_name) +
                     "\n        "
                 )
               ]
@@ -53576,19 +53638,69 @@ var render = function() {
         attrs: { fields: _vm.fields, items: _vm.processedFiles },
         scopedSlots: _vm._u([
           {
-            key: "cell(download)",
+            key: "cell(actions)",
             fn: function(data) {
               return [
-                _c(
-                  "a",
-                  { attrs: { href: _vm.downloadUrl(data.item.id) } },
-                  [
-                    _c("b-button", { attrs: { variant: "secondary" } }, [
-                      _vm._v("Download")
-                    ])
-                  ],
-                  1
-                )
+                _vm.canDownload
+                  ? _c(
+                      "a",
+                      { attrs: { href: _vm.downloadUrl(data.item.id) } },
+                      [
+                        _c(
+                          "b-button",
+                          { attrs: { size: "sm", variant: "outline-info" } },
+                          [
+                            _c("i", { staticClass: "fa fa-download" }),
+                            _vm._v(" Download")
+                          ]
+                        )
+                      ],
+                      1
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.canChangeStatus
+                  ? _c(
+                      "b-button",
+                      {
+                        attrs: { size: "sm", variant: "outline-info" },
+                        on: {
+                          click: function($event) {
+                            return _vm.changeStatus(data.item)
+                          }
+                        }
+                      },
+                      [
+                        _c("i", { staticClass: "fa fa-check" }),
+                        _vm._v(" Status\n            ")
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm.canSeeComments
+                  ? _c(
+                      "b-button",
+                      {
+                        attrs: { size: "sm", variant: "outline-info" },
+                        on: {
+                          click: function($event) {
+                            return _vm.showComments(data.item)
+                          }
+                        }
+                      },
+                      [
+                        _c("i", { staticClass: "fa fa-comments" }),
+                        _vm._v(" Comments "),
+                        _c("b-badge", { attrs: { variant: "secondary" } }, [
+                          _vm._v(_vm._s(data.item.comments.length) + " "),
+                          _c("span", { staticClass: "sr-only" }, [
+                            _vm._v("comments")
+                          ])
+                        ])
+                      ],
+                      1
+                    )
+                  : _vm._e()
               ]
             }
           },
@@ -53626,8 +53738,23 @@ var render = function() {
         [
           _vm.fileForStatusChange !== null
             ? _c("status-change", {
-                attrs: { file: _vm.fileForStatusChange, statuses: _vm.statuses }
+                attrs: {
+                  file: _vm.fileForStatusChange,
+                  statuses: _vm.statuses
+                },
+                on: { statusAdded: _vm.addStatus }
               })
+            : _vm._e()
+        ],
+        1
+      ),
+      _vm._v(" "),
+      _c(
+        "b-modal",
+        { attrs: { id: "comments", title: "Add Comment", "hide-footer": "" } },
+        [
+          _vm.fileForComments !== null
+            ? _c("comments", { attrs: { "file-id": _vm.fileForComments.id } })
             : _vm._e()
         ],
         1
@@ -53841,7 +53968,7 @@ var render = function() {
                     },
                     on: {
                       fileDeleted: _vm.popFile,
-                      fileUpdated: _vm.replaceFile
+                      "file-updated": _vm.replaceFile
                     }
                   })
                 ],
@@ -53893,9 +54020,9 @@ var render = function() {
                       _c("div", { staticClass: "commentText" }, [
                         _c("span", { staticClass: "commenterName" }, [
                           _vm._v(
-                            _vm._s(comment.posted_by.forename) +
+                            _vm._s(comment.posted_by.data.first_name) +
                               " " +
-                              _vm._s(comment.posted_by.surname)
+                              _vm._s(comment.posted_by.data.last_name)
                           )
                         ]),
                         _vm._v(" "),
@@ -53911,7 +54038,7 @@ var render = function() {
               0
             )
           ])
-        : _vm._e(),
+        : _c("div", [_vm._v("\n        No comments have been left.\n    ")]),
       _vm._v(" "),
       _c(
         "b-form",
@@ -54067,9 +54194,9 @@ var render = function() {
                 _c("span", [
                   _vm._v(
                     "Uploaded By: " +
-                      _vm._s(_vm.file.uploaded_by.forename) +
+                      _vm._s(_vm.file.uploaded_by.data.first_name) +
                       " " +
-                      _vm._s(_vm.file.uploaded_by.surname)
+                      _vm._s(_vm.file.uploaded_by.data.last_name)
                   )
                 ])
               ]),
@@ -54124,14 +54251,23 @@ var render = function() {
                 : _vm._e(),
               _vm._v(" "),
               _c(
-                "b-button",
-                { attrs: { type: "submit", variant: "primary" } },
-                [_vm._v("Submit")]
-              ),
-              _vm._v(" "),
-              _c("b-button", { attrs: { type: "reset", variant: "danger" } }, [
-                _vm._v("Reset")
-              ])
+                "div",
+                { staticStyle: { "text-align": "right" } },
+                [
+                  _c(
+                    "b-button",
+                    { attrs: { type: "submit", variant: "primary" } },
+                    [_vm._v("Submit")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "b-button",
+                    { attrs: { type: "reset", variant: "danger" } },
+                    [_vm._v("Reset")]
+                  )
+                ],
+                1
+              )
             ],
             1
           )
@@ -54241,7 +54377,7 @@ var render = function() {
                             },
                             [
                               _c("i", { staticClass: "fa fa-edit" }),
-                              _vm._v(" Edit")
+                              _vm._v(" Edit\n            ")
                             ]
                           )
                         : _vm._e(),
@@ -54259,8 +54395,21 @@ var render = function() {
                             },
                             [
                               _c("i", { staticClass: "fa fa-comments" }),
-                              _vm._v(" Comments")
-                            ]
+                              _vm._v(" Comments "),
+                              _c(
+                                "b-badge",
+                                { attrs: { variant: "secondary" } },
+                                [
+                                  _vm._v(
+                                    _vm._s(data.item.comments.length) + " "
+                                  ),
+                                  _c("span", { staticClass: "sr-only" }, [
+                                    _vm._v("comments")
+                                  ])
+                                ]
+                              )
+                            ],
+                            1
                           )
                         : _vm._e(),
                       _vm._v(" "),
@@ -54277,7 +54426,7 @@ var render = function() {
                             },
                             [
                               _c("i", { staticClass: "fa fa-trash" }),
-                              _vm._v(" Delete")
+                              _vm._v(" Delete\n            ")
                             ]
                           )
                         : _vm._e()
@@ -54287,7 +54436,7 @@ var render = function() {
               ],
               null,
               false,
-              319273775
+              150015930
             )
           })
         : _c("div", [_vm._v("\n        No files uploaded.\n    ")]),
@@ -54305,9 +54454,29 @@ var render = function() {
                   }
                 }
               })
-            : _vm._e()
+            : _vm._e(),
+          _vm._v(" "),
+          _c(
+            "template",
+            { slot: "modal-footer" },
+            [
+              _c(
+                "b-btn",
+                {
+                  attrs: { variant: "secondary" },
+                  on: {
+                    click: function($event) {
+                      return _vm.$bvModal.hide("editFile")
+                    }
+                  }
+                },
+                [_vm._v("\n                Cancel\n            ")]
+              )
+            ],
+            1
+          )
         ],
-        1
+        2
       ),
       _vm._v(" "),
       _c(

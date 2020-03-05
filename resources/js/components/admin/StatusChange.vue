@@ -17,9 +17,9 @@
         </b-form>
         <br/><hr/><br/>
         
-        <b-table :items="file.statuses" :fields="fields">
+        <b-table :items="statusItems" :fields="fields">
             <template v-slot:cell(created_by)="data">
-                {{data.item.created_by.forename}} {{data.item.created_by.surname}}
+                {{data.item.created_by.data.first_name}} {{data.item.created_by.data.last_name}}
             </template>
         </b-table>
     </div>
@@ -58,9 +58,22 @@
                     this.$http.post('file/' + this.file.id + '/status', {
                         status: this.status
                     })
-                    .then(response => this.$notify.success('Status change successful'))
+                    .then(response => {
+                        this.$notify.success('Status change successful');
+                        this.$emit('statusAdded', response.data);
+                    })
                     .catch(error => this.$notify.alert('Could not change the status of the document'));
                 }
+            }
+        },
+        
+        computed: {
+            statusItems() {
+                return this.file.statuses.sort((a, b) => {
+                    a = new Date(a.created_at);
+                    b = new Date(b.created_at);
+                    return a>b ? -1 : a<b ? 1 : 0;
+                });
             }
         }
     }

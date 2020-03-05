@@ -2,11 +2,13 @@
 
 namespace BristolSU\Module\UploadFile\Models;
 
+use BristolSU\Support\ActivityInstance\Contracts\ActivityInstanceRepository;
 use BristolSU\Support\Authentication\HasResource;
 use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
-use BristolSU\Support\ModuleInstance\ModuleInstance;
+use BristolSU\Support\ModuleInstance\Contracts\ModuleInstanceRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Config;
 
 class File extends Model
 {
@@ -25,18 +27,22 @@ class File extends Model
         'size',
         'uploaded_by',
         'module_instance_id',
-        'resource_type',
-        'resource_id'
+        'activity_instance_id',
     ];
 
     public function getUploadedByAttribute($uploadedById)
     {
-        return app()->make(UserRepository::class)->getById($uploadedById)->data();
+        return app()->make(UserRepository::class)->getById($uploadedById);
     }
     
     public function moduleInstance()
     {
-        return $this->belongsTo(ModuleInstance::class);
+        return app(ModuleInstanceRepository::class)->getById($this->module_instance_id);
+    }
+
+    public function activityInstance()
+    {
+        return app(ActivityInstanceRepository::class)->getById($this->activity_instance_id);
     }
 
     public function statuses()
@@ -47,14 +53,22 @@ class File extends Model
     public function getStatusAttribute()
     {
         if($this->statuses()->count() > 0) {
-            return $this->statuses->last()->status;
+            return $this->statuses()->latest('created_at')->first()->status;
         }
-        return settings('initial_status');
+        
+        $statuses = Config::get('uploadfile.statuses');
+        if(!is_array($statuses) || count($statuses) === 0) {
+            $default = 'Awaiting Approval';
+        } else {
+            $default = $statuses[0];
+        }
+        
+        return settings('initial_status', $default);
     }
 
     public function comments()
     {
-        return $this->hasMany(Comments::class);
+        return $this->hasMany(Comment::class);
     }
 
 }

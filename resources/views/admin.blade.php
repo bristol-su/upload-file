@@ -1,6 +1,6 @@
 @extends('uploadfile::layouts.app')
 
-@section('title', settings('title'))
+@section('title', settings('title', 'Upload a File'))
 
 @section('module-content')
     <div class="py-5">
@@ -13,6 +13,8 @@
                     <upload-file-admin
                         :can-download="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.file.download')?'true':'false')}}"
                         :can-change-status="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.status.create')?'true':'false')}}"
+                        :can-add-comments="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.comment.store')?'true':'false')}}"
+                        :can-see-comments="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.comment.index')?'true':'false')}}"
                         :statuses="{{json_encode(settings('statuses'))}}"></upload-file-admin>
                 </div>
             </div>
