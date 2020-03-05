@@ -7,7 +7,7 @@
                         <img src="document-comment-avatar.png"/>
                     </div>
                     <div class="commentText">
-                        <span class="commenterName">{{ comment.posted_by.forename }} {{comment.posted_by.surname}}</span> <span
+                        <span class="commenterName">{{ comment.posted_by.data.first_name }} {{comment.posted_by.data.last_name}}</span> <span
                             class="date sub-text">{{ comment.created_at }}</span>
                         <p>{{comment.comment}}</p>
 
@@ -15,7 +15,10 @@
                 </li>
             </ul>
         </div>
-                
+        <div v-else>
+            No comments have been left.
+        </div>
+        
         <b-form @submit.prevent="postComment" inline>
             <label class="sr-only" for="comment">Comment: </label>
             <b-input

@@ -1,6 +1,6 @@
 @extends('uploadfile::layouts.app')
 
-@section('title', settings('title'))
+@section('title', settings('title', 'Upload a File'))
 
 @section('module-content')
     <div class="py-5">

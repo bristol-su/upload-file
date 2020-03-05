@@ -92,7 +92,7 @@
                         formData.append('file[]', file)
                     }
                 } else {
-                    formData.append('file', this.file);
+                    formData.append('file[]', this.file);
                 }
                 formData.append('title', this.title);
                 formData.append('description', this.description);

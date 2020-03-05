@@ -30,9 +30,9 @@
                         v-model="file.description"
                 ></b-form-textarea>
             </b-form-group>
-        
+
             <div>
-                <span>Uploaded By: {{file.uploaded_by.forename}} {{file.uploaded_by.surname}}</span>
+                <span>Uploaded By: {{file.uploaded_by.data.first_name}} {{file.uploaded_by.data.last_name}}</span>
             </div>
             <br/>
             <div>
@@ -55,8 +55,11 @@
                     {{statusText(status)}}
                 </b-list-group-item>
             </b-list-group>
-            <b-button type="submit" variant="primary">Submit</b-button>
-            <b-button type="reset" variant="danger">Reset</b-button>
+            <div style="text-align: right;">
+                <b-button type="submit" variant="primary">Submit</b-button>
+                <b-button type="reset" variant="danger">Reset</b-button>
+            </div>
+
         </b-form>
         <div v-else>
             Loading...
@@ -100,7 +103,7 @@
             },
 
             statusText(status) {
-                let text = 'Changed to ' + status.status + ' by ' + status.created_by.forename + ' ' + status.created_by.surname;
+                let text = 'Changed to ' + status.status + ' by ' + status.created_by.data.first_name + ' ' + status.created_by.data.last_name;
                 if (this.hover === status.id) {
                     text = text + ' on the ' + moment(status.created_at).format('lll');
                 } else {
@@ -113,11 +116,12 @@
                 this.$http.put('file/' + this.file.id, {
                     title: this.file.title, description: this.file.description
                 })
-                .then(response => {
-                    this.$notify.success('File updated');
-                    this.$emit('fileUpdated', response.data);
-                })
-                .catch(error => this.$notify.alert('File could not be updated: ' + error.message));
+                    .then(response => {
+                        this.$notify.success('File updated');
+                        this.$emit('fileUpdated', response.data);
+                        window.location.reload();   
+                    })
+                    .catch(error => this.$notify.alert('File could not be updated: ' + error.message));
             }
         },
 

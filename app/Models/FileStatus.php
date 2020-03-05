@@ -5,14 +5,19 @@ namespace BristolSU\Module\UploadFile\Models;
 
 
 use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
+use BristolSU\Support\Revision\HasRevisions;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class FileStatus extends Model
 {
-
+    use SoftDeletes, HasRevisions;
+    
     protected $table = 'uploadfile_file_statuses';
 
-    protected $guarded = [];
+    protected $fillable = [
+        'file_id', 'status', 'created_by'
+    ];
     
     public function file()
     {
@@ -21,9 +26,7 @@ class FileStatus extends Model
 
     public function getCreatedByAttribute($createdById)
     {
-        return app()->make(UserRepository::class)->getById($createdById)->data();
+        return app()->make(UserRepository::class)->getById($createdById);
     }
-    
-    
     
 }

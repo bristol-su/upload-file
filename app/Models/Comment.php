@@ -3,13 +3,13 @@
 namespace BristolSU\Module\UploadFile\Models;
 
 use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
+use BristolSU\Support\Revision\HasRevisions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Comments extends Model
+class Comment extends Model
 {
-
-    use SoftDeletes;
+    use SoftDeletes, HasRevisions;
 
     protected $table = 'uploadfile_comments';
 
@@ -21,7 +21,7 @@ class Comments extends Model
 
     public function getPostedByAttribute($postedById)
     {
-        return app()->make(UserRepository::class)->getById($postedById)->data();
+        return app()->make(UserRepository::class)->getById($postedById);
     }
 
     public function file()
