@@ -3,7 +3,7 @@
     <img src="https://s3.eu-west-2.amazonaws.com/bristol-su-static-bucket/committee-portal/su-logo.jpg" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">Static Page</h3>
+  <h3 align="center">Upload a File</h3>
 
   <p align="center">
     Allow users to upload files, images and documents.
