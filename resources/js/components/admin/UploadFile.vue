@@ -68,6 +68,10 @@
             statuses: {
                 required: true,
                 type: Array
+            },
+            queryString: {
+                type: String,
+                required: true
             }
         },
         
@@ -104,7 +108,7 @@
             },
 
             downloadUrl(id) {
-                return this.$url + '/file/' + id + '/download';
+                return this.$url + '/file/' + id + '/download?' + this.queryString;
             },
 
             presentSize(size) {

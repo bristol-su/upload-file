@@ -77,6 +77,10 @@
                 required: true,
                 default: false
             },
+            queryString: {
+                type: String,
+                required: true
+            }
         },
 
         data() {
@@ -98,7 +102,7 @@
             },
 
             downloadUrl(id) {
-                return this.$url + '/file/' + id + '/download';
+                return this.$url + '/file/' + id + '/download?' + this.queryString;
             },
 
             deleteFile(id) {

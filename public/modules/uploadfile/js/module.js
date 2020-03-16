@@ -267,6 +267,10 @@ __webpack_require__.r(__webpack_exports__);
     statuses: {
       required: true,
       type: Array
+    },
+    queryString: {
+      type: String,
+      required: true
     }
   },
   data: function data() {
@@ -305,7 +309,7 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     downloadUrl: function downloadUrl(id) {
-      return this.$url + '/file/' + id + '/download';
+      return this.$url + '/file/' + id + '/download?' + this.queryString;
     },
     presentSize: function presentSize(size) {
       var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
@@ -583,6 +587,10 @@ __webpack_require__.r(__webpack_exports__);
       "default": function _default() {
         return [];
       }
+    },
+    queryString: {
+      type: String,
+      required: true
     }
   },
   data: function data() {
@@ -961,6 +969,10 @@ __webpack_require__.r(__webpack_exports__);
       type: Boolean,
       required: true,
       "default": false
+    },
+    queryString: {
+      type: String,
+      required: true
     }
   },
   data: function data() {
@@ -979,7 +991,7 @@ __webpack_require__.r(__webpack_exports__);
       return user.data.first_name + ' ' + user.data.last_name;
     },
     downloadUrl: function downloadUrl(id) {
-      return this.$url + '/file/' + id + '/download';
+      return this.$url + '/file/' + id + '/download?' + this.queryString;
     },
     deleteFile: function deleteFile(id) {
       var _this = this;
@@ -53960,6 +53972,7 @@ var render = function() {
                 [
                   _c("view-tab-content", {
                     attrs: {
+                      "query-string": _vm.queryString,
                       "can-update": _vm.canUpdate,
                       "can-see-comments": _vm.canSeeComments,
                       "can-delete": _vm.canDelete,

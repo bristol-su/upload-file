@@ -5,7 +5,7 @@
                 <upload-tab-content :allowed-extensions="allowedExtensions" :multiple-files="multipleFiles" :default-document-title="defaultDocumentTitle" @file-uploaded="pushFile"></upload-tab-content>
             </b-tab>
             <b-tab v-if="canView" title="Saved Files">
-                <view-tab-content :can-update="canUpdate" :can-see-comments="canSeeComments" :can-delete="canDelete" :can-download="canDownload" @fileDeleted="popFile" :files="files" @file-updated="replaceFile"></view-tab-content>
+                <view-tab-content :query-string="queryString" :can-update="canUpdate" :can-see-comments="canSeeComments" :can-delete="canDelete" :can-download="canDownload" @fileDeleted="popFile" :files="files" @file-updated="replaceFile"></view-tab-content>
             </b-tab>
         </b-tabs>
     </div>
@@ -69,6 +69,10 @@
                 default: function() {
                     return [];
                 }
+            },
+            queryString: {
+                type: String,
+                required: true
             }
         },
         
