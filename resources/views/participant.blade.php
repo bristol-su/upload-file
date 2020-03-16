@@ -19,7 +19,8 @@
                         :allowed-extensions="{{json_encode((settings('allowed_extensions')??[]))}}"
                         :can-update="{{(\BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.update')?'true':'false')}}"
                         :can-delete="{{(\BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.destroy')?'true':'false')}}"
-                        :can-see-comments="{{(\BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.comment.index')?'true':'false')}}"></upload-file-root>
+                        :can-see-comments="{{(\BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.comment.index')?'true':'false')}}"
+                        query-string="{{url()->getAuthQueryString()}}"></upload-file-root>
                 </div>
             </div>
         </div>

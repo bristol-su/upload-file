@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - (16/03/2020)
+
+### Changed
+- Added authentication query string to file download URLs
+
 ## [1.0] - (05/03/2020)
 
 ### Added

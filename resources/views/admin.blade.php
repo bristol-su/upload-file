@@ -15,7 +15,8 @@
                         :can-change-status="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.status.create')?'true':'false')}}"
                         :can-add-comments="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.comment.store')?'true':'false')}}"
                         :can-see-comments="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.comment.index')?'true':'false')}}"
-                        :statuses="{{json_encode(settings('statuses'))}}"></upload-file-admin>
+                        :statuses="{{json_encode(settings('statuses'))}}"
+                        query-string="{{url()->getAuthQueryString()}}"></upload-file-admin>
                 </div>
             </div>
         </div>
