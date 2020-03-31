@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.3] - (31/03/2020)
+
+### Fixed
+- Using settings helper in status didn't work for a completion condition
+
 ## [1.0.2] - (18/03/2020)
 
 ### Changed

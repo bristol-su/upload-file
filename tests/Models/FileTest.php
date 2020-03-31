@@ -102,7 +102,7 @@ class FileTest extends TestCase
             'value' => 'Some Custom Default Status'
         ]);
         
-        $file = factory(File::class)->create();
+        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id()]);
         
         $this->assertEquals('Some Custom Default Status', $file->status);
     }

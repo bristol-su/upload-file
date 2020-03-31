@@ -6,6 +6,7 @@ use BristolSU\Support\ActivityInstance\Contracts\ActivityInstanceRepository;
 use BristolSU\Support\Authentication\HasResource;
 use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
 use BristolSU\Support\ModuleInstance\Contracts\ModuleInstanceRepository;
+use BristolSU\Support\ModuleInstance\ModuleInstance;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
@@ -34,7 +35,10 @@ class File extends Model
     {
         return app()->make(UserRepository::class)->getById($uploadedById);
     }
-    
+
+    /**
+     * @return ModuleInstance
+     */
     public function moduleInstance()
     {
         return app(ModuleInstanceRepository::class)->getById($this->module_instance_id);
@@ -63,7 +67,7 @@ class File extends Model
             $default = $statuses[0];
         }
         
-        return settings('initial_status', $default);
+        return $this->moduleInstance()->setting('initial_status', $default);
     }
 
     public function comments()
