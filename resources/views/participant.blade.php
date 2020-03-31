@@ -20,6 +20,9 @@
                         :can-update="{{(\BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.update')?'true':'false')}}"
                         :can-delete="{{(\BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.destroy')?'true':'false')}}"
                         :can-see-comments="{{(\BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.comment.index')?'true':'false')}}"
+                        :can-add-comments="{{(\BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.comment.store')?'true':'false')}}"
+                        :can-delete-comments="{{(\BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.comment.destroy')?'true':'false')}}"
+                        :can-update-comments="{{(\BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.comment.update')?'true':'false')}}"
                         query-string="{{url()->getAuthQueryString()}}"></upload-file-root>
                 </div>
             </div>

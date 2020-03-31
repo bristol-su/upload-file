@@ -13,7 +13,9 @@
                         class="fa fa-edit"></i> Edit
                 </b-button>
                 <b-button @click="showComments(data.item.id)" size="sm" v-if="canSeeComments" variant="outline-info"><i
-                        class="fa fa-comments"></i> Comments <b-badge variant="secondary">{{data.item.comments.length}} <span class="sr-only">comments</span></b-badge>
+                        class="fa fa-comments"></i> Comments
+                    <b-badge variant="secondary">{{data.item.comments.length}} <span class="sr-only">comments</span>
+                    </b-badge>
                 </b-button>
                 <b-button @click="deleteFile(data.item.id)" size="sm" v-if="canDelete" variant="outline-danger"><i
                         class="fa fa-trash"></i> Delete
@@ -27,17 +29,18 @@
 
         <b-modal id="editFile">
             <edit-file :file-id="editingFileId" @fileUpdated="$emit('fileUpdated', $event)"
-                       v-if="editingFileId !== null" ></edit-file>
+                       v-if="editingFileId !== null"></edit-file>
 
             <template slot="modal-footer">
-                <b-btn variant="secondary" @click="$bvModal.hide('editFile')">
+                <b-btn @click="$bvModal.hide('editFile')" variant="secondary">
                     Cancel
                 </b-btn>
-            </template>        
+            </template>
         </b-modal>
 
-        <b-modal id="showComments">
-            <comments :file-id="commentingFileId" v-if="commentingFileId !== null"></comments>
+        <b-modal id="showComments" title="Comments">
+            <comments :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
+                      :file-id="commentingFileId" v-if="commentingFileId !== null"></comments>
         </b-modal>
     </div>
 </template>
@@ -73,6 +76,21 @@
                 default: false
             },
             canSeeComments: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+            canAddComments: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+            canDeleteComments: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+            canUpdateComments: {
                 type: Boolean,
                 required: true,
                 default: false

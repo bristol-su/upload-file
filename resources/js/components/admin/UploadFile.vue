@@ -26,8 +26,9 @@
             </status-change>
         </b-modal>
 
-        <b-modal id="comments" title="Add Comment" hide-footer>
-            <comments :file-id="fileForComments.id" v-if="fileForComments !== null"></comments>
+        <b-modal id="comments" title="Comments" hide-footer >
+            <comments :file-id="fileForComments.id" v-if="fileForComments !== null"
+                      :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"></comments>
         </b-modal>
     </div>
 </template>
@@ -56,6 +57,16 @@
                 default: false
             },
             canAddComments: {
+                required: true,
+                type: Boolean,
+                default: false
+            },
+            canDeleteComments: {
+                required: true,
+                type: Boolean,
+                default: false
+            },
+            canUpdateComments: {
                 required: true,
                 type: Boolean,
                 default: false
