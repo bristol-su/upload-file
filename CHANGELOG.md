@@ -7,7 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.6] - (06/04/2020)
+## [1.0.7] - (07/04/2020)
+
+### Added
+- Ability for admins to delete and edit files
+
+## [1.0.6] - (06/04/2020)   
 
 ### Added
 - Allow admins to upload files on behalf of a user
@@ -45,7 +50,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial Release
 
-[Unreleased]: https://github.com/bristol-su/upload-file/compare/v1.0.4...HEAD
+[Unreleased]: https://github.com/bristol-su/upload-file/compare/v1.0.7...HEAD
+[1.0.7]: https://github.com/bristol-su/upload-file/compare/v1.0.6...v1.0.7
+[1.0.6]: https://github.com/bristol-su/upload-file/compare/v1.0.5...v1.0.6
+[1.0.5]: https://github.com/bristol-su/upload-file/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/bristol-su/upload-file/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/bristol-su/upload-file/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/bristol-su/upload-file/compare/v1.0.1...v1.0.2

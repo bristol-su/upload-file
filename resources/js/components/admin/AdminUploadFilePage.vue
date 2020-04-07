@@ -9,6 +9,8 @@
                 :can-delete-comments="canDeleteComments"
                 :can-update-comments="canUpdateComments"
                 :can-download="canDownload"
+                :can-delete-files="canDeleteFiles"
+                :can-update-files="canUpdateFiles"
                 :statuses="statuses"></upload-file>
         </b-tab>
         <b-tab title="Upload a File" v-if="canUploadFiles">
@@ -91,6 +93,16 @@
             queryString: {
                 type: String,
                 required: true
+            },
+            canUpdateFiles: {
+                type: Boolean,
+                required: false,
+                default:  false
+            },
+            canDeleteFiles: {
+                type: Boolean,
+                required: false,
+                default:  false
             }
         },
 

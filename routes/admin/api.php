@@ -14,7 +14,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::namespace('AdminApi')->group(function() {
-    Route::apiResource('file', 'FileController')->parameters(['file' => 'uploadfile_file'])->only(['index', 'show', 'store']);
+    Route::apiResource('file', 'FileController')->parameters(['file' => 'uploadfile_file']);
     Route::prefix('file/{uploadfile_file}')->group(function() {
         Route::apiResource('status', 'FileStatusController')->parameters(['status' => 'uploadfile_file_status']);
         Route::apiResource('comment', 'CommentController')->only(['index', 'store'])->parameters(['comment' => 'uploadfile_comment']);

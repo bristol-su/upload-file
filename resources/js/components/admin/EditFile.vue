@@ -2,6 +2,15 @@
     <div>
         <b-form @reset.prevent="loadFile" @submit.prevent="update" v-if="file !== null">
             <b-form-group
+                    id="for-label"
+                    label-for="on-behalf-of"
+                    description="Who is the document being uploaded on behalf of?"
+            >
+                <audience id="on-behalf-of" v-model="file.activity_instance_id"></audience>
+
+            </b-form-group>
+            
+            <b-form-group
                     description="A name for the file."
                     id="title-label"
                     label="Title:"
@@ -34,6 +43,7 @@
             <div>
                 <span>Uploaded By: {{file.uploaded_by.data.first_name}} {{file.uploaded_by.data.last_name}}</span>
             </div>
+
             <br/>
             <div>
                 <span>Status: {{file.status}}</span>
@@ -64,10 +74,11 @@
 
 <script>
     import moment from 'moment';
+    import Audience from './Audience';
 
     export default {
         name: "EditFile",
-
+        components: {Audience},
         props: {
             fileId: {
                 required: true,
@@ -93,10 +104,6 @@
                     .catch(error => this.$notify.alert('Could not load the file:' + error.message));
             },
 
-            downloadUrl(id) {
-                return this.$url + '/file/' + id + '/download';
-            },
-
             statusText(status) {
                 let text = 'Changed to ' + status.status + ' by ' + status.created_by.data.first_name + ' ' + status.created_by.data.last_name;
                 if (this.hover === status.id) {
@@ -109,12 +116,12 @@
 
             update() {
                 this.$http.put('file/' + this.file.id, {
-                    title: this.file.title, description: this.file.description
+                    title: this.file.title, description: this.file.description, activity_instance_id: this.file.activity_instance_id
                 })
                     .then(response => {
                         this.$notify.success('File updated');
                         this.$emit('fileUpdated', response.data);
-                        window.location.reload();   
+                        window.location.reload();
                     })
                     .catch(error => this.$notify.alert('File could not be updated: ' + error.message));
             }

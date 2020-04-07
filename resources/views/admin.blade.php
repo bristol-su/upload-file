@@ -19,6 +19,8 @@
                         :can-update-comments="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.comment.update')?'true':'false')}}"
                         :can-view-files="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.file.index')?'true':'false')}}"
                         :can-upload-files="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.file.store')?'true':'false')}}"
+                        :can-delete-files="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.file.destroy')?'true':'false')}}"
+                        :can-update-files="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.admin.file.update')?'true':'false')}}"
                         :statuses="{{json_encode(settings('statuses'))}}"
                         default-document-title="{{settings('document_title')}}"
                         :multiple-files="{{(settings('multiple_files')?'true':'false')}}"
