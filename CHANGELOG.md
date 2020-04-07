@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.8] - (07/04/2020)
+
+### Fixed
+- Added headers to be able to download files through Laravel Vapor.
+
 ## [1.0.7] - (07/04/2020)
 
 ### Added
@@ -50,7 +55,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial Release
 
-[Unreleased]: https://github.com/bristol-su/upload-file/compare/v1.0.7...HEAD
+[Unreleased]: https://github.com/bristol-su/upload-file/compare/v1.0.8...HEAD
+[1.0.8]: https://github.com/bristol-su/upload-file/compare/v1.0.7...v1.0.8
 [1.0.7]: https://github.com/bristol-su/upload-file/compare/v1.0.6...v1.0.7
 [1.0.6]: https://github.com/bristol-su/upload-file/compare/v1.0.5...v1.0.6
 [1.0.5]: https://github.com/bristol-su/upload-file/compare/v1.0.4...v1.0.5

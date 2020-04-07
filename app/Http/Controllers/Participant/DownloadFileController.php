@@ -18,7 +18,9 @@ class DownloadFileController extends Controller
         $this->authorize('file.download');
         
         if(Storage::exists($file->path)) {
-            return Storage::download($file->path, $file->filename);
+            return Storage::download($file->path, $file->filename, [
+                'X-Vapor-Base64-Encode' => 'True'
+            ]);
         }
         
         throw new HttpException(404, 'File not found');
