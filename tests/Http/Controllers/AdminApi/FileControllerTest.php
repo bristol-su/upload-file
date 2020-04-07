@@ -3,10 +3,13 @@
 namespace BristolSU\Module\Tests\UploadFile\Http\Controllers\AdminApi;
 
 use BristolSU\Module\Tests\UploadFile\TestCase;
+use BristolSU\Module\UploadFile\Events\DocumentDeleted;
+use BristolSU\Module\UploadFile\Events\DocumentUpdated;
 use BristolSU\Module\UploadFile\Events\DocumentUploaded;
 use BristolSU\Module\UploadFile\Models\File;
 use BristolSU\Support\ActivityInstance\ActivityInstance;
 use BristolSU\Support\ModuleInstance\Settings\ModuleInstanceSetting;
+use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
@@ -363,5 +366,225 @@ class FileControllerTest extends TestCase
         $response->assertJsonValidationErrors(['file.0' => 'file of type:']);
 
     }
+
+
+
+    /** @test */
+    public function update_returns_403_if_permission_not_given()
+    {
+        $this->revokePermissionTo('uploadfile.admin.file.update');
+
+        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+
+        $response = $this->patchJson($this->adminApiUrl('file/' . $file->id), [
+            'title' => 'NewTitle', 'description' => 'NewDescription'
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    /** @test */
+    public function update_returns_200_if_permission_given()
+    {
+        $this->givePermissionTo('uploadfile.admin.file.update');
+
+        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+
+        $response = $this->patchJson($this->adminApiUrl('file/' . $file->id), [
+            'title' => 'NewTitle', 'description' => 'NewDescription'
+        ]);
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function update_updates_the_title_and_description_and_activity_instance()
+    {
+        $this->givePermissionTo('uploadfile.admin.file.update');
+
+        $file = factory(File::class)->create(['title' => 'OldTitle', 'description' => 'OldDescription', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+
+        $this->assertDatabaseHas('uploadfile_files', [
+            'id' => $file->id, 'title' => 'OldTitle', 'description' => 'OldDescription'
+        ]);
+
+        $newActivityInstance = factory(ActivityInstance::class)->create();
+        
+        $response = $this->patchJson($this->adminApiUrl('file/' . $file->id), [
+            'title' => 'NewTitle', 'description' => 'NewDescription', 'activity_instance_id' => $newActivityInstance->id
+        ]);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('uploadfile_files', [
+            'id' => $file->id, 'title' => 'NewTitle', 'description' => 'NewDescription', 'activity_instance_id' => (string) $newActivityInstance->id
+        ]);
+    }
+
+    /** @test */
+    public function update_updates_just_the_title_if_no_description_given()
+    {
+        $this->givePermissionTo('uploadfile.admin.file.update');
+
+        $file = factory(File::class)->create(['title' => 'OldTitle', 'description' => 'OldDescription', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+
+        $this->assertDatabaseHas('uploadfile_files', [
+            'id' => $file->id, 'title' => 'OldTitle', 'description' => 'OldDescription'
+        ]);
+
+        $response = $this->patchJson($this->adminApiUrl('file/' . $file->id), [
+            'title' => 'NewTitle'
+        ]);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('uploadfile_files', [
+            'id' => $file->id, 'title' => 'NewTitle', 'description' => 'OldDescription'
+        ]);
+    }
+
+    /** @test */
+    public function update_updates_just_the_description_if_no_title_given()
+    {
+        $this->givePermissionTo('uploadfile.admin.file.update');
+
+        $file = factory(File::class)->create(['title' => 'OldTitle', 'description' => 'OldDescription', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+
+        $this->assertDatabaseHas('uploadfile_files', [
+            'id' => $file->id, 'title' => 'OldTitle', 'description' => 'OldDescription'
+        ]);
+
+        $response = $this->patchJson($this->adminApiUrl('file/' . $file->id), [
+            'description' => 'NewDescription'
+        ]);
+        $response->assertStatus(200);
+
+        $this->assertDatabaseHas('uploadfile_files', [
+            'id' => $file->id, 'title' => 'OldTitle', 'description' => 'NewDescription'
+        ]);
+    }
+
+    /** @test */
+    public function update_returns_the_file_with_the_new_title_and_description_and_activity_instance()
+    {
+        $this->givePermissionTo('uploadfile.admin.file.update');
+
+        $file = factory(File::class)->create(['title' => 'OldTitle', 'description' => 'OldDescription',
+            'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+
+        $newActivityInstance = factory(ActivityInstance::class)->create();
+        
+        $response = $this->patchJson($this->adminApiUrl('file/' . $file->id), [
+            'title' => 'NewTitle', 'description' => 'NewDescription', 'activity_instance_id' => $newActivityInstance->id
+        ]);
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'id' => $file->id,
+            'title' => 'NewTitle',
+            'description' => 'NewDescription',
+            'activity_instance_id' => $newActivityInstance->id
+        ]);
+
+    }
+
+    /** @test */
+    public function update_fires_an_event(){
+        Event::fake(DocumentUpdated::class);
+        $this->bypassAuthorization();
+
+        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $response = $this->patchJson($this->adminApiUrl('file/' . $file->id), [
+            'title' => 'NewTitle', 'description' => 'NewDescription'
+        ]);        
+        $response->assertStatus(200);
+
+        Event::assertDispatched(DocumentUpdated::class, function($event) use ($file) {
+            return $event instanceof DocumentUpdated && $event->file->is($file);
+        });
+    }
+
+    /** @test */
+    public function destroy_returns_403_if_permission_not_given()
+    {
+        $this->revokePermissionTo('uploadfile.admin.file.destroy');
+
+        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->idc]);
+
+        $response = $this->deleteJson($this->adminApiUrl('file/' . $file->id));
+        $response->assertStatus(403);
+    }
+
+    /** @test */
+    public function destroy_returns_200_if_permission_given()
+    {
+        $this->givePermissionTo('uploadfile.admin.file.destroy');
+
+        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+
+        $response = $this->deleteJson($this->adminApiUrl('file/' . $file->id));
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    public function destroy_returns_a_404_if_file_not_found()
+    {
+        $this->bypassAuthorization();
+        $this->assertDatabaseMissing('uploadfile_files', ['id' => 100]);
+        $response = $this->deleteJson($this->adminApiUrl('file/100'));
+        $response->assertStatus(404);
+    }
+
+    /** @test */
+    public function destroy_deletes_a_file_from_the_database()
+    {
+        $this->bypassAuthorization();
+
+        $file = factory(File::class)->create(['title' => 'SomeFile', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+
+        $this->assertDatabaseHas('uploadfile_files', [
+            'id' => $file->id,
+            'title' => 'SomeFile'
+        ]);
+
+        $response = $this->deleteJson($this->adminApiUrl('file/' . $file->id));
+        $response->assertStatus(200);
+
+        $this->assertSoftDeleted('uploadfile_files', [
+            'id' => $file->id,
+            'title' => 'SomeFile'
+        ]);
+    }
+
+    /** @test */
+    public function destroy_returns_the_deleted_file()
+    {
+        $this->bypassAuthorization();
+        $now = Carbon::now();
+
+        $file = factory(File::class)->create(['title' => 'SomeFile', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+
+        Carbon::setTestNow($now);
+
+        $response = $this->deleteJson($this->adminApiUrl('file/' . $file->id));
+        $response->assertStatus(200);
+
+        $response->assertJsonFragment([
+            'id' => $file->id,
+            'title' => 'SomeFile',
+            'deleted_at' => $now->format('Y-m-d H:i:s')
+        ]);
+    }
+
+    /** @test */
+    public function destroy_fires_an_event(){
+        Event::fake(DocumentDeleted::class);
+        $this->bypassAuthorization();
+
+        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $response = $this->deleteJson($this->adminApiUrl('file/' . $file->id));
+        $response->assertStatus(200);
+
+        Event::assertDispatched(DocumentDeleted::class, function($event) use ($file) {
+            return $event instanceof DocumentDeleted && $event->file->is($file);
+        });
+    }
+
 
 }
