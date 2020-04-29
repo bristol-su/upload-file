@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.8] - (07/04/2020)
+
+### Fixed
+- Added headers to be able to download files through Laravel Vapor.
+
+## [1.0.7] - (07/04/2020)
+
+### Added
+- Ability for admins to delete and edit files
+
+## [1.0.6] - (06/04/2020)   
+
+### Added
+- Allow admins to upload files on behalf of a user
+
+## [1.0.5] - (04/04/2020)
+
+### Added
+- Update npm dependencies
+
+## [1.0.4] - (31/03/2020)
+
+### Added
+- Ability to update and edit comments from the frontent
+
+### Changed
+- Updated js dependencies
+
+## [1.0.3] - (31/03/2020)
+
+### Fixed
+- Using settings helper in status didn't work for a completion condition
+
 ## [1.0.2] - (18/03/2020)
 
 ### Changed
@@ -22,7 +55,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial Release
 
-[Unreleased]: https://github.com/bristol-su/upload-file/compare/v1.0.2...HEAD
+[Unreleased]: https://github.com/bristol-su/upload-file/compare/v1.0.8...HEAD
+[1.0.8]: https://github.com/bristol-su/upload-file/compare/v1.0.7...v1.0.8
+[1.0.7]: https://github.com/bristol-su/upload-file/compare/v1.0.6...v1.0.7
+[1.0.6]: https://github.com/bristol-su/upload-file/compare/v1.0.5...v1.0.6
+[1.0.5]: https://github.com/bristol-su/upload-file/compare/v1.0.4...v1.0.5
+[1.0.4]: https://github.com/bristol-su/upload-file/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/bristol-su/upload-file/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/bristol-su/upload-file/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/bristol-su/upload-file/compare/v1.0...v1.0.1
 [1.0]: https://github.com/bristol-su/upload-file/releases/tag/v1.0

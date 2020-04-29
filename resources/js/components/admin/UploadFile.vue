@@ -12,13 +12,20 @@
                 <b-button @click="showComments(data.item)" size="sm" v-if="canSeeComments" variant="outline-info"><i
                         class="fa fa-comments"></i> Comments <b-badge variant="secondary">{{data.item.comments.length}} <span class="sr-only">comments</span></b-badge>
                 </b-button>
-
+                <b-button @click="editFile(data.item.id)" size="sm" v-if="canUpdateFiles" variant="outline-info"><i
+                        class="fa fa-edit"></i> Edit
+                </b-button>
+                <b-button @click="deleteFile(data.item.id)" size="sm" v-if="canDeleteFiles" variant="outline-danger"><i
+                        class="fa fa-trash"></i> Delete
+                </b-button>
             </template>
             
             <template v-slot:cell(change_status)="data">
                 <b-button variant="secondary" @click="changeStatus(data.item)">Change Status</b-button>
             </template>
         </b-table>
+        
+        
 
         <b-modal id="file-status-change" :title="statusChangeTitle" hide-footer>
             <status-change :file="fileForStatusChange" v-if="fileForStatusChange !== null" :statuses="statuses" @statusAdded="addStatus">
@@ -26,8 +33,19 @@
             </status-change>
         </b-modal>
 
-        <b-modal id="comments" title="Add Comment" hide-footer>
-            <comments :file-id="fileForComments.id" v-if="fileForComments !== null"></comments>
+        <b-modal id="comments" title="Comments" hide-footer >
+            <comments :file-id="fileForComments.id" v-if="fileForComments !== null"
+                      :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"></comments>
+        </b-modal>
+
+        <b-modal id="editFile">
+            <edit-file :file-id="editingFileId" v-if="editingFileId !== null"></edit-file>
+
+            <template slot="modal-footer">
+                <b-btn @click="$bvModal.hide('editFile')" variant="secondary">
+                    Cancel
+                </b-btn>
+            </template>
         </b-modal>
     </div>
 </template>
@@ -36,10 +54,12 @@
     
     import StatusChange from './StatusChange';
     import Comments from '../participant/View/Comments';
+    import EditFile from './EditFile';
     export default {
         name: "UploadFile",
         
         components: {
+            EditFile,
             Comments,
             StatusChange
         },
@@ -60,6 +80,16 @@
                 type: Boolean,
                 default: false
             },
+            canDeleteComments: {
+                required: true,
+                type: Boolean,
+                default: false
+            },
+            canUpdateComments: {
+                required: true,
+                type: Boolean,
+                default: false
+            },
             canSeeComments: {
                 required: true,
                 type: Boolean,
@@ -72,6 +102,16 @@
             queryString: {
                 type: String,
                 required: true
+            },
+            canUpdateFiles: {
+                type: Boolean,
+                required: false,
+                default:  false
+            },
+            canDeleteFiles: {
+                type: Boolean,
+                required: false,
+                default:  false
             }
         },
         
@@ -80,7 +120,8 @@
                 files: [],
                 fileForStatusChange: null,
                 fileForComments: null,
-                fields: ['title', 'size', 'uploaded_by', 'status', 'created_at', 'actions']
+                fields: ['title', 'size', 'uploaded_by', 'status', 'created_at', 'actions'],
+                editingFileId: null
             }
         },
         
@@ -89,6 +130,39 @@
         },
         
         methods: {
+            deleteFile(id) {
+                this.$bvModal.msgBoxConfirm('Are you sure you want to delete this file?', {
+                    title: 'Deleting file',
+                    size: 'sm',
+                    buttonSize: 'sm',
+                    okVariant: 'danger',
+                    okTitle: 'Delete',
+                    cancelTitle: 'Cancel',
+                    footerClass: 'p-2',
+                    hideHeaderClose: true,
+                    centered: true
+                })
+                    .then(confirmed => {
+                        if (confirmed) {
+                            this.$http.delete('file/' + id)
+                                .then(response => {
+                                    this.$notify.success('File deleted');
+                                    this.$emit('fileDeleted', response.data.id);
+                                    window.location.reload();
+                                })
+                                .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
+                        } else {
+                            this.$notify.warning('No files deleted');
+                        }
+                    })
+                    .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
+            },
+
+            editFile(id) {
+                this.editingFileId = id;
+                this.$bvModal.show('editFile')
+            },
+
             addStatus(status) {
                 this.$http.get('/file/' + this.fileForStatusChange.id)
                     .then(response => Vue.set(this.files, this.files.indexOf(this.fileForStatusChange), response.data))

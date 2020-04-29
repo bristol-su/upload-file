@@ -1,11 +1,16 @@
 <template>
     <div>
         <b-tabs>
-            <b-tab title="New File" v-if="canUpload" active>
-                <upload-tab-content :allowed-extensions="allowedExtensions" :multiple-files="multipleFiles" :default-document-title="defaultDocumentTitle" @file-uploaded="pushFile"></upload-tab-content>
+            <b-tab active title="New File" v-if="canUpload">
+                <upload-tab-content :allowed-extensions="allowedExtensions" :default-document-title="defaultDocumentTitle"
+                                    :multiple-files="multipleFiles"
+                                    @file-uploaded="pushFile"></upload-tab-content>
             </b-tab>
-            <b-tab v-if="canView" title="Saved Files">
-                <view-tab-content :query-string="queryString" :can-update="canUpdate" :can-see-comments="canSeeComments" :can-delete="canDelete" :can-download="canDownload" @fileDeleted="popFile" :files="files" @file-updated="replaceFile"></view-tab-content>
+            <b-tab title="Saved Files" v-if="canView">
+                <view-tab-content :can-delete="canDelete" :can-download="canDownload" :can-see-comments="canSeeComments"
+                                  :can-update="canUpdate" :files="files" :query-string="queryString"
+                                  :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments" :can-add-comments="canAddComments"
+                                  @file-updated="replaceFile" @fileDeleted="popFile"></view-tab-content>
             </b-tab>
         </b-tabs>
     </div>
@@ -14,15 +19,15 @@
 <script>
     import UploadTabContent from './Upload/UploadTabContent';
     import ViewTabContent from './View/ViewTabContent';
-    
+
     export default {
         name: "UploadFile",
-        
+
         components: {
             UploadTabContent,
             ViewTabContent,
         },
-        
+
         props: {
             canUpload: {
                 type: Boolean,
@@ -54,6 +59,21 @@
                 required: true,
                 default: false
             },
+            canAddComments: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+            canDeleteComments: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+            canUpdateComments: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
             defaultDocumentTitle: {
                 type: String,
                 default: ''
@@ -66,7 +86,7 @@
             allowedExtensions: {
                 required: false,
                 type: Array,
-                default: function() {
+                default: function () {
                     return [];
                 }
             },
@@ -75,39 +95,39 @@
                 required: true
             }
         },
-        
+
         data() {
             return {
                 files: []
             }
         },
-        
+
         created() {
             this.loadFiles();
         },
-        
+
         methods: {
             pushFile(file) {
-                this.$http.get('file/'+file.id)
+                this.$http.get('file/' + file.id)
                     .then(response => this.files.push(response.data))
                     .catch(error => window.location.reload());
             },
-            
+
             loadFiles() {
                 this.$http.get('file')
                     .then(response => this.files = response.data)
                     .catch(error => this.$notify.alert('Sorry, something went wrong retrieving files: ' + error.message));
             },
-            
+
             popFile(id) {
                 this.files = this.files.filter(file => file.id !== id);
             },
-            
+
             replaceFile(file) {
                 this.$http.get('file/' + file.id)
                     .then(response => {
                         let index = this.files.map(data => data.id).indexOf(file.id);
-                        this.files[index] = response.data;  
+                        this.files[index] = response.data;
                     })
                     .catch(error => window.location.reload());
             }

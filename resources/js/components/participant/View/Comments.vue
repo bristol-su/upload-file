@@ -3,15 +3,8 @@
         <div v-if="comments.length > 0">
             <ul class="commentList">
                 <li v-for="comment in comments" v-if="comments.length > 0">
-                    <div class="commenterImage">
-                        <img src="document-comment-avatar.png"/>
-                    </div>
-                    <div class="commentText">
-                        <span class="commenterName">{{ comment.posted_by.data.first_name }} {{comment.posted_by.data.last_name}}</span> <span
-                            class="date sub-text">{{ comment.created_at }}</span>
-                        <p>{{comment.comment}}</p>
-
-                    </div>
+                    <comment :comment="comment" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments" @updated="loadComments"></comment>
+                    <hr/>
                 </li>
             </ul>
         </div>
@@ -19,7 +12,7 @@
             No comments have been left.
         </div>
         
-        <b-form @submit.prevent="postComment" inline>
+        <b-form @submit.prevent="postComment" inline v-if="canAddComments">
             <label class="sr-only" for="comment">Comment: </label>
             <b-input
                     id="comment"
@@ -35,13 +28,29 @@
 </template>
 
 <script>
+    import Comment from './Comment';
     export default {
         name: "Comments",
-
+        components: {Comment},
         props: {
             fileId: {
                 required: false
-            }
+            },
+            canAddComments: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+            canDeleteComments: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
+            canUpdateComments: {
+                type: Boolean,
+                required: true,
+                default: false
+            },
         },
 
         data() {
@@ -81,7 +90,6 @@
     .commentList {
         padding: 0;
         list-style: none;
-        max-height: 200px;
         overflow: auto;
     }
 
@@ -90,38 +98,5 @@
         margin-top: 10px;
     }
 
-    .commentList li > div {
-        display: table-cell;
-    }
-
-    .commenterImage {
-        width: 30px;
-        margin-right: 5px;
-        height: 100%;
-        float: left;
-    }
-
-    .commenterImage.owner {
-        float: right;
-    }
-
-    .commenterImage img {
-        width: 100%;
-        border-radius: 50%;
-    }
-
-    .commentText p {
-        margin: 0;
-    }
-
-    .sub-text {
-        color: #aaa;
-        font-family: verdana;
-        font-size: 11px;
-    }
-
-    .commenterName {
-
-    }
 
 </style>

@@ -95,6 +95,21 @@ class ModuleServiceProvider extends ServiceProvider
             'description' => 'Allow the user to view all uploaded files',
             'admin' => true
         ],
+        'admin.file.store' => [
+            'name' => 'Upload a new file',
+            'description' => 'Allow the ability to upload a file on behalf of a user.',
+            'admin' => true
+        ],
+        'admin.file.destroy' => [
+            'name' => 'Delete a file',
+            'description' => 'Allow the user to delete any uploaded file',
+            'admin' => true
+        ],
+        'admin.file.update' => [
+            'name' => 'Update a File',
+            'description' => 'Allow the user to update any file name/description or reassign the file.',
+            'admin' => true
+        ],
         'admin.file.download' => [
             'name' => 'Download files',
             'description' => 'Allow the user to download any uploaded files',

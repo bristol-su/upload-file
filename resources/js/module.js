@@ -1,8 +1,8 @@
 import Vue from 'vue';
 import UploadFileRoot from './components/participant/UploadFile';
-import UploadFileAdmin from './components/admin/UploadFile';
+import AdminUploadFilePage from './components/admin/AdminUploadFilePage';
 import BootstrapVue from 'bootstrap-vue';
-import http from 'http-client';
+import http from '@bristol-su/http-client';
 import AWN from "awesome-notifications";
 
 Vue.prototype.$http = http;
@@ -15,6 +15,6 @@ let vue = new Vue({
     
     components: {
         UploadFileRoot,
-        UploadFileAdmin
+        AdminUploadFilePage
     }
 });
