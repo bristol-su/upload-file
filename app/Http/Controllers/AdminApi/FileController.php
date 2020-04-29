@@ -23,7 +23,12 @@ class FileController extends Controller
     {
         $this->authorize('admin.file.index');
         
-        return File::forModuleInstance()->with(['statuses', 'comments'])->get();
+        return File::forModuleInstance()->with(['statuses', 'comments'])->get()->map(function(File $file) {
+            $activityInstance = $file->activityInstance();
+            $file = $file->toArray();
+            $file['activity_instance'] = $activityInstance;
+            return $file;
+        });
     }
 
     public function show(Activity $activity, ModuleInstance $moduleInstance, File $file)
