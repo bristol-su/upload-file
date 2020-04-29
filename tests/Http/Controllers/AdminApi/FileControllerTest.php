@@ -42,8 +42,9 @@ class FileControllerTest extends TestCase
             'module_instance_id' => $this->getModuleInstance()->id()
         ]);
         $otherFiles = factory(File::class, 3)->create();
-
+        
         $response = $this->getJson($this->adminApiUrl('/file'));
+        
         $response->assertStatus(200);
         $response->assertJsonCount(5);
         foreach($files as $file) {

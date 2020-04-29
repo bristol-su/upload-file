@@ -1,7 +1,9 @@
 <template>
     <div>
         <b-table :fields="fields" :items="processedFiles">
-
+            <template v-slot:cell(uploaded_for)="data">
+                <v-uploaded-for-name :activity-instance="data.item.activity_instance"></v-uploaded-for-name>
+            </template>
             <template v-slot:cell(actions)="data">
                 <a :href="downloadUrl(data.item.id)" v-if="canDownload">
                     <b-button size="sm" variant="outline-info"><i class="fa fa-download"></i> Download</b-button>
@@ -55,10 +57,12 @@
     import StatusChange from './StatusChange';
     import Comments from '../participant/View/Comments';
     import EditFile from './EditFile';
+    import VUploadedForName from './VUploadedForName';
     export default {
         name: "UploadFile",
         
         components: {
+            VUploadedForName,
             EditFile,
             Comments,
             StatusChange
@@ -120,7 +124,7 @@
                 files: [],
                 fileForStatusChange: null,
                 fileForComments: null,
-                fields: ['title', 'size', 'uploaded_by', 'status', 'created_at', 'actions'],
+                fields: ['title', 'uploaded_for', 'uploaded_by', 'status', 'created_at', 'actions'],
                 editingFileId: null
             }
         },
