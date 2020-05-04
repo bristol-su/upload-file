@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.10] - (04/05/2020)
+
+### Changed
+- Changed the comment column to a text from string
+
 ## [1.0.9] - (29/04/2020)
 
 ### Added
