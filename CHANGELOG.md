@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - (06/05/2020)
+
+### Added
+- Added tags to files
+- Added the ability to drag in old files for the resource with given tags
+
 ## [1.0.10] - (04/05/2020)
 
 ### Changed

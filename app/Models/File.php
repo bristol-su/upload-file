@@ -2,6 +2,7 @@
 
 namespace BristolSU\Module\UploadFile\Models;
 
+use BristolSU\Support\ActivityInstance\ActivityInstance;
 use BristolSU\Support\ActivityInstance\Contracts\ActivityInstanceRepository;
 use BristolSU\Support\Authentication\HasResource;
 use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
@@ -9,6 +10,7 @@ use BristolSU\Support\ModuleInstance\Contracts\ModuleInstanceRepository;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
 
 class File extends Model
@@ -29,6 +31,11 @@ class File extends Model
         'uploaded_by',
         'module_instance_id',
         'activity_instance_id',
+        'tags'
+    ];
+    
+    protected $casts = [
+        'tags' => 'array'
     ];
 
     public function getUploadedByAttribute($uploadedById)
@@ -36,6 +43,19 @@ class File extends Model
         return app()->make(UserRepository::class)->getById($uploadedById);
     }
 
+    public function scopeWithTag(Builder $query, string $tag)
+    {
+        $activityInstanceRepository = app(ActivityInstanceRepository::class);
+        $activityInstance = $activityInstanceRepository->getById(static::activityInstanceId());
+        $activityInstanceIds = $activityInstanceRepository
+            ->allForResource($activityInstance->resource_type, $activityInstance->resource_id)
+            ->map(function(ActivityInstance $activityInstance) {
+                return $activityInstance->id;
+            });
+        return $query->whereIn('activity_instance_id', $activityInstanceIds->toArray())
+            ->where('tags', 'LIKE', '%"' . $tag . '"%');
+    }   
+    
     /**
      * @return ModuleInstance
      */
@@ -44,6 +64,9 @@ class File extends Model
         return app(ModuleInstanceRepository::class)->getById($this->module_instance_id);
     }
 
+    /**
+     * @return ActivityInstance
+     */
     public function activityInstance()
     {
         return app(ActivityInstanceRepository::class)->getById($this->activity_instance_id);

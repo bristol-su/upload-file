@@ -8,6 +8,7 @@ use BristolSU\Module\UploadFile\Models\Comment;
 use BristolSU\Module\UploadFile\Models\File;
 use BristolSU\Module\Tests\UploadFile\TestCase;
 use BristolSU\Module\UploadFile\Models\FileStatus;
+use BristolSU\Support\Activity\Activity;
 use BristolSU\Support\ActivityInstance\ActivityInstance;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
 use BristolSU\Support\ModuleInstance\Settings\ModuleInstanceSetting;
@@ -147,4 +148,43 @@ class FileTest extends TestCase
         }
     }
     
+    /** @test */
+    public function it_has_tags(){
+        $file = factory(File::class)->create([
+            'tags' => ['tag1', 'tag2']
+        ]);
+        $this->assertEquals(['tag1', 'tag2'], $file->tags);
+    }
+    
+    /** @test */
+    public function withTag_returns_all_files_uploaded_by_the_participant_with_a_tag_for_a_user(){
+        $user1 = $this->getControlUser();
+        $user2 = factory(User::class)->create();
+        $activity1 = factory(Activity::class)->create();
+        $activity2 = factory(Activity::class)->create();
+        $activityInstance1 = factory(ActivityInstance::class)->create(['activity_id' => $activity1->id, 'resource_id' => $user1, 'resource_type' => 'user']);
+        $activityInstance2 = factory(ActivityInstance::class)->create(['activity_id' => $activity2->id, 'resource_id' => $user1, 'resource_type' => 'user']);
+        $activityInstance3 = factory(ActivityInstance::class)->create(['activity_id' => $activity1->id, 'resource_id' => $user2, 'resource_type' => 'user']);
+        
+        $files = factory(File::class, 3)->create(['activity_instance_id' => $activityInstance1->id, 'tags' => ['w', 'needed']])->merge(
+            factory(File::class, 2)->create(['activity_instance_id' => $activityInstance2->id, 'tags' => ['w', 'needed']])
+        )->merge(
+            factory(File::class, 2)->create(['activity_instance_id' => $this->getActivityInstance()->id, 'tags' => ['w', 'needed']])
+        )->merge(
+            factory(File::class, 2)->create(['activity_instance_id' => $activityInstance1->id, 'tags' => ['w']])
+        );
+        factory(File::class, 4)->create(['activity_instance_id' => $activityInstance3->id]);
+        
+        $foundFiles = File::withTag('needed')->get();
+        
+        $this->assertCount(7, $foundFiles);
+        $this->assertModelEquals($files[0], $foundFiles->shift());
+        $this->assertModelEquals($files[1], $foundFiles->shift());
+        $this->assertModelEquals($files[2], $foundFiles->shift());
+        $this->assertModelEquals($files[3], $foundFiles->shift());
+        $this->assertModelEquals($files[4], $foundFiles->shift());
+        $this->assertModelEquals($files[5], $foundFiles->shift());
+        $this->assertModelEquals($files[6], $foundFiles->shift());
+
+    }
 }

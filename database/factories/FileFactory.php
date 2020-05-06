@@ -19,6 +19,7 @@ $factory->define(File::class, function (Faker $faker) {
         },
         'activity_instance_id' => function () {
             return factory(\BristolSU\Support\ActivityInstance\ActivityInstance::class)->create()->id;
-        }
+        },
+        'tags' => $faker->randomElements(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'], 4)
     ];
 });

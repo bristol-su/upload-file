@@ -11,6 +11,7 @@ use BristolSU\Module\UploadFile\Events\DocumentDeleted;
 use BristolSU\Module\UploadFile\Events\DocumentUpdated;
 use BristolSU\Module\UploadFile\Events\DocumentUploaded;
 use BristolSU\Module\UploadFile\Events\StatusChanged;
+use BristolSU\Module\UploadFile\Fields\TagList;
 use BristolSU\Module\UploadFile\Models\Comment;
 use BristolSU\Module\UploadFile\Models\File;
 use BristolSU\Module\UploadFile\Models\FileStatus;
@@ -203,6 +204,8 @@ class ModuleServiceProvider extends ServiceProvider
     {
         parent::boot();
         
+        $this->registerGlobalScript('modules/uploadfile/js/components.js');
+        
         $this->app->make(CompletionConditionManager::class)->register(
             $this->alias(), 'number_of_files_submitted', NumberOfDocumentsSubmitted::class
         );
@@ -253,7 +256,7 @@ class ModuleServiceProvider extends ServiceProvider
             )->withField(
                 Field::checkList('allowed_extensions')->label('Allowed file types')->hint('Which file types can be uploaded?')
                     ->listBox(true)->values($this->app['config']->get($this->alias() . '.file_types'))
-		    ->default(['doc', 'docx', 'odt', 'rtf', 'txt', 'csv', 'ppt', 'pptx', 'pdf', 'xls'])
+		                ->default(['doc', 'docx', 'odt', 'rtf', 'txt', 'csv', 'ppt', 'pptx', 'pdf', 'xls'])
             )
         )->withGroup(
             Group::make('Status Changes')->withField(
@@ -262,6 +265,12 @@ class ModuleServiceProvider extends ServiceProvider
             )->withField(
                 Field::checkList('statuses')->label('Available Statuses')->hint('A list of available statuses')
                     ->listBox(true)->values($this->app['config']->get($this->alias() . '.statuses'))
+            )
+        )->withGroup(
+            Group::make('Tags')->withField(
+                Field::make(TagList::class, 'new_tags')->label('New Tags')->hint('What tags should we assign when a new document is uploaded?')
+            )->withField(
+                Field::make(TagList::class, 'tags_to_merge')->label('Tags to merge')->hint('Any files with these tags will also be shown to the user')
             )
         )->getSchema();
     }
