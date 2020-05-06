@@ -12,6 +12,11 @@
                                   :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments" :can-add-comments="canAddComments"
                                   @file-updated="replaceFile" @fileDeleted="popFile"></view-tab-content>
             </b-tab>
+            <b-tab title="Old Files" v-if="oldFiles.length > 0">
+                <view-tab-content :can-delete="false" :can-download="true" :can-see-comments="true"
+                    :can-update="false" :query-string="queryString" :files="oldFiles" :can-delete-comments="false"
+                    can-update-comments="false" :can-add-comments="false" />
+            </b-tab>
         </b-tabs>
     </div>
 </template>
@@ -98,12 +103,14 @@
 
         data() {
             return {
-                files: []
+                files: [],
+                oldFiles: []
             }
         },
 
         created() {
             this.loadFiles();
+            this.loadOldFiles();
         },
 
         methods: {
@@ -117,6 +124,12 @@
                 this.$http.get('file')
                     .then(response => this.files = response.data)
                     .catch(error => this.$notify.alert('Sorry, something went wrong retrieving files: ' + error.message));
+            },
+            
+            loadOldFiles() {
+                this.$http.get('file/old')
+                    .then(response => this.oldFiles = response.data)
+                    .catch(error => this.$notify.alert('Sorry, something went wrong retrieving the old files: ' + error.message));
             },
 
             popFile(id) {
