@@ -71,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial Release
 
-[Unreleased]: https://github.com/bristol-su/upload-file/compare/v1.0.10...HEAD
+[Unreleased]: https://github.com/bristol-su/upload-file/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/bristol-su/upload-file/compare/v1.0.10...v1.1.0
 [1.0.10]: https://github.com/bristol-su/upload-file/compare/v1.0.9...v1.0.10
 [1.0.9]: https://github.com/bristol-su/upload-file/compare/v1.0.8...v1.0.9
 [1.0.8]: https://github.com/bristol-su/upload-file/compare/v1.0.7...v1.0.8
