@@ -54,7 +54,8 @@ class FileController extends Controller
                 'path' => $path,
                 'size' => $file->getSize(),
                 'uploaded_by' => $authentication->getUser()->id(),
-                'activity_instance_id' => $request->input('activity_instance_id')
+                'activity_instance_id' => $request->input('activity_instance_id'),
+                'tags' => settings('new_tags', [])
             ]));
 
             event(new DocumentUploaded($tempFileMeta));
