@@ -317,4 +317,16 @@ class CommentControllerTest extends TestCase
             return $event instanceof CommentUpdated && $event->comment->is($comment);
         });
     }
+    
+    /** @test */
+    public function show_returns_a_403_if_the_file_belongs_to_a_different_activity_instance(){
+        $this->bypassAuthorization();
+        
+        $activityInstance = factory(ActivityInstance::class)->create();
+        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(),
+            'activity_instance_id' => $activityInstance->id]);
+        
+        $response = $this->getJson($this->userApiUrl('file/' . $file->id));
+        $response->assertStatus(403);
+    }
 }

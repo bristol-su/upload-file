@@ -10,12 +10,12 @@
                 <view-tab-content :can-delete="canDelete" :can-download="canDownload" :can-see-comments="canSeeComments"
                                   :can-update="canUpdate" :files="files" :query-string="queryString"
                                   :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments" :can-add-comments="canAddComments"
-                                  @file-updated="replaceFile" @fileDeleted="popFile"></view-tab-content>
+                                  @file-updated="replaceFile" @fileDeleted="popFile" :is-old-files="false"></view-tab-content>
             </b-tab>
             <b-tab title="Old Files" v-if="oldFiles.length > 0">
                 <view-tab-content :can-delete="false" :can-download="true" :can-see-comments="true"
                     :can-update="false" :query-string="queryString" :files="oldFiles" :can-delete-comments="false"
-                    can-update-comments="false" :can-add-comments="false" />
+                    can-update-comments="false" :can-add-comments="false" :is-old-files="true" />
             </b-tab>
         </b-tabs>
     </div>

@@ -12,7 +12,8 @@
     ],
     "require": {
         "php": "^7.2",
-        "bristol-su/support": "dev-develop as 4.0"
+        "bristol-su/support": "dev-develop as 4.0",
+        "phpspec/prophecy-phpunit": "^2.0"
     },
     "require-dev": {
         "orchestra/testbench": "^4.0"
