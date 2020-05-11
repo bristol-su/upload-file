@@ -100,7 +100,7 @@
                 required: true
             },
             isOldFiles: {
-                type: Boolean
+                type: Boolean,
                 default: false
             }
         },
