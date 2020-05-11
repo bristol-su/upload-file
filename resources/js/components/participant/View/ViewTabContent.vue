@@ -98,6 +98,10 @@
             queryString: {
                 type: String,
                 required: true
+            },
+            isOldFiles: {
+                type: Boolean,
+                default: false
             }
         },
 
@@ -120,7 +124,7 @@
             },
 
             downloadUrl(id) {
-                return this.$url + '/file/' + id + '/download?' + this.queryString;
+                return this.$url + '/' + (this.isOldFiles ? 'old-file' : 'file') + '/' + id + '/download?' + this.queryString;
             },
 
             deleteFile(id) {

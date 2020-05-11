@@ -6,10 +6,11 @@ use BristolSU\Module\UploadFile\ModuleServiceProvider;
 use BristolSU\Support\Testing\AssertsEloquentModels;
 use BristolSU\Support\Testing\CreatesModuleEnvironment;
 use BristolSU\Support\Testing\TestCase as BaseTestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesModuleEnvironment, AssertsEloquentModels;
+    use CreatesModuleEnvironment, AssertsEloquentModels, ProphecyTrait;
     
     public function setUp(): void
     {

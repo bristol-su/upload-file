@@ -15,6 +15,7 @@ use BristolSU\Module\UploadFile\Fields\TagList;
 use BristolSU\Module\UploadFile\Models\Comment;
 use BristolSU\Module\UploadFile\Models\File;
 use BristolSU\Module\UploadFile\Models\FileStatus;
+use BristolSU\Support\ActivityInstance\Contracts\ActivityInstanceResolver;
 use BristolSU\Support\Completion\Contracts\CompletionConditionManager;
 use BristolSU\Support\Module\ModuleServiceProvider as ServiceProvider;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
@@ -216,6 +217,18 @@ class ModuleServiceProvider extends ServiceProvider
         Route::bind('uploadfile_file', function($id) {
             $file = File::findOrFail($id);
             if(request()->route('module_instance_slug') && (int) $file->module_instance_id === request()->route('module_instance_slug')->id()) {
+                return $file;
+            }
+            throw (new ModelNotFoundException)->setModel(File::class);
+        });
+
+        Route::bind('uploadfile_old_file', function($id) {
+            $file = File::findOrFail($id);
+            
+            $currentActivityInstance = app(ActivityInstanceResolver::class)->getActivityInstance();
+            $fileActivityInstance = $file->activityInstance();
+            if($currentActivityInstance->resource_type === $fileActivityInstance->resource_type
+                && (int) $currentActivityInstance->resource_id === (int) $fileActivityInstance->resource_id) {
                 return $file;
             }
             throw (new ModelNotFoundException)->setModel(File::class);

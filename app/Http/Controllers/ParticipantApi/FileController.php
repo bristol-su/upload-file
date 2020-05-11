@@ -34,6 +34,7 @@ class FileController extends Controller
                 'path' => $path,
                 'size' => $file->getSize(),
                 'uploaded_by' => $authentication->getUser()->id(),
+                'tags' => settings('new_tags', [])
             ]));
 
             event(new DocumentUploaded($tempFileMeta));

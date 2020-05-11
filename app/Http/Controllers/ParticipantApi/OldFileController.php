@@ -2,9 +2,10 @@
 
 namespace BristolSU\Module\UploadFile\Http\Controllers\ParticipantApi;
 
+use BristolSU\Module\UploadFile\Http\Controllers\Controller;
 use BristolSU\Module\UploadFile\Models\File;
 
-class OldFileController
+class OldFileController extends Controller
 {
 
     public function index()
@@ -21,4 +22,5 @@ class OldFileController
             return $file->load(['statuses', 'comments']);
         })->values();
     }
+
 }

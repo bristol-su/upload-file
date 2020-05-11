@@ -25,5 +25,18 @@ class DownloadFileController extends Controller
         
         throw new HttpException(404, 'File not found');
     }
+
+    public function downloadOld(Request $request, Activity $activity, ModuleInstance $moduleInstance, File $file)
+    {
+        $this->authorize('file.download');
+
+        if(Storage::exists($file->path)) {
+            return Storage::download($file->path, $file->filename, [
+                'X-Vapor-Base64-Encode' => 'True'
+            ]);
+        }
+
+        throw new HttpException(404, 'File not found');
+    }
     
 }
