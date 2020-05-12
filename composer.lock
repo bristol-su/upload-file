@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "26868ce7cf2477fea2282988d986b6f4",
+    "content-hash": "d4bd7da63019353c333e65f73fb4f49b",
     "packages": [
         {
             "name": "bristol-su/control",
@@ -63,16 +63,16 @@
         },
         {
             "name": "bristol-su/support",
-            "version": "v4.4.1",
+            "version": "v4.5.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bristol-su/support.git",
-                "reference": "1e8ee069017020f9a626a7cc6962fa348eb742f3"
+                "reference": "d023d98c72dfb75f6d1fad1ff19f7b62bf008eaf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bristol-su/support/zipball/1e8ee069017020f9a626a7cc6962fa348eb742f3",
-                "reference": "1e8ee069017020f9a626a7cc6962fa348eb742f3",
+                "url": "https://api.github.com/repos/bristol-su/support/zipball/d023d98c72dfb75f6d1fad1ff19f7b62bf008eaf",
+                "reference": "d023d98c72dfb75f6d1fad1ff19f7b62bf008eaf",
                 "shasum": ""
             },
             "require": {
@@ -82,13 +82,14 @@
                 "laracasts/utilities": "^3.0",
                 "laravel/framework": "^6.0",
                 "laravel/passport": "^8.0",
-                "php": "^7.2",
+                "php": "^7.3",
                 "tobytwigger/form-schema-generator": "^1.1",
                 "venturecraft/revisionable": "^1.33"
             },
             "require-dev": {
-                "brianium/paratest": "^3.0",
+                "brianium/paratest": "^4.0",
                 "orchestra/testbench": "^4.0",
+                "phpspec/prophecy-phpunit": "^2.0",
                 "phpstan/phpstan": "^0.12.3"
             },
             "type": "library",
@@ -131,7 +132,7 @@
                 "portal",
                 "sdk"
             ],
-            "time": "2020-04-28T08:56:58+00:00"
+            "time": "2020-05-12T12:11:29+00:00"
         },
         {
             "name": "defuse/php-encryption",
@@ -4987,6 +4988,54 @@
                 "stub"
             ],
             "time": "2020-03-05T15:02:03+00:00"
+        },
+        {
+            "name": "phpspec/prophecy-phpunit",
+            "version": "v2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpspec/prophecy-phpunit.git",
+                "reference": "049638b7a0a50149ec16fe9c6959f8e37c15454e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpspec/prophecy-phpunit/zipball/049638b7a0a50149ec16fe9c6959f8e37c15454e",
+                "reference": "049638b7a0a50149ec16fe9c6959f8e37c15454e",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3",
+                "phpspec/prophecy": "^1.3",
+                "phpunit/phpunit": "^9.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Prophecy\\PhpUnit\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christophe Coevoet",
+                    "email": "stof@notk.org"
+                }
+            ],
+            "description": "PhpUnit test case integrating the Prophecy mocking library",
+            "homepage": "http://phpspec.net",
+            "keywords": [
+                "phpunit",
+                "prophecy"
+            ],
+            "time": "2020-04-07T09:34:43+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
