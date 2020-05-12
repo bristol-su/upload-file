@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3] - (12/05/2020)
+
+## Removed
+- Removed the phpunit prophecy dependency since this will be handled by support
+
 ## [1.1.2] - (12/05/2020)
 
 ## Changed
@@ -82,7 +87,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial Release
 
-[Unreleased]: https://github.com/bristol-su/upload-file/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/bristol-su/upload-file/compare/v1.1.3...HEAD
+[1.1.3]: https://github.com/bristol-su/upload-file/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/bristol-su/upload-file/compare/v1.1.1...v1.1.2
 [1.1.1]: https://github.com/bristol-su/upload-file/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/bristol-su/upload-file/compare/v1.0.10...v1.1.0
