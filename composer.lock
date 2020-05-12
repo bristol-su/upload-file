@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f6699aa8ca0c2061d6fe465bc3495bb6",
+    "content-hash": "26868ce7cf2477fea2282988d986b6f4",
     "packages": [
         {
             "name": "bristol-su/control",
@@ -63,16 +63,16 @@
         },
         {
             "name": "bristol-su/support",
-            "version": "dev-develop",
+            "version": "v4.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bristol-su/support.git",
-                "reference": "5a9e56ad7b89f26ad7cc592dbc72c8ef885c0c86"
+                "reference": "1e8ee069017020f9a626a7cc6962fa348eb742f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bristol-su/support/zipball/5a9e56ad7b89f26ad7cc592dbc72c8ef885c0c86",
-                "reference": "5a9e56ad7b89f26ad7cc592dbc72c8ef885c0c86",
+                "url": "https://api.github.com/repos/bristol-su/support/zipball/1e8ee069017020f9a626a7cc6962fa348eb742f3",
+                "reference": "1e8ee069017020f9a626a7cc6962fa348eb742f3",
                 "shasum": ""
             },
             "require": {
@@ -131,7 +131,7 @@
                 "portal",
                 "sdk"
             ],
-            "time": "2020-05-06T09:56:37+00:00"
+            "time": "2020-04-28T08:56:58+00:00"
         },
         {
             "name": "defuse/php-encryption",
@@ -6140,18 +6140,9 @@
             "time": "2020-04-18T12:12:48+00:00"
         }
     ],
-    "aliases": [
-        {
-            "alias": "4.0",
-            "alias_normalized": "4.0.0.0",
-            "version": "dev-develop",
-            "package": "bristol-su/support"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "bristol-su/support": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
