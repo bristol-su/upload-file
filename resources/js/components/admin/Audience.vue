@@ -5,7 +5,7 @@
             :value="value" 
             @input="$emit('input', $event)"
         ></v-select>
-    </di    v>
+    </div>
 </template>
 
 <script>
