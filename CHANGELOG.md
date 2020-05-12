@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - (12/05/2020)
+
+## Changed
+- Allow searching for a participant on the admin side when uploading a document
+
 ## [1.1.1] - (11/05/2020)
 
 ### Added

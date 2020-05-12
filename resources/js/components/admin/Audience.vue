@@ -1,13 +1,24 @@
 <template>
     <div>
-        <b-form-select :value="value" @input="$emit('input', $event)" :options="options"></b-form-select>
-    </div>
+        <v-select 
+            :options="options"
+            :value="value" 
+            @input="$emit('input', $event)"
+        ></v-select>
+    </di    v>
 </template>
 
 <script>
+    import vSelect from 'vue-select';
+    import 'vue-select/dist/vue-select.css';
+    
     export default {
         name: "Audience",
 
+        components: {
+            vSelect
+        },
+        
         props: {
             value: {
                 required: false,
