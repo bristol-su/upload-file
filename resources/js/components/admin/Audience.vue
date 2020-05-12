@@ -1,13 +1,25 @@
 <template>
     <div>
-        <b-form-select :value="value" @input="$emit('input', $event)" :options="options"></b-form-select>
+        <v-select 
+            :options="options"
+            :value="value" 
+            @input="$emit('input', $event)"
+            :reduce="obj => obj.value"
+        ></v-select>
     </div>
 </template>
 
 <script>
+    import vSelect from 'vue-select';
+    import 'vue-select/dist/vue-select.css';
+    
     export default {
         name: "Audience",
 
+        components: {
+            vSelect
+        },
+        
         props: {
             value: {
                 required: false,
@@ -37,18 +49,18 @@
         computed: {
             options() {
                 return this.audience.map(a => {
-                    let text = '';
+                    let label = '';
                     if(a.resource_type === 'user') {
-                        text = a.participant.data.first_name + ' ' + a.participant.data.last_name + ' (' + a.name + ')';
+                        label = a.participant.data.first_name + ' ' + a.participant.data.last_name + ' (' + a.name + ')';
                     }
                     if(a.resource_type === 'group') {
-                        text = a.participant.data.name + ' (' + a.name + ')';
+                        label = a.participant.data.name + ' (' + a.name + ')';
                     }
                     if(a.resource_type === 'role') {
-                        text = a.participant.data.role_name + ' (' + a.name + ')';
+                        label = a.participant.data.role_name + ' (' + a.name + ')';
                     }
                     
-                    return { value: a.id, text: text }
+                    return { value: a.id, label: label }
                 })
             }
         }
