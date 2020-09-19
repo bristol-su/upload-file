@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 use BristolSU\Module\UploadFile\Models\File;
 use Faker\Generator as Faker;
 

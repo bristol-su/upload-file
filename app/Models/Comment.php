@@ -19,6 +19,17 @@ class Comment extends Model
         'file_id',
     ];
 
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
+
     public function getPostedByAttribute($postedById)
     {
         return app()->make(UserRepository::class)->getById($postedById);

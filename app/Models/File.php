@@ -38,6 +38,18 @@ class File extends Model
         'tags' => 'array'
     ];
 
+    /**
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(\DateTimeInterface $date)   
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
+
+
     public function getUploadedByAttribute($uploadedById)
     {
         return app()->make(UserRepository::class)->getById($uploadedById);

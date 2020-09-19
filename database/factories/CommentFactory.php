@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Factories;
+
 $factory->define(\BristolSU\Module\UploadFile\Models\Comment::class, function(\Faker\Generator $faker) {
     return [
         'file_id' => function() {
