@@ -38,7 +38,7 @@
             </template>
         </b-modal>
 
-        <b-modal id="showComments" title="Comments">
+        <b-modal id="showComments" title="Comments" size="lg">
             <comments :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
                       :file-id="commentingFileId" v-if="commentingFileId !== null"></comments>
         </b-modal>
