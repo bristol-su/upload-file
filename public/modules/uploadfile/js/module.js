@@ -66444,31 +66444,37 @@ var render = function() {
         1
       ),
       _vm._v(" "),
-      _c(
-        "b-modal",
-        {
-          attrs: {
-            id: "comments",
-            title: "Comments",
-            "hide-footer": "",
-            size: "lg"
-          }
-        },
-        [
-          _vm.fileForComments !== null
-            ? _c("comments", {
-                attrs: {
-                  "file-id": _vm.fileForComments.id,
-                  "can-add-comments": _vm.canAddComments,
-                  "can-delete-comments": _vm.canDeleteComments,
-                  "can-update-comments": _vm.canUpdateComments
-                },
-                on: { updateCommentCount: _vm.updateCommentCount }
-              })
-            : _vm._e()
-        ],
-        1
-      ),
+      _vm.fileForComments !== null
+        ? _c(
+            "b-modal",
+            {
+              attrs: {
+                id: "comments",
+                title:
+                  "Commenting On: " +
+                  _vm.fileForComments.activity_instance.name +
+                  " Uploaded by: " +
+                  _vm.fileForComments.uploaded_by,
+                "hide-footer": "",
+                size: "lg"
+              }
+            },
+            [
+              _vm.fileForComments !== null
+                ? _c("comments", {
+                    attrs: {
+                      "file-id": _vm.fileForComments.id,
+                      "can-add-comments": _vm.canAddComments,
+                      "can-delete-comments": _vm.canDeleteComments,
+                      "can-update-comments": _vm.canUpdateComments
+                    },
+                    on: { updateCommentCount: _vm.updateCommentCount }
+                  })
+                : _vm._e()
+            ],
+            1
+          )
+        : _vm._e(),
       _vm._v(" "),
       _c(
         "b-modal",

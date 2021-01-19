@@ -35,7 +35,7 @@
             </status-change>
         </b-modal>
 
-        <b-modal id="comments" title="Comments" hide-footer size="lg">
+        <b-modal id="comments" :title="'Commenting On: ' + fileForComments.activity_instance.name + ', Uploaded by: ' + fileForComments.uploaded_by" hide-footer size="lg" v-if="fileForComments !== null">
             <comments :file-id="fileForComments.id" v-if="fileForComments !== null"
                       :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
                       v-on:updateCommentCount="updateCommentCount"
