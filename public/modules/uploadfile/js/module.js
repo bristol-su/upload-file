@@ -2669,6 +2669,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -2819,6 +2821,27 @@ __webpack_require__.r(__webpack_exports__);
     showComments: function showComments(file) {
       this.fileForComments = file;
       this.$bvModal.show('comments');
+    },
+    updateCommentCount: function updateCommentCount(data) {
+      var fileId = data.file;
+      var Comment = data.comment;
+      var index = this.files.findIndex(function (f) {
+        return f.id === fileId;
+      });
+      var file = this.files[index];
+      var comments = file['comments'];
+
+      if (data.action === 'Added') {
+        // Add new Comment to data:
+        comments.push(Comment);
+      }
+
+      if (data.action === 'Removed') {
+        // Find and remove Comment for Array:
+        comments.splice(comments.findIndex(function (c) {
+          return c.id === Comment;
+        }), 1);
+      }
     }
   },
   computed: {
@@ -3225,7 +3248,6 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     UpdateCommentCount: function UpdateCommentCount(data) {
-      console.log('Start Update of Count!', data);
       var fileId = data.file;
       var Comment = data.comment;
       var index = this.files.findIndex(function (f) {
@@ -66418,7 +66440,8 @@ var render = function() {
                   "can-add-comments": _vm.canAddComments,
                   "can-delete-comments": _vm.canDeleteComments,
                   "can-update-comments": _vm.canUpdateComments
-                }
+                },
+                on: { updateCommentCount: _vm.updateCommentCount }
               })
             : _vm._e()
         ],

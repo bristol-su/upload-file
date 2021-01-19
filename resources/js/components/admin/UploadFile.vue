@@ -37,7 +37,9 @@
 
         <b-modal id="comments" title="Comments" hide-footer size="lg">
             <comments :file-id="fileForComments.id" v-if="fileForComments !== null"
-                      :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"></comments>
+                      :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
+                      v-on:updateCommentCount="updateCommentCount"
+            ></comments>
         </b-modal>
 
         <b-modal id="editFile">
@@ -206,6 +208,24 @@
             showComments(file) {
                 this.fileForComments = file;
                 this.$bvModal.show('comments');
+            },
+
+            updateCommentCount(data){
+                let fileId = data.file;
+                let Comment = data.comment;
+                let index = this.files.findIndex(f => f.id === fileId);
+                let file = this.files[index];
+                let comments = file['comments'];
+
+                if(data.action === 'Added') {
+                    // Add new Comment to data:
+                    comments.push(Comment);
+                }
+
+                if(data.action === 'Removed') {
+                    // Find and remove Comment for Array:
+                    comments.splice( comments.findIndex(c => c.id === Comment), 1);
+                }
             }
         },
         
