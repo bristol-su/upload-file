@@ -1,6 +1,59 @@
 <template>
     <div>
-        <b-table :fields="fields" :items="processedFiles" :tbody-tr-class="rowStyle">
+        <b-container>
+            <b-row>
+                <!-- Filter & Search: -->
+                <b-col lg="6">
+                    <b-form-group
+                            label="Filter"
+                            label-for="filter-input"
+                            label-cols-sm="3"
+                            label-align-sm="right"
+                            label-size="sm"
+                            class="mb-0"
+                    >
+                        <b-input-group size="sm">
+                            <b-form-input
+                                    id="filter-input"
+                                    v-model="filter"
+                                    type="search"
+                                    placeholder="Type to Search"
+                            ></b-form-input>
+
+                            <b-input-group-append>
+                                <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-form-group>
+                </b-col>
+                <b-col lg="6" class="my-1">
+                    <b-form-group
+                            v-model="sortDirection"
+                            label="Filter On"
+                            description="Leave all unchecked to filter on all data"
+                            label-cols-sm="3"
+                            label-align-sm="right"
+                            label-size="sm"
+                            class="mb-0"
+                            v-slot="{ ariaDescribedby }"
+                    >
+                        <b-form-checkbox-group
+                                v-model="filterOn"
+                                :aria-describedby="ariaDescribedby"
+                                class="mt-1"
+                        >
+                            <b-form-checkbox value="title">Title</b-form-checkbox>
+                            <b-form-checkbox value="uploaded_for">Uploaded For</b-form-checkbox>
+                            <b-form-checkbox value="uploaded_by">Uploaded By</b-form-checkbox>
+                            <b-form-checkbox value="status">Status</b-form-checkbox>
+                            <b-form-checkbox value="created_at">Created At</b-form-checkbox>
+                        </b-form-checkbox-group>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+        </b-container>
+
+        <b-table :fields="fields" :items="processedFiles" :tbody-tr-class="rowStyle" :filter="filter" :filter-included-fields="filterOn">
             <template v-slot:cell(uploaded_for)="data">
                 <v-uploaded-for-name :activity-instance="data.item.activity_instance"></v-uploaded-for-name>
             </template>
@@ -128,7 +181,10 @@
                 fileForComments: null,
                 fields: [
                     {key: 'title', sortable: true}, {key: 'uploaded_for', sortable: true}, {key:'uploaded_by', sortable: true}, {key:'status', sortable: true}, {key:'created_at', sortable: true}, 'actions'],
-                editingFileId: null
+                editingFileId: null,
+                filter: null,
+                filterOn: [],
+                sortDirection: 'asc',
             }
         },
         

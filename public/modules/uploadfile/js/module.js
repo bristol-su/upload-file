@@ -2671,6 +2671,59 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2754,7 +2807,10 @@ __webpack_require__.r(__webpack_exports__);
         key: 'created_at',
         sortable: true
       }, 'actions'],
-      editingFileId: null
+      editingFileId: null,
+      filter: null,
+      filterOn: [],
+      sortDirection: 'asc'
     };
   },
   created: function created() {
@@ -66294,11 +66350,170 @@ var render = function() {
   return _c(
     "div",
     [
+      _c(
+        "b-container",
+        [
+          _c(
+            "b-row",
+            [
+              _c(
+                "b-col",
+                { attrs: { lg: "6" } },
+                [
+                  _c(
+                    "b-form-group",
+                    {
+                      staticClass: "mb-0",
+                      attrs: {
+                        label: "Filter",
+                        "label-for": "filter-input",
+                        "label-cols-sm": "3",
+                        "label-align-sm": "right",
+                        "label-size": "sm"
+                      }
+                    },
+                    [
+                      _c(
+                        "b-input-group",
+                        { attrs: { size: "sm" } },
+                        [
+                          _c("b-form-input", {
+                            attrs: {
+                              id: "filter-input",
+                              type: "search",
+                              placeholder: "Type to Search"
+                            },
+                            model: {
+                              value: _vm.filter,
+                              callback: function($$v) {
+                                _vm.filter = $$v
+                              },
+                              expression: "filter"
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c(
+                            "b-input-group-append",
+                            [
+                              _c(
+                                "b-button",
+                                {
+                                  attrs: { disabled: !_vm.filter },
+                                  on: {
+                                    click: function($event) {
+                                      _vm.filter = ""
+                                    }
+                                  }
+                                },
+                                [_vm._v("Clear")]
+                              )
+                            ],
+                            1
+                          )
+                        ],
+                        1
+                      )
+                    ],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "b-col",
+                { staticClass: "my-1", attrs: { lg: "6" } },
+                [
+                  _c("b-form-group", {
+                    staticClass: "mb-0",
+                    attrs: {
+                      label: "Filter On",
+                      description: "Leave all unchecked to filter on all data",
+                      "label-cols-sm": "3",
+                      "label-align-sm": "right",
+                      "label-size": "sm"
+                    },
+                    scopedSlots: _vm._u([
+                      {
+                        key: "default",
+                        fn: function(ref) {
+                          var ariaDescribedby = ref.ariaDescribedby
+                          return [
+                            _c(
+                              "b-form-checkbox-group",
+                              {
+                                staticClass: "mt-1",
+                                attrs: { "aria-describedby": ariaDescribedby },
+                                model: {
+                                  value: _vm.filterOn,
+                                  callback: function($$v) {
+                                    _vm.filterOn = $$v
+                                  },
+                                  expression: "filterOn"
+                                }
+                              },
+                              [
+                                _c(
+                                  "b-form-checkbox",
+                                  { attrs: { value: "title" } },
+                                  [_vm._v("Title")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "b-form-checkbox",
+                                  { attrs: { value: "uploaded_for" } },
+                                  [_vm._v("Uploaded For")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "b-form-checkbox",
+                                  { attrs: { value: "uploaded_by" } },
+                                  [_vm._v("Uploaded By")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "b-form-checkbox",
+                                  { attrs: { value: "status" } },
+                                  [_vm._v("Status")]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "b-form-checkbox",
+                                  { attrs: { value: "created_at" } },
+                                  [_vm._v("Created At")]
+                                )
+                              ],
+                              1
+                            )
+                          ]
+                        }
+                      }
+                    ]),
+                    model: {
+                      value: _vm.sortDirection,
+                      callback: function($$v) {
+                        _vm.sortDirection = $$v
+                      },
+                      expression: "sortDirection"
+                    }
+                  })
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
+      _vm._v(" "),
       _c("b-table", {
         attrs: {
           fields: _vm.fields,
           items: _vm.processedFiles,
-          "tbody-tr-class": _vm.rowStyle
+          "tbody-tr-class": _vm.rowStyle,
+          filter: _vm.filter,
+          "filter-included-fields": _vm.filterOn
         },
         scopedSlots: _vm._u([
           {
