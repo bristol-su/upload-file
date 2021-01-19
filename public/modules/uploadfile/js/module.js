@@ -66353,7 +66353,14 @@ var render = function() {
       _vm._v(" "),
       _c(
         "b-modal",
-        { attrs: { id: "comments", title: "Comments", "hide-footer": "" } },
+        {
+          attrs: {
+            id: "comments",
+            title: "Comments",
+            "hide-footer": "",
+            size: "lg"
+          }
+        },
         [
           _vm.fileForComments !== null
             ? _c("comments", {

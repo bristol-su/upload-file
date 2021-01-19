@@ -35,7 +35,7 @@
             </status-change>
         </b-modal>
 
-        <b-modal id="comments" title="Comments" hide-footer >
+        <b-modal id="comments" title="Comments" hide-footer size="lg">
             <comments :file-id="fileForComments.id" v-if="fileForComments !== null"
                       :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"></comments>
         </b-modal>
