@@ -2738,7 +2738,22 @@ __webpack_require__.r(__webpack_exports__);
       files: [],
       fileForStatusChange: null,
       fileForComments: null,
-      fields: ['title', 'uploaded_for', 'uploaded_by', 'status', 'created_at', 'actions'],
+      fields: [{
+        key: 'title',
+        sortable: true
+      }, {
+        key: 'uploaded_for',
+        sortable: true
+      }, {
+        key: 'uploaded_by',
+        sortable: true
+      }, {
+        key: 'status',
+        sortable: true
+      }, {
+        key: 'created_at',
+        sortable: true
+      }, 'actions'],
       editingFileId: null
     };
   },
@@ -66452,8 +66467,8 @@ var render = function() {
                 id: "comments",
                 title:
                   "Commenting On: " +
-                  _vm.fileForComments.activity_instance.name +
-                  " Uploaded by: " +
+                  _vm.fileForComments.activity_instance.participant_name +
+                  ", Uploaded by: " +
                   _vm.fileForComments.uploaded_by,
                 "hide-footer": "",
                 size: "lg"

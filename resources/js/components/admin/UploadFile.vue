@@ -35,7 +35,7 @@
             </status-change>
         </b-modal>
 
-        <b-modal id="comments" :title="'Commenting On: ' + fileForComments.activity_instance.name + ', Uploaded by: ' + fileForComments.uploaded_by" hide-footer size="lg" v-if="fileForComments !== null">
+        <b-modal id="comments" :title="'Commenting On: ' + fileForComments.activity_instance.participant_name + ', Uploaded by: ' + fileForComments.uploaded_by" hide-footer size="lg" v-if="fileForComments !== null">
             <comments :file-id="fileForComments.id" v-if="fileForComments !== null"
                       :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
                       v-on:updateCommentCount="updateCommentCount"
@@ -126,7 +126,8 @@
                 files: [],
                 fileForStatusChange: null,
                 fileForComments: null,
-                fields: ['title', 'uploaded_for', 'uploaded_by', 'status', 'created_at', 'actions'],
+                fields: [
+                    {key: 'title', sortable: true}, {key: 'uploaded_for', sortable: true}, {key:'uploaded_by', sortable: true}, {key:'status', sortable: true}, {key:'created_at', sortable: true}, 'actions'],
                 editingFileId: null
             }
         },
