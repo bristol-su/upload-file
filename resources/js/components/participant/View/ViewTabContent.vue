@@ -113,6 +113,14 @@
             }
         },
 
+        mounted() {
+            // Reset Function for Comments Modal to ensure that you can't inherit the wrong ID.
+            this.$root.$on('bv::modal::hide', (bvEvent, modalId) => {
+                if(modalId === 'showComments') {
+                    this.commentingFileId = null;
+                }
+            });
+        },
         methods: {
             presentSize(size) {
                 let i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
