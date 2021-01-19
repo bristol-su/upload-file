@@ -40,7 +40,7 @@
 
         <b-modal id="showComments" title="Comments" size="lg">
             <comments :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
-                      :file-id="commentingFileId" v-if="commentingFileId !== null"></comments>
+                      :file-id="commentingFileId" v-if="commentingFileId !== null" v-on:updateCommentCount="updateCommentCount"></comments>
         </b-modal>
     </div>
 </template>
@@ -170,8 +170,11 @@
             showComments(id) {
                 this.commentingFileId = id;
                 this.$bvModal.show('showComments');
+            },
+            updateCommentCount(e)
+            {
+                this.$emit('updateCommentCount', e);
             }
-
         },
 
         computed: {

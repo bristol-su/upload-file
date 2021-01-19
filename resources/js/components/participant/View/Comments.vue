@@ -4,7 +4,7 @@
             <ul class="commentList">
                 <li v-for="comment in comments" v-if="comments.length > 0">
                     <comment :comment="comment" :can-delete-comments="canDeleteComments"
-                             :can-update-comments="canUpdateComments" @updated="loadComments"></comment>
+                             :can-update-comments="canUpdateComments" @updated="loadComments" v-on:commentDeleted="commentDeleted"></comment>
                     <hr/>
                 </li>
             </ul>
@@ -85,10 +85,18 @@
                     .then(response => {
                         this.comments.push(response.data);
                         this.newComment = '';
+                        this.$emit('updateCommentCount', {file: this.fileId, comment: response.data, action: 'Added'});
                     })
                     .catch(error => this.$notify.alert('Could not post the comment'));
+            },
+
+            commentDeleted(e) {
+                // Refresh Comments:
+                this.loadComments();
+                this.$emit('updateCommentCount', {...e, file: this.fileId});
             }
         },
+
 
         computed: {}
     }

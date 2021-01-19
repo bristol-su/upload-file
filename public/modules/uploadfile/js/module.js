@@ -3091,6 +3091,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -3221,6 +3223,28 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (error) {
         return window.location.reload();
       });
+    },
+    UpdateCommentCount: function UpdateCommentCount(data) {
+      console.log('Start Update of Count!', data);
+      var fileId = data.file;
+      var Comment = data.comment;
+      var index = this.files.findIndex(function (f) {
+        return f.id === fileId;
+      });
+      var file = this.files[index];
+      var comments = file['comments'];
+
+      if (data.action === 'Added') {
+        // Add new Comment to data:
+        comments.push(Comment);
+      }
+
+      if (data.action === 'Removed') {
+        // Find and remove Comment for Array:
+        comments.splice(comments.findIndex(function (c) {
+          return c.id === Comment;
+        }), 1);
+      }
     }
   }
 });
@@ -3317,7 +3341,10 @@ __webpack_require__.r(__webpack_exports__);
           _this.$http["delete"]('/comment/' + _this.comment.id).then(function (response) {
             _this.$notify.success('Comment deleted');
 
-            _this.$emit('updated');
+            _this.$emit('commentDeleted', {
+              comment: _this.comment.id,
+              action: 'Removed'
+            });
           })["catch"](function (error) {
             return _this.$notify.alert('Could not delete comment: ' + error.message);
           });
@@ -3370,6 +3397,12 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Comment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Comment */ "./resources/js/components/participant/View/Comment.vue");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 //
 //
 //
@@ -3461,9 +3494,22 @@ __webpack_require__.r(__webpack_exports__);
         _this2.comments.push(response.data);
 
         _this2.newComment = '';
+
+        _this2.$emit('updateCommentCount', {
+          file: _this2.fileId,
+          comment: response.data,
+          action: 'Added'
+        });
       })["catch"](function (error) {
         return _this2.$notify.alert('Could not post the comment');
       });
+    },
+    commentDeleted: function commentDeleted(e) {
+      // Refresh Comments:
+      this.loadComments();
+      this.$emit('updateCommentCount', _objectSpread({}, e, {
+        file: this.fileId
+      }));
     }
   },
   computed: {}
@@ -3794,6 +3840,9 @@ __webpack_require__.r(__webpack_exports__);
     showComments: function showComments(id) {
       this.commentingFileId = id;
       this.$bvModal.show('showComments');
+    },
+    updateCommentCount: function updateCommentCount(e) {
+      this.$emit('updateCommentCount', e);
     }
   },
   computed: {
@@ -66644,7 +66693,8 @@ var render = function() {
                     },
                     on: {
                       "file-updated": _vm.replaceFile,
-                      fileDeleted: _vm.popFile
+                      fileDeleted: _vm.popFile,
+                      updateCommentCount: _vm.UpdateCommentCount
                     }
                   })
                 ],
@@ -66839,7 +66889,10 @@ var render = function() {
                             "can-delete-comments": _vm.canDeleteComments,
                             "can-update-comments": _vm.canUpdateComments
                           },
-                          on: { updated: _vm.loadComments }
+                          on: {
+                            updated: _vm.loadComments,
+                            commentDeleted: _vm.commentDeleted
+                          }
                         }),
                         _vm._v(" "),
                         _c("hr")
@@ -67314,7 +67367,8 @@ var render = function() {
                   "can-delete-comments": _vm.canDeleteComments,
                   "can-update-comments": _vm.canUpdateComments,
                   "file-id": _vm.commentingFileId
-                }
+                },
+                on: { updateCommentCount: _vm.updateCommentCount }
               })
             : _vm._e()
         ],

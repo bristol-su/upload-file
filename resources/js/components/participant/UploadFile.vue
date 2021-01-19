@@ -10,7 +10,9 @@
                 <view-tab-content :can-delete="canDelete" :can-download="canDownload" :can-see-comments="canSeeComments"
                                   :can-update="canUpdate" :files="files" :query-string="queryString"
                                   :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments" :can-add-comments="canAddComments"
-                                  @file-updated="replaceFile" @fileDeleted="popFile" :is-old-files="false"></view-tab-content>
+                                  @file-updated="replaceFile" @fileDeleted="popFile" :is-old-files="false"
+                                  v-on:updateCommentCount="UpdateCommentCount"
+                ></view-tab-content>
             </b-tab>
             <b-tab title="Old Files" v-if="oldFiles.length > 0">
                 <view-tab-content :can-delete="false" :can-download="true" :can-see-comments="true"
@@ -143,6 +145,24 @@
                         this.files[index] = response.data;
                     })
                     .catch(error => window.location.reload());
+            },
+            UpdateCommentCount(data)
+            {
+                let fileId = data.file;
+                let Comment = data.comment;
+                let index = this.files.findIndex(f => f.id === fileId);
+                let file = this.files[index];
+                let comments = file['comments'];
+
+                if(data.action === 'Added') {
+                    // Add new Comment to data:
+                    comments.push(Comment);
+                }
+
+                if(data.action === 'Removed') {
+                    // Find and remove Comment for Array:
+                    comments.splice( comments.findIndex(c => c.id === Comment), 1);
+                }
             }
         }
     }
