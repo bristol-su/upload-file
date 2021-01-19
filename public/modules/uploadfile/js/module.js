@@ -2842,6 +2842,24 @@ __webpack_require__.r(__webpack_exports__);
           return c.id === Comment;
         }), 1);
       }
+    },
+    rowStyle: function rowStyle(item, type) {
+      if (!item || type !== 'row') {
+        return;
+      } // if(item.style === 'Awaiting Approval') { return 'table-warning'; }
+
+
+      if (item.status === 'Approved') {
+        return 'table-success';
+      }
+
+      if (item.status === 'Approved Pending Comments') {
+        return 'table-warning';
+      }
+
+      if (item.status === 'Rejected') {
+        return 'table-danger';
+      }
     }
   },
   computed: {
@@ -66262,7 +66280,11 @@ var render = function() {
     "div",
     [
       _c("b-table", {
-        attrs: { fields: _vm.fields, items: _vm.processedFiles },
+        attrs: {
+          fields: _vm.fields,
+          items: _vm.processedFiles,
+          "tbody-tr-class": _vm.rowStyle
+        },
         scopedSlots: _vm._u([
           {
             key: "cell(uploaded_for)",

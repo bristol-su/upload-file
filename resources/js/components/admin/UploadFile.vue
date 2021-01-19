@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-table :fields="fields" :items="processedFiles">
+        <b-table :fields="fields" :items="processedFiles" :tbody-tr-class="rowStyle">
             <template v-slot:cell(uploaded_for)="data">
                 <v-uploaded-for-name :activity-instance="data.item.activity_instance"></v-uploaded-for-name>
             </template>
@@ -226,6 +226,14 @@
                     // Find and remove Comment for Array:
                     comments.splice( comments.findIndex(c => c.id === Comment), 1);
                 }
+            },
+            rowStyle(item, type)
+            {
+                if(!item || type !== 'row') { return; }
+                // if(item.style === 'Awaiting Approval') { return 'table-warning'; }
+                if(item.status === 'Approved') { return 'table-success'; }
+                if(item.status === 'Approved Pending Comments') { return 'table-warning'; }
+                if(item.status === 'Rejected') { return 'table-danger'; }
             }
         },
         
