@@ -2746,6 +2746,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2835,11 +2842,9 @@ __webpack_require__.r(__webpack_exports__);
       sortDirection: 'asc',
       currentPage: 1,
       perPage: 10,
-      totalRows: 1
+      totalRows: 1,
+      isBusy: false
     };
-  },
-  created: function created() {
-    this.loadFiles();
   },
   methods: {
     deleteFile: function deleteFile(id) {
@@ -2891,15 +2896,33 @@ __webpack_require__.r(__webpack_exports__);
     pushFile: function pushFile(file) {
       this.files.push(file);
     },
-    loadFiles: function loadFiles() {
+    toggleBusy: function toggleBusy() {
+      this.isBusy = !this.isBusy;
+    },
+    loadFiles: function loadFiles(ctx, callback) {
       var _this3 = this;
 
-      this.$http.get('file').then(function (response) {
-        _this3.files = response.data;
-        _this3.totalRows = _this3.files.length;
+      this.toggleBusy();
+      var params = '?page=' + ctx.currentPage;
+      this.$http.get('file' + params).then(function (response) {
+        _this3.files = response.data.data;
+
+        _this3.files.map(function (file) {
+          file.size = _this3.presentSize(file.size);
+          file.uploaded_by = _this3.presentUploadedBy(file.uploaded_by);
+          return file;
+        });
+
+        callback(_this3.files); // Add number of entries:
+
+        _this3.totalRows = response.data.total;
+        _this3.perPage = response.data.per_page;
+
+        _this3.toggleBusy();
       })["catch"](function (error) {
         return _this3.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message);
       });
+      return null;
     },
     downloadUrl: function downloadUrl(id) {
       return this.$url + '/file/' + id + '/download?' + this.queryString;
@@ -2965,14 +2988,11 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   computed: {
-    processedFiles: function processedFiles() {
-      var _this4 = this;
-
-      return this.files.map(function (file) {
-        file.size = _this4.presentSize(file.size);
-        file.uploaded_by = _this4.presentUploadedBy(file.uploaded_by);
-        return file;
-      });
+    processedFiles: function processedFiles() {// return this.files.map(file => {
+      //     file.size = this.presentSize(file.size);
+      //     file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
+      //     return file;
+      // })
     },
     statusChangeTitle: function statusChangeTitle() {
       if (this.fileForStatusChange === null) {
@@ -66571,12 +66591,13 @@ var render = function() {
       _c("b-table", {
         attrs: {
           fields: _vm.fields,
-          items: _vm.processedFiles,
+          items: _vm.loadFiles,
           "tbody-tr-class": _vm.rowStyle,
           filter: _vm.filter,
           "filter-included-fields": _vm.filterOn,
           "current-page": _vm.currentPage,
-          "per-page": _vm.perPage
+          "per-page": _vm.perPage,
+          busy: _vm.isBusy
         },
         on: { filtered: _vm.onFiltered },
         scopedSlots: _vm._u([
@@ -66711,6 +66732,24 @@ var render = function() {
                 )
               ]
             }
+          },
+          {
+            key: "table-busy",
+            fn: function() {
+              return [
+                _c(
+                  "div",
+                  { staticClass: "text-center text-danger my-2" },
+                  [
+                    _c("b-spinner", { staticClass: "align-middle" }),
+                    _vm._v(" "),
+                    _c("strong", [_vm._v("Loading...")])
+                  ],
+                  1
+                )
+              ]
+            },
+            proxy: true
           }
         ])
       }),

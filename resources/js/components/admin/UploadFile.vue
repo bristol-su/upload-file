@@ -67,14 +67,14 @@
 
         <b-table
                 :fields="fields"
-                :items="processedFiles"
+                :items="loadFiles"
                 :tbody-tr-class="rowStyle"
                 :filter="filter"
                 :filter-included-fields="filterOn"
                 :current-page="currentPage"
                 :per-page="perPage"
                 @filtered="onFiltered"
-
+                :busy="isBusy"
         >
             <template v-slot:cell(uploaded_for)="data">
                 <v-uploaded-for-name :activity-instance="data.item.activity_instance"></v-uploaded-for-name>
@@ -99,6 +99,13 @@
             
             <template v-slot:cell(change_status)="data">
                 <b-button variant="secondary" @click="changeStatus(data.item)">Change Status</b-button>
+            </template>
+
+            <template #table-busy>
+                <div class="text-center text-danger my-2">
+                    <b-spinner class="align-middle"></b-spinner>
+                    <strong>Loading...</strong>
+                </div>
             </template>
         </b-table>
         
@@ -209,14 +216,11 @@
                 sortDirection: 'asc',
                 currentPage: 1,
                 perPage: 10,
-                totalRows: 1
+                totalRows: 1,
+                isBusy: false
             }
         },
-        
-        created() {
-            this.loadFiles();
-        },
-        
+
         methods: {
             deleteFile(id) {
                 this.$bvModal.msgBoxConfirm('Are you sure you want to delete this file?', {
@@ -262,11 +266,36 @@
             pushFile(file) {
                 this.files.push(file);
             },
+
+            toggleBusy() {
+              this.isBusy = !this.isBusy;
+            },
             
-            loadFiles() {
-                this.$http.get('file')
-                    .then(response => {this.files = response.data; this.totalRows = this.files.length;})
+            loadFiles(ctx, callback) {
+                this.toggleBusy();
+
+                const params =  '?page=' + ctx.currentPage;
+
+                this.$http.get('file' + params)
+                    .then(response =>
+                            {
+                                this.files = response.data.data;
+
+                                this.files.map(file => {
+                                    file.size = this.presentSize(file.size);
+                                    file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
+                                    return file;
+                                });
+
+                                callback(this.files);
+                                // Add number of entries:
+                                this.totalRows = response.data.total;
+                                this.perPage = response.data.per_page;
+                                this.toggleBusy();
+                            })
                     .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message));
+
+                return null;
             },
 
             downloadUrl(id) {
@@ -326,11 +355,11 @@
         
         computed: {
             processedFiles() {
-                return this.files.map(file => {
-                    file.size = this.presentSize(file.size);
-                    file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
-                    return file;
-                })
+                // return this.files.map(file => {
+                //     file.size = this.presentSize(file.size);
+                //     file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
+                //     return file;
+                // })
             },
 
             statusChangeTitle() {
