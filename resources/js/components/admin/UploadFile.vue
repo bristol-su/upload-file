@@ -51,9 +51,31 @@
                     </b-form-group>
                 </b-col>
             </b-row>
+            <b-row>
+                <b-col lg="12">
+                    <b-pagination
+                            v-model="currentPage"
+                            :total-rows="totalRows"
+                            :per-page="perPage"
+                            align="fill"
+                            size="sm"
+                            class="my-0"
+                    ></b-pagination>
+                </b-col>
+            </b-row>
         </b-container>
 
-        <b-table :fields="fields" :items="processedFiles" :tbody-tr-class="rowStyle" :filter="filter" :filter-included-fields="filterOn">
+        <b-table
+                :fields="fields"
+                :items="processedFiles"
+                :tbody-tr-class="rowStyle"
+                :filter="filter"
+                :filter-included-fields="filterOn"
+                :current-page="currentPage"
+                :per-page="perPage"
+                @filtered="onFiltered"
+
+        >
             <template v-slot:cell(uploaded_for)="data">
                 <v-uploaded-for-name :activity-instance="data.item.activity_instance"></v-uploaded-for-name>
             </template>
@@ -185,6 +207,9 @@
                 filter: null,
                 filterOn: [],
                 sortDirection: 'asc',
+                currentPage: 1,
+                perPage: 10,
+                totalRows: 1
             }
         },
         
@@ -240,7 +265,7 @@
             
             loadFiles() {
                 this.$http.get('file')
-                    .then(response => this.files = response.data)
+                    .then(response => {this.files = response.data; this.totalRows = this.files.length;})
                     .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message));
             },
 
@@ -291,6 +316,11 @@
                 if(item.status === 'Approved') { return 'table-success'; }
                 if(item.status === 'Approved Pending Comments') { return 'table-warning'; }
                 if(item.status === 'Rejected') { return 'table-danger'; }
+            },
+            onFiltered(filteredItems) {
+                // Trigger pagination to update the number of buttons/pages due to filtering
+                this.totalRows = filteredItems.length;
+                this.currentPage = 1;
             }
         },
         

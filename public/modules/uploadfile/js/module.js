@@ -2724,6 +2724,28 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -2810,7 +2832,10 @@ __webpack_require__.r(__webpack_exports__);
       editingFileId: null,
       filter: null,
       filterOn: [],
-      sortDirection: 'asc'
+      sortDirection: 'asc',
+      currentPage: 1,
+      perPage: 10,
+      totalRows: 1
     };
   },
   created: function created() {
@@ -2870,7 +2895,8 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       this.$http.get('file').then(function (response) {
-        return _this3.files = response.data;
+        _this3.files = response.data;
+        _this3.totalRows = _this3.files.length;
       })["catch"](function (error) {
         return _this3.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message);
       });
@@ -2931,6 +2957,11 @@ __webpack_require__.r(__webpack_exports__);
       if (item.status === 'Rejected') {
         return 'table-danger';
       }
+    },
+    onFiltered: function onFiltered(filteredItems) {
+      // Trigger pagination to update the number of buttons/pages due to filtering
+      this.totalRows = filteredItems.length;
+      this.currentPage = 1;
     }
   },
   computed: {
@@ -66502,6 +66533,36 @@ var render = function() {
               )
             ],
             1
+          ),
+          _vm._v(" "),
+          _c(
+            "b-row",
+            [
+              _c(
+                "b-col",
+                { attrs: { lg: "12" } },
+                [
+                  _c("b-pagination", {
+                    staticClass: "my-0",
+                    attrs: {
+                      "total-rows": _vm.totalRows,
+                      "per-page": _vm.perPage,
+                      align: "fill",
+                      size: "sm"
+                    },
+                    model: {
+                      value: _vm.currentPage,
+                      callback: function($$v) {
+                        _vm.currentPage = $$v
+                      },
+                      expression: "currentPage"
+                    }
+                  })
+                ],
+                1
+              )
+            ],
+            1
           )
         ],
         1
@@ -66513,8 +66574,11 @@ var render = function() {
           items: _vm.processedFiles,
           "tbody-tr-class": _vm.rowStyle,
           filter: _vm.filter,
-          "filter-included-fields": _vm.filterOn
+          "filter-included-fields": _vm.filterOn,
+          "current-page": _vm.currentPage,
+          "per-page": _vm.perPage
         },
+        on: { filtered: _vm.onFiltered },
         scopedSlots: _vm._u([
           {
             key: "cell(uploaded_for)",
