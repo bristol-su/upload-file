@@ -2750,9 +2750,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 
 
 
@@ -2885,12 +2882,28 @@ __webpack_require__.r(__webpack_exports__);
     addStatus: function addStatus(status) {
       var _this2 = this;
 
+      alert(status);
+      console.log(status);
       this.$http.get('/file/' + this.fileForStatusChange.id).then(function (response) {
-        return Vue.set(_this2.files, _this2.files.indexOf(_this2.fileForStatusChange), response.data);
+        console.log(response);
+        _this2.fileForStatusChange.status = response.data.status;
+
+        _this2.fileForStatusChange.statuses.push(response.data);
+
+        var fileIndex = _this2.files.findIndex(function (f) {
+          return f.id === _this2.fileForStatusChange.id;
+        });
+
+        console.log(_this2.fileForStatusChange);
+        Vue.set(_this2.files, fileIndex, _this2.fileForStatusChange);
+
+        _this2.$refs.filetable.refresh();
       })["catch"](function (error) {
         return _this2.$notify.alert('Could not update files. Please refresh the page.');
       }).then(function () {
-        return _this2.$bvModal.hide('file-status-change');
+        _this2.$bvModal.hide('file-status-change');
+
+        _this2.fileForStatusChange = null;
       });
     },
     pushFile: function pushFile(file) {
@@ -2899,12 +2912,17 @@ __webpack_require__.r(__webpack_exports__);
     toggleBusy: function toggleBusy() {
       this.isBusy = !this.isBusy;
     },
-    loadFiles: function loadFiles(ctx, callback) {
+    loadFiles: function loadFiles() {
       var _this3 = this;
 
       this.toggleBusy();
-      var params = '?page=' + ctx.currentPage;
-      this.$http.get('file' + params).then(function (response) {
+      console.log(this.filterOn);
+      this.$http.get('file', {
+        params: {
+          page: this.currentPage,
+          per_page: this.perPage
+        }
+      }).then(function (response) {
         _this3.files = response.data.data;
 
         _this3.files.map(function (file) {
@@ -2913,16 +2931,15 @@ __webpack_require__.r(__webpack_exports__);
           return file;
         });
 
-        callback(_this3.files); // Add number of entries:
-
         _this3.totalRows = response.data.total;
         _this3.perPage = response.data.per_page;
 
         _this3.toggleBusy();
       })["catch"](function (error) {
         return _this3.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message);
+      }).then(function () {
+        return _this3.$refs.filetable.refresh();
       });
-      return null;
     },
     downloadUrl: function downloadUrl(id) {
       return this.$url + '/file/' + id + '/download?' + this.queryString;
@@ -2980,11 +2997,6 @@ __webpack_require__.r(__webpack_exports__);
       if (item.status === 'Rejected') {
         return 'table-danger';
       }
-    },
-    onFiltered: function onFiltered(filteredItems) {
-      // Trigger pagination to update the number of buttons/pages due to filtering
-      this.totalRows = filteredItems.length;
-      this.currentPage = 1;
     }
   },
   computed: {
@@ -66450,6 +66462,15 @@ var render = function() {
                                 "b-button",
                                 {
                                   attrs: { disabled: !_vm.filter },
+                                  on: { click: _vm.loadFiles }
+                                },
+                                [_vm._v("Search")]
+                              ),
+                              _vm._v(" "),
+                              _c(
+                                "b-button",
+                                {
+                                  attrs: { disabled: !_vm.filter },
                                   on: {
                                     click: function($event) {
                                       _vm.filter = ""
@@ -66589,17 +66610,13 @@ var render = function() {
       ),
       _vm._v(" "),
       _c("b-table", {
+        ref: "filetable",
         attrs: {
           fields: _vm.fields,
-          items: _vm.loadFiles,
+          items: _vm.files,
           "tbody-tr-class": _vm.rowStyle,
-          filter: _vm.filter,
-          "filter-included-fields": _vm.filterOn,
-          "current-page": _vm.currentPage,
-          "per-page": _vm.perPage,
           busy: _vm.isBusy
         },
-        on: { filtered: _vm.onFiltered },
         scopedSlots: _vm._u([
           {
             key: "cell(uploaded_for)",
@@ -80958,8 +80975,8 @@ var vue = new vue__WEBPACK_IMPORTED_MODULE_0___default.a({
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /Users/aidanlaycock/Desktop/Webdev/portal-upload-file/resources/js/module.js */"./resources/js/module.js");
-module.exports = __webpack_require__(/*! /Users/aidanlaycock/Desktop/Webdev/portal-upload-file/resources/sass/module.scss */"./resources/sass/module.scss");
+__webpack_require__(/*! /mnt/5F242F4A45A0248A/development/bristolsu/portal/modules/upload-file/resources/js/module.js */"./resources/js/module.js");
+module.exports = __webpack_require__(/*! /mnt/5F242F4A45A0248A/development/bristolsu/portal/modules/upload-file/resources/sass/module.scss */"./resources/sass/module.scss");
 
 
 /***/ })

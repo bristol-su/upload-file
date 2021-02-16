@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d4bd7da63019353c333e65f73fb4f49b",
+    "content-hash": "51c141f338e679a94dc8ad2e71b60284",
     "packages": [
         {
             "name": "bristol-su/control",
@@ -68,16 +68,16 @@
         },
         {
             "name": "bristol-su/support",
-            "version": "v4.7.4",
+            "version": "dev-portal-281/laravel-scout",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bristol-su/support.git",
-                "reference": "fd12c9555d2cc5d2d7a97134e4ba7a1e763004a8"
+                "reference": "208ef9c4a7b68924d83cc004a9826bace53ddedc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bristol-su/support/zipball/fd12c9555d2cc5d2d7a97134e4ba7a1e763004a8",
-                "reference": "fd12c9555d2cc5d2d7a97134e4ba7a1e763004a8",
+                "url": "https://api.github.com/repos/bristol-su/support/zipball/208ef9c4a7b68924d83cc004a9826bace53ddedc",
+                "reference": "208ef9c4a7b68924d83cc004a9826bace53ddedc",
                 "shasum": ""
             },
             "require": {
@@ -87,12 +87,16 @@
                 "laracasts/utilities": "^3.0",
                 "laravel/framework": "^6.0",
                 "laravel/passport": "^9.0",
+                "laravel/scout": "^8.6",
                 "php": "^7.4",
+                "teamtnt/laravel-scout-tntsearch-driver": "^11.1",
+                "teamtnt/tntsearch": "^2.6",
                 "tobytwigger/form-schema-generator": "^1.1",
                 "venturecraft/revisionable": "^1.33"
             },
             "require-dev": {
                 "brianium/paratest": "^4.0",
+                "bristol-su/portal-pipeline": "^1.0.0",
                 "orchestra/testbench": "^4.0",
                 "phpspec/prophecy-phpunit": "^2.0",
                 "phpstan/phpstan": "^0.12.3"
@@ -139,9 +143,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bristol-su/support/issues",
-                "source": "https://github.com/bristol-su/support/tree/v4.7.4"
+                "source": "https://github.com/bristol-su/support/tree/portal-281/laravel-scout"
             },
-            "time": "2020-09-09T21:14:28+00:00"
+            "time": "2021-02-16T16:29:34+00:00"
         },
         {
             "name": "defuse/php-encryption",
@@ -1527,6 +1531,75 @@
                 "source": "https://github.com/laravel/passport"
             },
             "time": "2020-12-04T09:37:12+00:00"
+        },
+        {
+            "name": "laravel/scout",
+            "version": "v8.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laravel/scout.git",
+                "reference": "54070f7b68fed15f25e61e68884c4110496b8aa1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laravel/scout/zipball/54070f7b68fed15f25e61e68884c4110496b8aa1",
+                "reference": "54070f7b68fed15f25e61e68884c4110496b8aa1",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/bus": "^6.0|^7.0|^8.0",
+                "illuminate/contracts": "^6.0|^7.0|^8.0",
+                "illuminate/database": "^6.0|^7.0|^8.0",
+                "illuminate/http": "^6.0|^7.0|^8.0",
+                "illuminate/pagination": "^6.0|^7.0|^8.0",
+                "illuminate/queue": "^6.0|^7.0|^8.0",
+                "illuminate/support": "^6.0|^7.0|^8.0",
+                "php": "^7.2|^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "phpunit/phpunit": "^8.0|^9.3"
+            },
+            "suggest": {
+                "algolia/algoliasearch-client-php": "Required to use the Algolia engine (^2.2)."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "8.x-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Laravel\\Scout\\ScoutServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laravel\\Scout\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Taylor Otwell",
+                    "email": "taylor@laravel.com"
+                }
+            ],
+            "description": "Laravel Scout provides a driver based solution to searching your Eloquent models.",
+            "keywords": [
+                "algolia",
+                "laravel",
+                "search"
+            ],
+            "support": {
+                "issues": "https://github.com/laravel/scout/issues",
+                "source": "https://github.com/laravel/scout"
+            },
+            "time": "2021-01-19T15:30:52+00:00"
         },
         {
             "name": "lcobucci/clock",
@@ -5272,6 +5345,154 @@
             "time": "2021-01-27T09:09:26+00:00"
         },
         {
+            "name": "teamtnt/laravel-scout-tntsearch-driver",
+            "version": "v11.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/teamtnt/laravel-scout-tntsearch-driver.git",
+                "reference": "a9c27a68dc2bd74fb354165633520de95708215d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/teamtnt/laravel-scout-tntsearch-driver/zipball/a9c27a68dc2bd74fb354165633520de95708215d",
+                "reference": "a9c27a68dc2bd74fb354165633520de95708215d",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/bus": "~5.4|^6.0|^7.0|^8.0",
+                "illuminate/contracts": "~5.4|^6.0|^7.0|^8.0",
+                "illuminate/database": "~5.4|^6.0|^7.0|^8.0",
+                "illuminate/pagination": "~5.4|^6.0|^7.0|^8.0",
+                "illuminate/queue": "~5.4|^6.0|^7.0|^8.0",
+                "illuminate/support": "~5.4|^6.0|^7.0|^8.0",
+                "laravel/scout": "7.*|^8.0|^8.3",
+                "php": ">=7.1",
+                "teamtnt/tntsearch": "2.*"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "phpunit/phpunit": "^8.0|^9.3"
+            },
+            "suggest": {
+                "teamtnt/tntsearch": "Required to use the TNTSearch engine."
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "TeamTNT\\Scout\\TNTSearchScoutServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TeamTNT\\Scout\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "TNT Studio",
+                    "email": "info@tntstudio.hr"
+                }
+            ],
+            "description": "Driver for Laravel Scout search package based on https://github.com/teamtnt/tntsearch",
+            "keywords": [
+                "laravel",
+                "scout",
+                "search",
+                "tntsearch"
+            ],
+            "support": {
+                "issues": "https://github.com/teamtnt/laravel-scout-tntsearch-driver/issues",
+                "source": "https://github.com/teamtnt/laravel-scout-tntsearch-driver/tree/v11.1.0"
+            },
+            "time": "2020-11-11T11:17:48+00:00"
+        },
+        {
+            "name": "teamtnt/tntsearch",
+            "version": "v2.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/teamtnt/tntsearch.git",
+                "reference": "d9b2d764491c87f03ec214ed8dbc27336cf0c0e4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/teamtnt/tntsearch/zipball/d9b2d764491c87f03ec214ed8dbc27336cf0c0e4",
+                "reference": "d9b2d764491c87f03ec214ed8dbc27336cf0c0e4",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "ext-pdo_sqlite": "*",
+                "ext-sqlite3": "*",
+                "php": "~7.1|^8"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "TeamTNT\\TNTSearch\\": "src"
+                },
+                "files": [
+                    "helper/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nenad Tičarić",
+                    "email": "nticaric@gmail.com",
+                    "homepage": "http://www.tntstudio.us",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A fully featured full text search engine written in PHP",
+            "homepage": "https://github.com/teamtnt/tntsearch",
+            "keywords": [
+                "Fuzzy search",
+                "bm25",
+                "fulltext",
+                "geosearch",
+                "search",
+                "stemming",
+                "teamtnt",
+                "text classification",
+                "tntsearch"
+            ],
+            "support": {
+                "issues": "https://github.com/teamtnt/tntsearch/issues",
+                "source": "https://github.com/teamtnt/tntsearch/tree/v2.6.0"
+            },
+            "funding": [
+                {
+                    "url": "https://ko-fi.com/nticaric",
+                    "type": "ko_fi"
+                },
+                {
+                    "url": "https://opencollective.com/tntsearch",
+                    "type": "open_collective"
+                },
+                {
+                    "url": "https://www.patreon.com/nticaric",
+                    "type": "patreon"
+                }
+            ],
+            "time": "2020-12-21T09:11:54+00:00"
+        },
+        {
             "name": "tijsverkoyen/css-to-inline-styles",
             "version": "2.2.3",
             "source": {
@@ -7889,9 +8110,18 @@
             "time": "2020-07-08T17:02:28+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "bristol-su/support",
+            "version": "dev-portal-281/laravel-scout",
+            "alias": "4.7.2",
+            "alias_normalized": "4.7.2.0"
+        }
+    ],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "bristol-su/support": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

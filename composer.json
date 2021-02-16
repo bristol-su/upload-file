@@ -11,8 +11,8 @@
         }
     ],
     "require": {
-        "php": "^7.2",
-        "bristol-su/support": "^4.0"
+        "php": "^7.4",
+        "bristol-su/support": "dev-portal-281/laravel-scout as 4.7.2"
     },
     "require-dev": {
         "orchestra/testbench": "^4.0",

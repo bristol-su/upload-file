@@ -373,7 +373,7 @@ __webpack_require__.r(__webpack_exports__);
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/aidanlaycock/Desktop/Webdev/portal-upload-file/resources/js/components.js */"./resources/js/components.js");
+module.exports = __webpack_require__(/*! /mnt/5F242F4A45A0248A/development/bristolsu/portal/modules/upload-file/resources/js/components.js */"./resources/js/components.js");
 
 
 /***/ })

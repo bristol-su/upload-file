@@ -8,6 +8,7 @@ use BristolSU\Support\Authentication\HasResource;
 use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
 use BristolSU\Support\ModuleInstance\Contracts\ModuleInstanceRepository;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
+use BristolSU\Support\Search\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,12 +16,12 @@ use Illuminate\Support\Facades\Config;
 
 class File extends Model
 {
-    use SoftDeletes, HasResource;
+    use SoftDeletes, HasResource, Searchable;
 
     protected $table = 'uploadfile_files';
-    
+
     protected $appends = ['status'];
-    
+
     protected $fillable = [
         'title',
         'description',
@@ -33,10 +34,24 @@ class File extends Model
         'activity_instance_id',
         'tags'
     ];
-    
+
     protected $casts = [
         'tags' => 'array'
     ];
+
+    public function toSearchableArray()
+    {
+        $attributes = $this->only([
+            'title', 'description', 'filename', 'tags', 'status'
+        ]);
+        $attributes['comments'] = $this->comments->map(fn($comment) => $comment->only('comment'))->toJson();
+        return $attributes;
+    }
+
+    protected function makeAllSearchableUsing($query)
+    {
+        return $query->with('comments');
+    }
 
     public function getUploadedByAttribute($uploadedById)
     {
@@ -54,8 +69,8 @@ class File extends Model
             });
         return $query->whereIn('activity_instance_id', $activityInstanceIds->toArray())
             ->where('tags', 'LIKE', '%"' . $tag . '"%');
-    }   
-    
+    }
+
     /**
      * @return ModuleInstance
      */
@@ -82,14 +97,14 @@ class File extends Model
         if($this->statuses()->count() > 0) {
             return $this->statuses()->latest('created_at')->first()->status;
         }
-        
+
         $statuses = Config::get('uploadfile.statuses');
         if(!is_array($statuses) || count($statuses) === 0) {
             $default = 'Awaiting Approval';
         } else {
             $default = $statuses[0];
         }
-        
+
         return $this->moduleInstance()->setting('initial_status', $default);
     }
 

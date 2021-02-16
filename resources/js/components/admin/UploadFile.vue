@@ -21,6 +21,7 @@
                             ></b-form-input>
 
                             <b-input-group-append>
+                                <b-button :disabled="!filter" @click="loadFiles">Search</b-button>
                                 <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
                             </b-input-group-append>
                         </b-input-group>
@@ -67,14 +68,10 @@
 
         <b-table
                 :fields="fields"
-                :items="loadFiles"
+                :items="files"
                 :tbody-tr-class="rowStyle"
-                :filter="filter"
-                :filter-included-fields="filterOn"
-                :current-page="currentPage"
-                :per-page="perPage"
-                @filtered="onFiltered"
                 :busy="isBusy"
+                ref="filetable"
         >
             <template v-slot:cell(uploaded_for)="data">
                 <v-uploaded-for-name :activity-instance="data.item.activity_instance"></v-uploaded-for-name>
@@ -96,7 +93,7 @@
                         class="fa fa-trash"></i> Delete
                 </b-button>
             </template>
-            
+
             <template v-slot:cell(change_status)="data">
                 <b-button variant="secondary" @click="changeStatus(data.item)">Change Status</b-button>
             </template>
@@ -108,12 +105,12 @@
                 </div>
             </template>
         </b-table>
-        
-        
+
+
 
         <b-modal id="file-status-change" :title="statusChangeTitle" hide-footer>
             <status-change :file="fileForStatusChange" v-if="fileForStatusChange !== null" :statuses="statuses" @statusAdded="addStatus">
-                
+
             </status-change>
         </b-modal>
 
@@ -137,21 +134,21 @@
 </template>
 
 <script>
-    
+
     import StatusChange from './StatusChange';
     import Comments from '../participant/View/Comments';
     import EditFile from './EditFile';
     import VUploadedForName from './VUploadedForName';
     export default {
         name: "UploadFile",
-        
+
         components: {
             VUploadedForName,
             EditFile,
             Comments,
             StatusChange
         },
-        
+
         props: {
             canDownload: {
                 required: true,
@@ -202,7 +199,7 @@
                 default:  false
             }
         },
-        
+
         data() {
             return {
                 files: [],
@@ -256,13 +253,26 @@
             },
 
             addStatus(status) {
+                alert(status);
+                console.log(status);
                 this.$http.get('/file/' + this.fileForStatusChange.id)
-                    .then(response => Vue.set(this.files, this.files.indexOf(this.fileForStatusChange), response.data))
+                    .then(response => {
+                        console.log(response);
+                        this.fileForStatusChange.status = response.data.status
+                        this.fileForStatusChange.statuses.push(response.data);
+
+                        let fileIndex = this.files.findIndex(f => f.id === this.fileForStatusChange.id);
+                        console.log(this.fileForStatusChange);
+                        Vue.set(this.files, fileIndex, this.fileForStatusChange)
+                        this.$refs.filetable.refresh()
+                    })
                     .catch(error => this.$notify.alert('Could not update files. Please refresh the page.'))
-                    .then(() => this.$bvModal.hide('file-status-change'));
-                
+                    .then(() => {
+                        this.$bvModal.hide('file-status-change');
+                        this.fileForStatusChange = null;
+                    });
             },
-            
+
             pushFile(file) {
                 this.files.push(file);
             },
@@ -270,13 +280,17 @@
             toggleBusy() {
               this.isBusy = !this.isBusy;
             },
-            
-            loadFiles(ctx, callback) {
+
+            loadFiles() {
                 this.toggleBusy();
+console.log(this.filterOn);
+                this.$http.get('file', {
+                    params: {
+                        page: this.currentPage,
+                        per_page: this.perPage,
 
-                const params =  '?page=' + ctx.currentPage;
-
-                this.$http.get('file' + params)
+                    }
+                })
                     .then(response =>
                             {
                                 this.files = response.data.data;
@@ -287,15 +301,12 @@
                                     return file;
                                 });
 
-                                callback(this.files);
-                                // Add number of entries:
                                 this.totalRows = response.data.total;
                                 this.perPage = response.data.per_page;
                                 this.toggleBusy();
                             })
-                    .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message));
-
-                return null;
+                    .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message))
+                    .then(() => this.$refs.filetable.refresh());
             },
 
             downloadUrl(id) {
@@ -310,7 +321,7 @@
             presentUploadedBy(user) {
                 return user.data.first_name + ' ' + user.data.last_name;
             },
-            
+
             changeStatus(file) {
                 this.fileForStatusChange = file;
                 this.$bvModal.show('file-status-change');
@@ -345,14 +356,9 @@
                 if(item.status === 'Approved') { return 'table-success'; }
                 if(item.status === 'Approved Pending Comments') { return 'table-warning'; }
                 if(item.status === 'Rejected') { return 'table-danger'; }
-            },
-            onFiltered(filteredItems) {
-                // Trigger pagination to update the number of buttons/pages due to filtering
-                this.totalRows = filteredItems.length;
-                this.currentPage = 1;
             }
         },
-        
+
         computed: {
             processedFiles() {
                 // return this.files.map(file => {
