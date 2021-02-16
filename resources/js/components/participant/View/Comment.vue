@@ -82,7 +82,7 @@
                             this.$http.delete('/comment/' + this.comment.id)
                                 .then(response => {
                                     this.$notify.success('Comment deleted');
-                                    this.$emit('updated')
+                                    this.$emit('commentDeleted', {comment: this.comment.id, action: 'Removed' })
                                 })
                                 .catch(error => this.$notify.alert('Could not delete comment: ' + error.message));
                         } else {

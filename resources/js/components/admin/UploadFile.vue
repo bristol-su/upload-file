@@ -1,6 +1,81 @@
 <template>
     <div>
-        <b-table :fields="fields" :items="processedFiles">
+        <b-container>
+            <b-row>
+                <!-- Filter & Search: -->
+                <b-col lg="6">
+                    <b-form-group
+                            label="Filter"
+                            label-for="filter-input"
+                            label-cols-sm="3"
+                            label-align-sm="right"
+                            label-size="sm"
+                            class="mb-0"
+                    >
+                        <b-input-group size="sm">
+                            <b-form-input
+                                    id="filter-input"
+                                    v-model="filter"
+                                    type="search"
+                                    placeholder="Type to Search"
+                            ></b-form-input>
+
+                            <b-input-group-append>
+                                <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                            </b-input-group-append>
+                        </b-input-group>
+                    </b-form-group>
+                </b-col>
+                <b-col lg="6" class="my-1">
+                    <b-form-group
+                            v-model="sortDirection"
+                            label="Filter On"
+                            description="Leave all unchecked to filter on all data"
+                            label-cols-sm="3"
+                            label-align-sm="right"
+                            label-size="sm"
+                            class="mb-0"
+                            v-slot="{ ariaDescribedby }"
+                    >
+                        <b-form-checkbox-group
+                                v-model="filterOn"
+                                :aria-describedby="ariaDescribedby"
+                                class="mt-1"
+                        >
+                            <b-form-checkbox value="title">Title</b-form-checkbox>
+                            <b-form-checkbox value="uploaded_for">Uploaded For</b-form-checkbox>
+                            <b-form-checkbox value="uploaded_by">Uploaded By</b-form-checkbox>
+                            <b-form-checkbox value="status">Status</b-form-checkbox>
+                            <b-form-checkbox value="created_at">Created At</b-form-checkbox>
+                        </b-form-checkbox-group>
+                    </b-form-group>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col lg="12">
+                    <b-pagination
+                            v-model="currentPage"
+                            :total-rows="totalRows"
+                            :per-page="perPage"
+                            align="fill"
+                            size="sm"
+                            class="my-0"
+                    ></b-pagination>
+                </b-col>
+            </b-row>
+        </b-container>
+
+        <b-table
+                :fields="fields"
+                :items="loadFiles"
+                :tbody-tr-class="rowStyle"
+                :filter="filter"
+                :filter-included-fields="filterOn"
+                :current-page="currentPage"
+                :per-page="perPage"
+                @filtered="onFiltered"
+                :busy="isBusy"
+        >
             <template v-slot:cell(uploaded_for)="data">
                 <v-uploaded-for-name :activity-instance="data.item.activity_instance"></v-uploaded-for-name>
             </template>
@@ -25,6 +100,13 @@
             <template v-slot:cell(change_status)="data">
                 <b-button variant="secondary" @click="changeStatus(data.item)">Change Status</b-button>
             </template>
+
+            <template #table-busy>
+                <div class="text-center text-danger my-2">
+                    <b-spinner class="align-middle"></b-spinner>
+                    <strong>Loading...</strong>
+                </div>
+            </template>
         </b-table>
         
         
@@ -35,9 +117,11 @@
             </status-change>
         </b-modal>
 
-        <b-modal id="comments" title="Comments" hide-footer >
+        <b-modal id="comments" :title="'Commenting On: ' + fileForComments.activity_instance.participant_name + ', Uploaded by: ' + fileForComments.uploaded_by" hide-footer size="lg" v-if="fileForComments !== null">
             <comments :file-id="fileForComments.id" v-if="fileForComments !== null"
-                      :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"></comments>
+                      :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
+                      v-on:updateCommentCount="updateCommentCount"
+            ></comments>
         </b-modal>
 
         <b-modal id="editFile">
@@ -124,15 +208,19 @@
                 files: [],
                 fileForStatusChange: null,
                 fileForComments: null,
-                fields: ['title', 'uploaded_for', 'uploaded_by', 'status', 'created_at', 'actions'],
-                editingFileId: null
+                fields: [
+                    {key: 'title', sortable: true}, {key: 'uploaded_for', sortable: true}, {key:'uploaded_by', sortable: true}, {key:'status', sortable: true}, {key:'created_at', sortable: true}, 'actions'],
+                editingFileId: null,
+                filter: null,
+                filterOn: [],
+                sortDirection: 'asc',
+                currentPage: 1,
+                perPage: 10,
+                totalRows: 1,
+                isBusy: false
             }
         },
-        
-        created() {
-            this.loadFiles();
-        },
-        
+
         methods: {
             deleteFile(id) {
                 this.$bvModal.msgBoxConfirm('Are you sure you want to delete this file?', {
@@ -178,11 +266,36 @@
             pushFile(file) {
                 this.files.push(file);
             },
+
+            toggleBusy() {
+              this.isBusy = !this.isBusy;
+            },
             
-            loadFiles() {
-                this.$http.get('file')
-                    .then(response => this.files = response.data)
+            loadFiles(ctx, callback) {
+                this.toggleBusy();
+
+                const params =  '?page=' + ctx.currentPage;
+
+                this.$http.get('file' + params)
+                    .then(response =>
+                            {
+                                this.files = response.data.data;
+
+                                this.files.map(file => {
+                                    file.size = this.presentSize(file.size);
+                                    file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
+                                    return file;
+                                });
+
+                                callback(this.files);
+                                // Add number of entries:
+                                this.totalRows = response.data.total;
+                                this.perPage = response.data.per_page;
+                                this.toggleBusy();
+                            })
                     .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message));
+
+                return null;
             },
 
             downloadUrl(id) {
@@ -206,16 +319,47 @@
             showComments(file) {
                 this.fileForComments = file;
                 this.$bvModal.show('comments');
+            },
+
+            updateCommentCount(data){
+                let fileId = data.file;
+                let Comment = data.comment;
+                let index = this.files.findIndex(f => f.id === fileId);
+                let file = this.files[index];
+                let comments = file['comments'];
+
+                if(data.action === 'Added') {
+                    // Add new Comment to data:
+                    comments.push(Comment);
+                }
+
+                if(data.action === 'Removed') {
+                    // Find and remove Comment for Array:
+                    comments.splice( comments.findIndex(c => c.id === Comment), 1);
+                }
+            },
+            rowStyle(item, type)
+            {
+                if(!item || type !== 'row') { return; }
+                // if(item.style === 'Awaiting Approval') { return 'table-warning'; }
+                if(item.status === 'Approved') { return 'table-success'; }
+                if(item.status === 'Approved Pending Comments') { return 'table-warning'; }
+                if(item.status === 'Rejected') { return 'table-danger'; }
+            },
+            onFiltered(filteredItems) {
+                // Trigger pagination to update the number of buttons/pages due to filtering
+                this.totalRows = filteredItems.length;
+                this.currentPage = 1;
             }
         },
         
         computed: {
             processedFiles() {
-                return this.files.map(file => {
-                    file.size = this.presentSize(file.size);
-                    file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
-                    return file;
-                })
+                // return this.files.map(file => {
+                //     file.size = this.presentSize(file.size);
+                //     file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
+                //     return file;
+                // })
             },
 
             statusChangeTitle() {

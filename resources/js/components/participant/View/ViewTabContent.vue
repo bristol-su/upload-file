@@ -38,9 +38,9 @@
             </template>
         </b-modal>
 
-        <b-modal id="showComments" title="Comments">
+        <b-modal id="showComments" title="Comments" size="lg">
             <comments :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
-                      :file-id="commentingFileId" v-if="commentingFileId !== null"></comments>
+                      :file-id="commentingFileId" v-if="commentingFileId !== null" v-on:updateCommentCount="updateCommentCount"></comments>
         </b-modal>
     </div>
 </template>
@@ -113,6 +113,14 @@
             }
         },
 
+        mounted() {
+            // Reset Function for Comments Modal to ensure that you can't inherit the wrong ID.
+            this.$root.$on('bv::modal::hide', (bvEvent, modalId) => {
+                if(modalId === 'showComments') {
+                    this.commentingFileId = null;
+                }
+            });
+        },
         methods: {
             presentSize(size) {
                 let i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
@@ -162,8 +170,11 @@
             showComments(id) {
                 this.commentingFileId = id;
                 this.$bvModal.show('showComments');
+            },
+            updateCommentCount(e)
+            {
+                this.$emit('updateCommentCount', e);
             }
-
         },
 
         computed: {
