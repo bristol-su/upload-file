@@ -53,7 +53,7 @@ class FileTest extends TestCase
         $this->assertInstanceOf(User::class, $file->uploaded_by);
         $this->assertModelEquals($user, $file->uploaded_by);
     }
-    
+
     /** @test */
     public function activityInstance_returns_the_activity_instance_of_the_file(){
         $activityInstance = factory(ActivityInstance::class)->create();
@@ -65,13 +65,13 @@ class FileTest extends TestCase
         $this->assertInstanceOf(ActivityInstance::class, $file->activityInstance());
         $this->assertModelEquals($activityInstance, $file->activityInstance());
     }
-    
+
     /** @test */
     public function it_has_a_relationship_with_statuses(){
         $file = factory(File::class)->create();
         $statuses = factory(FileStatus::class, 5)->create(['file_id' => $file->id]);
         $otherStatuses = factory(FileStatus::class, 2)->create();
-        
+
         $resolvedStatuses = $file->statuses;
         $this->assertCount(5, $resolvedStatuses);
         $this->assertInstanceOf(Collection::class, $resolvedStatuses);
@@ -80,17 +80,17 @@ class FileTest extends TestCase
             $this->assertModelEquals($status, $resolvedStatuses->shift());
         }
     }
-    
+
     /** @test */
     public function status_attribute_returns_the_latest_status(){
         $file = factory(File::class)->create();
-        
+
         factory(FileStatus::class)->create(['file_id' => $file->id, 'status' => 'Awaiting Approval', 'created_at' => Carbon::now()->subSecond(), 'updated_at' => Carbon::now()->subSecond()]);
         $this->assertEquals('Awaiting Approval', $file->status);
-        
+
         factory(FileStatus::class)->create(['file_id' => $file->id, 'status' => 'Rejected', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()]);
         $this->assertEquals('Rejected', $file->status);
-        
+
         factory(FileStatus::class)->create(['file_id' => $file->id, 'status' => 'Approved', 'created_at' => Carbon::now()->addSecond(), 'updated_at' => Carbon::now()->addSecond()]);
         $this->assertEquals('Approved', $file->status);
     }
@@ -102,9 +102,9 @@ class FileTest extends TestCase
             'key' => 'initial_status',
             'value' => 'Some Custom Default Status'
         ]);
-        
+
         $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id()]);
-        
+
         $this->assertEquals('Some Custom Default Status', $file->status);
     }
 
@@ -125,7 +125,7 @@ class FileTest extends TestCase
         Config::set('uploadfile.statuses', null);
         $this->assertEquals('Awaiting Approval', $file->status);
     }
-    
+
     /** @test */
     public function awaiting_approval_is_returned_if_statuses_in_config_are_an_empty_array(){
         $file = factory(File::class)->create();
@@ -147,7 +147,7 @@ class FileTest extends TestCase
             $this->assertModelEquals($status, $resolvedComments->shift());
         }
     }
-    
+
     /** @test */
     public function it_has_tags(){
         $file = factory(File::class)->create([
@@ -155,7 +155,7 @@ class FileTest extends TestCase
         ]);
         $this->assertEquals(['tag1', 'tag2'], $file->tags);
     }
-    
+
     /** @test */
     public function withTag_returns_all_files_uploaded_by_the_participant_with_a_tag_for_a_user(){
         $user1 = $this->getControlUser();
@@ -165,7 +165,7 @@ class FileTest extends TestCase
         $activityInstance1 = factory(ActivityInstance::class)->create(['activity_id' => $activity1->id, 'resource_id' => $user1, 'resource_type' => 'user']);
         $activityInstance2 = factory(ActivityInstance::class)->create(['activity_id' => $activity2->id, 'resource_id' => $user1, 'resource_type' => 'user']);
         $activityInstance3 = factory(ActivityInstance::class)->create(['activity_id' => $activity1->id, 'resource_id' => $user2, 'resource_type' => 'user']);
-        
+
         $files = factory(File::class, 3)->create(['activity_instance_id' => $activityInstance1->id, 'tags' => ['w', 'needed']])->merge(
             factory(File::class, 2)->create(['activity_instance_id' => $activityInstance2->id, 'tags' => ['w', 'needed']])
         )->merge(
@@ -174,9 +174,9 @@ class FileTest extends TestCase
             factory(File::class, 2)->create(['activity_instance_id' => $activityInstance1->id, 'tags' => ['w']])
         );
         factory(File::class, 4)->create(['activity_instance_id' => $activityInstance3->id]);
-        
+
         $foundFiles = File::withTag('needed')->get();
-        
+
         $this->assertCount(7, $foundFiles);
         $this->assertModelEquals($files[0], $foundFiles->shift());
         $this->assertModelEquals($files[1], $foundFiles->shift());
@@ -185,6 +185,48 @@ class FileTest extends TestCase
         $this->assertModelEquals($files[4], $foundFiles->shift());
         $this->assertModelEquals($files[5], $foundFiles->shift());
         $this->assertModelEquals($files[6], $foundFiles->shift());
+
+    }
+
+    /** @test */
+    public function it_has_a_searchable_array(){
+        $file = factory(File::class)->create([
+            'id' => 400,
+            'title' => 'This is a title',
+            'description' => 'A description',
+            'filename' => 'orig.pdf',
+            'tags' => ['a', 'b', 'c']
+        ]);
+        $status = factory(FileStatus::class)->create(['status' => 'Approved', 'file_id' => $file->id]);
+        $comment1 = factory(Comment::class)->create([
+            'file_id' => $file->id,
+            'id' => 700,
+            'comment' => 'My first comment'
+        ]);
+        $comment2 = factory(Comment::class)->create([
+            'file_id' => $file->id,
+            'id' => 701,
+            'comment' => 'My second comment'
+        ]);
+
+        $this->assertEquals([
+            'id' => 400,
+            'title' => 'This is a title',
+            'description' => 'A description',
+            'filename' => 'orig.pdf',
+            'tags' => json_encode(['a', 'b', 'c']),
+            'status' => 'Approved',
+            'comments' => json_encode([
+                [
+                    'id' => 700,
+                    'comment' => 'My first comment'
+                ],
+                [
+                    'id' => 701,
+                    'comment' => 'My second comment'
+                ]
+            ])
+        ], $file->toSearchableArray());
 
     }
 }

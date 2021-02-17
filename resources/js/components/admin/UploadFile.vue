@@ -21,8 +21,8 @@
                             ></b-form-input>
 
                             <b-input-group-append>
-                                <b-button :disabled="!filter" @click="loadFiles">Search</b-button>
-                                <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                                <b-button :disabled="!filter" @click="search">Search</b-button>
+                                <b-button :disabled="!filter" @click="filter = '' && loadFiles">Clear</b-button>
                             </b-input-group-append>
                         </b-input-group>
                     </b-form-group>
@@ -283,7 +283,7 @@
 
             loadFiles() {
                 this.toggleBusy();
-console.log(this.filterOn);
+
                 this.$http.get('file', {
                     params: {
                         page: this.currentPage,
@@ -291,22 +291,44 @@ console.log(this.filterOn);
 
                     }
                 })
-                    .then(response =>
-                            {
-                                this.files = response.data.data;
-
-                                this.files.map(file => {
-                                    file.size = this.presentSize(file.size);
-                                    file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
-                                    return file;
-                                });
-
-                                this.totalRows = response.data.total;
-                                this.perPage = response.data.per_page;
-                                this.toggleBusy();
-                            })
+                    .then(response => this.processFiles(response))
                     .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message))
-                    .then(() => this.$refs.filetable.refresh());
+                    .then(() => {
+                      this.$refs.filetable.refresh();
+                      this.toggleBusy();
+                });
+            },
+
+            searchFiles() {
+                this.toggleBusy();
+
+                this.$http.get('file/search', {
+                    params: {
+                        page: this.currentPage,
+                        per_page: this.perPage,
+                        filter: this.filter,
+                        filter_on: this.filterOn
+                    }
+                })
+                  .then(response => this.processFiles(response))
+                  .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message))
+                  .then(() => {
+                      this.$refs.filetable.refresh();
+                      this.toggleBusy();
+                  });
+            },
+
+            processFiles(response) {
+              this.files = response.data.data;
+
+              this.files.map(file => {
+                  file.size = this.presentSize(file.size);
+                  file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
+                  return file;
+              });
+
+              this.totalRows = response.data.total;
+              this.perPage = response.data.per_page;
             },
 
             downloadUrl(id) {

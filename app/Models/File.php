@@ -42,9 +42,10 @@ class File extends Model
     public function toSearchableArray()
     {
         $attributes = $this->only([
-            'title', 'description', 'filename', 'tags', 'status'
+            'id', 'title', 'description', 'filename', 'tags', 'status'
         ]);
-        $attributes['comments'] = $this->comments->map(fn($comment) => $comment->only('comment'))->toJson();
+        $attributes['tags'] = json_encode($attributes['tags'] ?? []);
+        $attributes['comments'] = $this->comments->map(fn($comment) => $comment->only('id', 'comment'))->toJson();
         return $attributes;
     }
 
