@@ -11,9 +11,9 @@
 |
 */
 
+use BristolSU\Module\UploadFile\Http\Controllers\Admin\AdminPageController;
+use BristolSU\Module\UploadFile\Http\Controllers\Admin\DownloadFileController;
 use Illuminate\Support\Facades\Route;
 
-Route::namespace('Admin')->group(function() {
-    Route::get('/', 'AdminPageController@index');
-    Route::get('/file/{uploadfile_file}/download', 'DownloadFileController@download');
-});
+Route::get('/', [AdminPageController::class, 'index']);
+Route::get('/file/{uploadfile_file}/download', [DownloadFileController::class, 'download']);

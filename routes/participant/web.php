@@ -11,10 +11,10 @@
 |
 */
 
+use BristolSU\Module\UploadFile\Http\Controllers\Participant\DownloadFileController;
+use BristolSU\Module\UploadFile\Http\Controllers\Participant\ParticipantPageController;
 use Illuminate\Support\Facades\Route;
 
-Route::namespace('Participant')->group(function() {
-    Route::get('/', 'ParticipantPageController@index');
-    Route::get('/file/{uploadfile_file}/download', 'DownloadFileController@download');
-    Route::get('/old-file/{uploadfile_old_file}/download', 'DownloadFileController@downloadOld');
-});
+Route::get('/', [ParticipantPageController::class, 'index']);
+Route::get('/file/{uploadfile_file}/download', [DownloadFileController::class, 'download']);
+Route::get('/old-file/{uploadfile_old_file}/download', [DownloadFileController::class, 'downloadOld']);
