@@ -8,7 +8,7 @@ import AWN from "awesome-notifications";
 Vue.prototype.$http = http;
 Vue.prototype.$notify = new AWN({position: 'top-right'});
 Vue.use(BootstrapVue);
-Vue.prototype.$url = portal.API_URL + '/' + (portal.admin ? 'a' : 'p') + '/' + portal.activity.slug + '/' + portal.module_instance.slug + '/' + portal.module_instance.alias;
+Vue.prototype.$url = portal.APP_URL + '/' + (portal.admin ? 'a' : 'p') + '/' + portal.activity.slug + '/' + portal.module_instance.slug + '/' + portal.module_instance.alias;
 
 let vue = new Vue({
     el: '#uploadfile-root',
