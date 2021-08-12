@@ -41,7 +41,7 @@ class ModuleServiceProvider extends ServiceProvider
             'description' => 'View the administrator page of the module.',
             'admin' => true
         ],
-        
+
         // ##### Api #####
         // Files
         'file.store' => [
@@ -90,7 +90,7 @@ class ModuleServiceProvider extends ServiceProvider
             'description' => 'Allow the user to update a comment.',
             'admin' => false
         ],
-        
+
         // Files
         'admin.file.index' => [
             'name' => 'View all files',
@@ -176,11 +176,11 @@ class ModuleServiceProvider extends ServiceProvider
             'description' => 'When the status of a document is changed'
         ]
     ];
-    
+
     protected $commands = [
-        
+
     ];
-    
+
     public function alias(): string
     {
         return 'uploadfile';
@@ -188,9 +188,9 @@ class ModuleServiceProvider extends ServiceProvider
 
     public function namespace()
     {
-        return '\BristolSU\Module\UploadFile\Http\Controllers';
+        return null;
     }
-    
+
     public function baseDirectory()
     {
         return __DIR__ . '/..';
@@ -204,16 +204,16 @@ class ModuleServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
-        
+
         $this->registerGlobalScript('modules/uploadfile/js/components.js');
-        
+
         $this->app->make(CompletionConditionManager::class)->register(
             $this->alias(), 'number_of_files_submitted', NumberOfDocumentsSubmitted::class
         );
         $this->app->make(CompletionConditionManager::class)->register(
             $this->alias(), 'number_of_files_submitted_with_status', NumberOfDocumentsWithStatus::class
         );
-        
+
         Route::bind('uploadfile_file', function($id) {
             $file = File::findOrFail($id);
             if(request()->route('module_instance_slug') && (int) $file->module_instance_id === request()->route('module_instance_slug')->id()) {
@@ -224,7 +224,7 @@ class ModuleServiceProvider extends ServiceProvider
 
         Route::bind('uploadfile_old_file', function($id) {
             $file = File::findOrFail($id);
-            
+
             $currentActivityInstance = app(ActivityInstanceResolver::class)->getActivityInstance();
             $fileActivityInstance = $file->activityInstance();
             if($currentActivityInstance->resource_type === $fileActivityInstance->resource_type
@@ -233,7 +233,7 @@ class ModuleServiceProvider extends ServiceProvider
             }
             throw (new ModelNotFoundException)->setModel(File::class);
         });
-        
+
         Route::bind('uploadfile_file_status', function($id) {
             $fileStatus = FileStatus::findOrFail($id);
             if(request()->route('module_instance_slug') && (int) $fileStatus->file->module_instance_id === request()->route('module_instance_slug')->id()) {
@@ -241,7 +241,7 @@ class ModuleServiceProvider extends ServiceProvider
             }
             throw (new ModelNotFoundException)->setModel(FileStatus::class);
         });
-        
+
         Route::bind('uploadfile_comment', function($id) {
             $comment = Comment::findOrFail($id);
             if(request()->route('module_instance_slug') && (int) $comment->file->module_instance_id === request()->route('module_instance_slug')->id()) {

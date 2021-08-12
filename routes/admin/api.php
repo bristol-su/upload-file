@@ -11,14 +11,16 @@
 |
 */
 
+use BristolSU\Module\UploadFile\Http\Controllers\AdminApi\ActivityInstanceController;
+use BristolSU\Module\UploadFile\Http\Controllers\AdminApi\CommentController;
+use BristolSU\Module\UploadFile\Http\Controllers\AdminApi\FileController;
+use BristolSU\Module\UploadFile\Http\Controllers\AdminApi\FileStatusController;
 use Illuminate\Support\Facades\Route;
 
-Route::namespace('AdminApi')->group(function() {
-    Route::apiResource('file', 'FileController')->parameters(['file' => 'uploadfile_file']);
-    Route::prefix('file/{uploadfile_file}')->group(function() {
-        Route::apiResource('status', 'FileStatusController')->parameters(['status' => 'uploadfile_file_status']);
-        Route::apiResource('comment', 'CommentController')->only(['index', 'store'])->parameters(['comment' => 'uploadfile_comment']);
-    });
-    Route::apiResource('comment', 'CommentController')->only(['update', 'destroy'])->parameters(['comment' => 'uploadfile_comment']);
-    Route::apiResource('activity-instance', 'ActivityInstanceController')->only(['index']);
+Route::apiResource('file', FileController::class)->parameters(['file' => 'uploadfile_file']);
+Route::prefix('file/{uploadfile_file}')->group(function() {
+    Route::apiResource('status', FileStatusController::class)->parameters(['status' => 'uploadfile_file_status']);
+    Route::apiResource('comment', CommentController::class)->only(['index', 'store'])->parameters(['comment' => 'uploadfile_comment']);
 });
+Route::apiResource('comment', CommentController::class)->only(['update', 'destroy'])->parameters(['comment' => 'uploadfile_comment']);
+Route::apiResource('activity-instance', ActivityInstanceController::class)->only(['index']);
