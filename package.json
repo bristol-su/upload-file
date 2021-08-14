@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@bristol-su/http-client": "github:bristol-su/http-client",
+    "@bristol-su/portal-ui-kit": "github:bristol-su/portal-ui-kit#PR-350/make-plugin",
     "awesome-notifications": "^2.2.9",
     "bootstrap": "^4.4.1",
     "bootstrap-vue": "^2.10.1",
