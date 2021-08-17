@@ -10,7 +10,7 @@ use FormSchema\Schema\Form;
 
 class NumberOfDocumentsSubmitted extends CompletionCondition
 {
-    
+
     public function isComplete($settings, ActivityInstance $activityInstance, ModuleInstance $moduleInstance): bool
     {
         return File::forResource($activityInstance->id, $moduleInstance->id())->count() >= $settings['number_of_files'];
@@ -33,9 +33,9 @@ class NumberOfDocumentsSubmitted extends CompletionCondition
     public function options(): Form
     {
         return \FormSchema\Generator\Form::make()->withField(
-            \FormSchema\Generator\Field::input('number_of_files')->inputType('number')->label('Number of Files')
-                ->required(true)->default(1)->hint('The number of files that must be submitted')
-                ->help('The number of documents that need to be submitted for the module to be marked as complete.')
+            \FormSchema\Generator\Field::number('number_of_files')->setLabel('Number of Files')
+                ->setRequired(true)->setValue(1)->setHint('The number of files that must be submitted')
+                ->setTooltip('The number of documents that need to be submitted for the module to be marked as complete.')
         )->getSchema();
     }
 

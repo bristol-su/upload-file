@@ -22,11 +22,9 @@
     "vue-template-compiler": "^2.6.11"
   },
   "dependencies": {
+    "@bristol-su/frontend-toolkit": "github:bristol-su/frontend-toolkit#PR-361",
     "@bristol-su/http-client": "github:bristol-su/http-client",
-    "@bristol-su/portal-ui-kit": "github:bristol-su/portal-ui-kit#PR-350/make-plugin",
     "awesome-notifications": "^2.2.9",
-    "bootstrap": "^4.4.1",
-    "bootstrap-vue": "^2.10.1",
     "http-client": "github:bristol-su/http-client",
     "jquery": "^3.4.1",
     "moment": "^2.24.0",

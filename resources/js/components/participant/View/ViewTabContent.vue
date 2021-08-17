@@ -124,7 +124,7 @@
             },
 
             downloadUrl(id) {
-                return this.$url + '/' + (this.isOldFiles ? 'old-file' : 'file') + '/' + id + '/download?' + this.queryString;
+                return this.$tools.routes.module.moduleUrl() + '/' + (this.isOldFiles ? 'old-file' : 'file') + '/' + id + '/download?' + this.queryString;
             },
 
             deleteFile(id) {

@@ -21,17 +21,17 @@
                         class="fa fa-trash"></i> Delete
                 </b-button>
             </template>
-            
+
             <template v-slot:cell(change_status)="data">
                 <b-button variant="secondary" @click="changeStatus(data.item)">Change Status</b-button>
             </template>
         </b-table>
-        
-        
+
+
 
         <b-modal id="file-status-change" :title="statusChangeTitle" hide-footer>
             <status-change :file="fileForStatusChange" v-if="fileForStatusChange !== null" :statuses="statuses" @statusAdded="addStatus">
-                
+
             </status-change>
         </b-modal>
 
@@ -53,21 +53,21 @@
 </template>
 
 <script>
-    
+
     import StatusChange from './StatusChange';
     import Comments from '../participant/View/Comments';
     import EditFile from './EditFile';
     import VUploadedForName from './VUploadedForName';
     export default {
         name: "UploadFile",
-        
+
         components: {
             VUploadedForName,
             EditFile,
             Comments,
             StatusChange
         },
-        
+
         props: {
             canDownload: {
                 required: true,
@@ -118,7 +118,7 @@
                 default:  false
             }
         },
-        
+
         data() {
             return {
                 files: [],
@@ -128,11 +128,11 @@
                 editingFileId: null
             }
         },
-        
+
         created() {
             this.loadFiles();
         },
-        
+
         methods: {
             deleteFile(id) {
                 this.$bvModal.msgBoxConfirm('Are you sure you want to delete this file?', {
@@ -172,13 +172,13 @@
                     .then(response => Vue.set(this.files, this.files.indexOf(this.fileForStatusChange), response.data))
                     .catch(error => this.$notify.alert('Could not update files. Please refresh the page.'))
                     .then(() => this.$bvModal.hide('file-status-change'));
-                
+
             },
-            
+
             pushFile(file) {
                 this.files.push(file);
             },
-            
+
             loadFiles() {
                 this.$http.get('file')
                     .then(response => this.files = response.data)
@@ -186,7 +186,7 @@
             },
 
             downloadUrl(id) {
-                return this.$url + '/file/' + id + '/download?' + this.queryString;
+                return this.$tools.routes.module.moduleUrl() + '/file/' + id + '/download?' + this.queryString;
             },
 
             presentSize(size) {
@@ -197,7 +197,7 @@
             presentUploadedBy(user) {
                 return user.data.first_name + ' ' + user.data.last_name;
             },
-            
+
             changeStatus(file) {
                 this.fileForStatusChange = file;
                 this.$bvModal.show('file-status-change');
@@ -208,7 +208,7 @@
                 this.$bvModal.show('comments');
             }
         },
-        
+
         computed: {
             processedFiles() {
                 return this.files.map(file => {

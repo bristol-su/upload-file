@@ -94,7 +94,7 @@
             },
 
             downloadUrl(id) {
-                return this.$url + '/file/' + id + '/download';
+                return this.$tools.routes.module.moduleUrl() + '/file/' + id + '/download';
             },
 
             statusText(status) {
@@ -114,7 +114,7 @@
                     .then(response => {
                         this.$notify.success('File updated');
                         this.$emit('fileUpdated', response.data);
-                        window.location.reload();   
+                        window.location.reload();
                     })
                     .catch(error => this.$notify.alert('File could not be updated: ' + error.message));
             }

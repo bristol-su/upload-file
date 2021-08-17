@@ -4,13 +4,12 @@ import AdminUploadFilePage from './components/admin/AdminUploadFilePage';
 import BootstrapVue from 'bootstrap-vue';
 import http from '@bristol-su/http-client';
 import AWN from "awesome-notifications";
-import UiKit from '@bristol-su/portal-ui-kit';
+import Toolkit from '@bristol-su/frontend-toolkit';
 
 Vue.prototype.$http = http;
 Vue.prototype.$notify = new AWN({position: 'top-right'});
 Vue.use(BootstrapVue);
-Vue.use(UiKit);
-Vue.prototype.$url = portal.APP_URL + '/' + (portal.admin ? 'a' : 'p') + '/' + portal.activity.slug + '/' + portal.module_instance.slug + '/' + portal.module_instance.alias;
+Vue.use(Toolkit);
 
 let vue = new Vue({
     el: '#uploadfile-root',

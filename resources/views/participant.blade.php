@@ -10,9 +10,6 @@
                     <h2 class="">{{settings('title')}}</h2>
                     <p class="">{!! settings('description') !!}</p>
 
-                    <p-button id="my-id" title="My Button in a module :O" help="Help" tooltip="tooltip"></p-button>
-
-
                     <upload-file-root
                         :can-upload="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.store')?'true':'false')}}"
                         :can-download="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.download')?'true':'false')}}"
