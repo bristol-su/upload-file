@@ -1,8 +1,8 @@
 <template>
     <div style="padding-top: 20px;">
-        <p-submit-form :schema="form">
+        <p-api-form :schema="form" @submit="submit">
 
-        </p-submit-form>
+        </p-api-form>
     </div>
 </template>
 
@@ -30,28 +30,18 @@ export default {
         }
     },
 
-    data() {
-        return {
-            formData: {
-                title: '',
-                file: null,
-                description: ''
-            }
-        }
-    },
-
     methods: {
-        submit() {
+        submit(data) {
             let formData = new FormData();
-            if (Array.isArray(this.file)) {
-                for (let file of this.file) {
+            if(data.file.length > 0) {
+                for (let file of data.file) {
                     formData.append('file[]', file)
                 }
             } else {
-                formData.append('file[]', this.file);
+                formData.append('file[]', data.file[0]);
             }
-            formData.append('title', this.title);
-            formData.append('description', this.description);
+            formData.append('title', data.title);
+            formData.append('description', data.description);
             this.$http.post('file', formData, {headers: {'Content-Type': 'multipart/form-data'}})
                 .then(response => {
                     this.$notify.success('File uploaded!');
@@ -60,11 +50,6 @@ export default {
                 })
                 .catch(error => this.$notify.alert('There was a problem uploading your file: ' + error.message));
 
-        },
-
-        reset() {
-            this.title = this.defaultDocumentTitle;
-            this.file = null;
         }
     },
 

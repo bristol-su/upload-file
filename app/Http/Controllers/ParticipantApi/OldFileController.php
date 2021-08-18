@@ -11,7 +11,7 @@ class OldFileController extends Controller
     public function index()
     {
         $files = collect();
-        foreach(settings('tags_to_merge', []) as $tag) {
+        foreach(settings('tags_to_merge', []) ?? [] as $tag) {
             foreach(File::withTag($tag)->get() as $file) {
                 $files->push($file);
             }
