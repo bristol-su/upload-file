@@ -177,14 +177,15 @@ export default {
                     title: file.title,
                     description: file.description,
                     status: file.status,
-                    uploadedBy: this.presentUploadedBy(file.uploaded_by),
-                    uploadedAt: file.hrUploadedAt = moment(file.created_at).fromNow(),
-                    // uploadedAtFormatted: moment(file.created_at).format('lll')
+                    'uploaded by': this.presentUploadedBy(file.uploaded_by),
+                    'uploaded at': file.hrUploadedAt = moment(file.created_at).fromNow(),
+                    uploadedAtFormatted: moment(file.created_at).format('lll')
                 }
             });
         },
         fields() {
-            return ['Title', 'Description', 'Status', 'Uploaded By', 'Uploaded At'];
+            return [
+                'Title', 'Description', 'Status', 'Uploaded By', 'Uploaded At'];
         }
     }
 }

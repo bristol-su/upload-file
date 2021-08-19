@@ -8,18 +8,20 @@
                                     @file-uploaded="pushFile"></upload-tab-content>
             </p-tab>
             <p-tab title="Saved Files" v-if="canView">
-                <view-tab-content :can-delete="canDelete" :can-download="canDownload" :can-see-comments="canSeeComments"
+                <view-tab-content v-if="!loadingFiles" :can-delete="canDelete" :can-download="canDownload" :can-see-comments="canSeeComments"
                                   :can-update="canUpdate" :files="files" :query-string="queryString"
                                   :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
                                   :can-add-comments="canAddComments"
                                   @file-updated="replaceFile" @fileDeleted="popFile"
                                   :is-old-files="false"></view-tab-content>
+                <div v-else>Loading</div>
             </p-tab>
             <p-tab title="Old Files" v-if="oldFiles.length > 0">
-                <view-tab-content :can-delete="false" :can-download="true" :can-see-comments="true"
+                <view-tab-content v-if="!loadingOldFiles" :can-delete="false" :can-download="true" :can-see-comments="true"
                                   :can-update="false" :query-string="queryString" :files="oldFiles"
                                   :can-delete-comments="false"
                                   :can-update-comments="false" :can-add-comments="false" :is-old-files="true"/>
+                <div v-else>Loading</div>
             </p-tab>
         </p-tabs>
     </div>
@@ -108,7 +110,9 @@ export default {
     data() {
         return {
             files: [],
-            oldFiles: []
+            oldFiles: [],
+            loadingFiles: false,
+            loadingOldFiles: false
         }
     },
 
@@ -125,15 +129,19 @@ export default {
         },
 
         loadFiles() {
+            this.loadingFiles = true;
             this.$http.get('file')
                 .then(response => this.files = response.data)
-                .catch(error => this.$notify.alert('Sorry, something went wrong retrieving files: ' + error.message));
+                .catch(error => this.$notify.alert('Sorry, something went wrong retrieving files: ' + error.message))
+                .then(() => this.loadingFiles = false);
         },
 
         loadOldFiles() {
+            this.loadingOldFiles = true;
             this.$http.get('file/old')
                 .then(response => this.oldFiles = response.data)
-                .catch(error => this.$notify.alert('Sorry, something went wrong retrieving the old files: ' + error.message));
+                .catch(error => this.$notify.alert('Sorry, something went wrong retrieving the old files: ' + error.message))
+                .then(() => this.loadingOldFiles = false);
         },
 
         popFile(id) {
