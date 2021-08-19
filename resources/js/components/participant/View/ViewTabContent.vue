@@ -4,7 +4,6 @@
             :data="presentedFiles"
             :columns="fields"
             v-if="presentedFiles.length > 0"
-            :total-count="100"
         >
             <!--            <template v-slot:cell(created_at)="data">-->
             <!--                <span @mouseenter="hover = data.item.id" @mouseleave="hover = null"-->
@@ -180,7 +179,7 @@ export default {
                     status: file.status,
                     uploadedBy: this.presentUploadedBy(file.uploaded_by),
                     uploadedAt: file.hrUploadedAt = moment(file.created_at).fromNow(),
-                    uploadedAtFormatted: moment(file.created_at).format('lll')
+                    // uploadedAtFormatted: moment(file.created_at).format('lll')
                 }
             });
         },

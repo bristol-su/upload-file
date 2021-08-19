@@ -46,7 +46,6 @@ export default {
                 .then(response => {
                     this.$notify.success('File uploaded!');
                     this.$emit('file-uploaded', response.data);
-                    this.reset();
                 })
                 .catch(error => this.$notify.alert('There was a problem uploading your file: ' + error.message));
 
