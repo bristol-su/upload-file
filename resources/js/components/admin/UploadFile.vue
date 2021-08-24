@@ -1,231 +1,233 @@
 <template>
     <div>
-        <b-table :fields="fields" :items="processedFiles">
-            <template v-slot:cell(uploaded_for)="data">
-                <v-uploaded-for-name :activity-instance="data.item.activity_instance"></v-uploaded-for-name>
+        <div v-if="loading">
+            Loading files
+        </div>
+        <p-table
+            v-else
+            :columns="columns"
+            :data="processedFiles"
+            :editable="canUpdateFiles"
+            :deletable="canDeleteFiles"
+            @delete="deleteFile($event)"
+            @edit="editFile($event)">
+            <template slot="col-uploaded for" slot-scope="slotProps">
+                <v-uploaded-for-name :activity-instance="slotProps.row['activity instance']"></v-uploaded-for-name>
             </template>
-            <template v-slot:cell(actions)="data">
-                <a :href="downloadUrl(data.item.id)" v-if="canDownload">
-                    <b-button size="sm" variant="outline-info"><i class="fa fa-download"></i> Download</b-button>
+
+            <template slot="col-uploaded at" slot-scope="slotProps">
+                <p-hover :activity-instance="slotProps.row['uploaded at']">
+                    <template #onHover>
+                        {{ slotProps.row['uploaded at formatted'] }}
+                    </template>
+                    {{ slotProps.row['uploaded at'] }}
+                </p-hover>
+            </template>
+
+            <template slot="actions" slot-scope="slotProps">
+                <a :href="downloadUrl(slotProps.row.id)" v-if="canDownload">Download</a>
+                <a href="#" @click.prevent="changeStatus(slotProps.row)" v-if="canChangeStatus">Change Status</a>
+                <a href="#" @click.prevent="showComments(slotProps.row)" v-if="canSeeComments">
+                    Comments ({{ slotProps.row.comments.length }})
                 </a>
-                <b-button @click="changeStatus(data.item)" size="sm" v-if="canChangeStatus" variant="outline-info"><i
-                        class="fa fa-check"></i> Status
-                </b-button>
-                <b-button @click="showComments(data.item)" size="sm" v-if="canSeeComments" variant="outline-info"><i
-                        class="fa fa-comments"></i> Comments <b-badge variant="secondary">{{data.item.comments.length}} <span class="sr-only">comments</span></b-badge>
-                </b-button>
-                <b-button @click="editFile(data.item.id)" size="sm" v-if="canUpdateFiles" variant="outline-info"><i
-                        class="fa fa-edit"></i> Edit
-                </b-button>
-                <b-button @click="deleteFile(data.item.id)" size="sm" v-if="canDeleteFiles" variant="outline-danger"><i
-                        class="fa fa-trash"></i> Delete
-                </b-button>
             </template>
 
-            <template v-slot:cell(change_status)="data">
-                <b-button variant="secondary" @click="changeStatus(data.item)">Change Status</b-button>
-            </template>
-        </b-table>
+        </p-table>
 
 
+<!--        <b-modal id="file-status-change" :title="statusChangeTitle" hide-footer>-->
 
-        <b-modal id="file-status-change" :title="statusChangeTitle" hide-footer>
-            <status-change :file="fileForStatusChange" v-if="fileForStatusChange !== null" :statuses="statuses" @statusAdded="addStatus">
+<!--        </b-modal>-->
 
-            </status-change>
-        </b-modal>
+<!--        <b-modal id="comments" title="Comments" hide-footer>-->
+<!--            <comments :file-id="fileForComments.id" v-if="fileForComments !== null"-->
+<!--                      :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments"-->
+<!--                      :can-update-comments="canUpdateComments"></comments>-->
+<!--        </b-modal>-->
 
-        <b-modal id="comments" title="Comments" hide-footer >
-            <comments :file-id="fileForComments.id" v-if="fileForComments !== null"
-                      :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"></comments>
-        </b-modal>
+        <p-modal id="changeStatusModal" :title="changeStatusModalTitle">
+            Make me work
+<!--            <status-change :file="fileForStatusChange" v-if="fileForStatusChange !== null" :statuses="statuses"-->
+<!--                           @statusAdded="addNewStatusToFile">-->
 
-        <b-modal id="editFile">
-            <edit-file :file-id="editingFileId" v-if="editingFileId !== null"></edit-file>
+<!--            </status-change>-->
+        </p-modal>
 
-            <template slot="modal-footer">
-                <b-btn @click="$bvModal.hide('editFile')" variant="secondary">
-                    Cancel
-                </b-btn>
-            </template>
-        </b-modal>
+        <p-modal id="editFileModal" title="Edit file">
+            <edit-file :file="fileBeingEdited" v-if="fileBeingEdited !== null" @fileUpdated="markFileAsUpdated"></edit-file>
+        </p-modal>
     </div>
 </template>
 
 <script>
 
-    import StatusChange from './StatusChange';
-    import Comments from '../participant/View/Comments';
-    import EditFile from './EditFile';
-    import VUploadedForName from './VUploadedForName';
-    export default {
-        name: "UploadFile",
+import StatusChange from './StatusChange';
+import Comments from '../participant/View/Comments';
+import EditFile from './EditFile';
+import VUploadedForName from './VUploadedForName';
+import moment from 'moment';
 
-        components: {
-            VUploadedForName,
-            EditFile,
-            Comments,
-            StatusChange
+export default {
+    name: "UploadFile",
+
+    components: {
+        VUploadedForName,
+        EditFile,
+        Comments,
+        StatusChange
+    },
+
+    props: {
+        canDownload: {
+            required: true,
+            type: Boolean,
+            default: false
+        },
+        canChangeStatus: {
+            required: true,
+            type: Boolean,
+            default: false
+        },
+        canAddComments: {
+            required: true,
+            type: Boolean,
+            default: false
+        },
+        canDeleteComments: {
+            required: true,
+            type: Boolean,
+            default: false
+        },
+        canUpdateComments: {
+            required: true,
+            type: Boolean,
+            default: false
+        },
+        canSeeComments: {
+            required: true,
+            type: Boolean,
+            default: false
+        },
+        statuses: {
+            required: true,
+            type: Array
+        },
+        canUpdateFiles: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
+        canDeleteFiles: {
+            type: Boolean,
+            required: false,
+            default: false
+        }
+    },
+
+    data() {
+        return {
+            files: [],
+            fileForStatusChange: null,
+            fileForComments: null,
+            columns: ['title', 'uploaded for', 'uploaded by', 'status', 'uploaded at'],
+            fileBeingEdited: null,
+            loading: false
+        }
+    },
+
+    created() {
+        this.loadFiles();
+    },
+
+    methods: {
+        deleteFile(file) {
+            this.$ui.confirm.delete('Deleting file ' + file.title, 'Are you sure you want to delete this file?', this)
+                .then(() => {
+                    this.$http.delete('file/' + file.id)
+                        .then(response => {
+                            this.$notify.success('File deleted');
+                            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1);
+                        })
+                        .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
+                });
         },
 
-        props: {
-            canDownload: {
-                required: true,
-                type: Boolean,
-                default: false
-            },
-            canChangeStatus: {
-                required: true,
-                type: Boolean,
-                default: false
-            },
-            canAddComments: {
-                required: true,
-                type: Boolean,
-                default: false
-            },
-            canDeleteComments: {
-                required: true,
-                type: Boolean,
-                default: false
-            },
-            canUpdateComments: {
-                required: true,
-                type: Boolean,
-                default: false
-            },
-            canSeeComments: {
-                required: true,
-                type: Boolean,
-                default: false
-            },
-            statuses: {
-                required: true,
-                type: Array
-            },
-            queryString: {
-                type: String,
-                required: true
-            },
-            canUpdateFiles: {
-                type: Boolean,
-                required: false,
-                default:  false
-            },
-            canDeleteFiles: {
-                type: Boolean,
-                required: false,
-                default:  false
+        editFile(file) {
+            this.fileBeingEdited = file;
+            this.$ui.modal.show('editFileModal');
+        },
+
+        markFileAsUpdated(file) {
+            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1, file);
+            this.$ui.modal.hide('editFileModal');
+            this.fileBeingEdited = null;
+        },
+
+        changeStatus(file) {
+            this.fileForStatusChange = file;
+            this.$ui.modal.show('changeStatusModal');
+        },
+
+        addNewStatusToFile(file) {
+            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1, file);
+            this.$ui.modal.hide('changeStatusModal');
+            this.fileForStatusChange = null;
+        },
+
+        loadFiles() {
+            this.loading = true;
+            this.$http.get('file')
+                .then(response => this.files = response.data)
+                .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message))
+                .then(() => this.loading = false);
+        },
+
+        downloadUrl(id) {
+            return this.$tools.routes.query.addQueryStringToWebUrl(this.$tools.routes.module.moduleUrl() + '/file/' + id + '/download');
+        },
+
+        presentSize(size) {
+            let i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+            return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+        },
+
+        presentUploadedBy(user) {
+            return user.data.first_name + ' ' + user.data.last_name;
+        },
+
+        showComments(file) {
+            // this.fileForComments = file;
+            // this.$bvModal.show('comments');
+        }
+    },
+
+    computed: {
+        processedFiles() {
+            return this.files.map(file => {
+                file['uploaded for'] = null;
+                file['uploaded by'] = this.presentUploadedBy(file.uploaded_by);
+                file['uploaded at'] = moment(file.created_at).fromNow();
+                file['uploaded at formatted'] = moment(file.created_at).format('lll');
+                file['activity instance'] = file.activity_instance;
+
+                return file;
+            })
+        },
+
+        changeStatusModalTitle() {
+            if (this.fileForStatusChange === null) {
+                return 'No file selected.';
             }
+            return 'Status of ' + this.fileForStatusChange.title
         },
-
-        data() {
-            return {
-                files: [],
-                fileForStatusChange: null,
-                fileForComments: null,
-                fields: ['title', 'uploaded_for', 'uploaded_by', 'status', 'created_at', 'actions'],
-                editingFileId: null
+        editFileModalTitle() {
+            if (this.fileBeingEdited === null) {
+                return 'No file selected.';
             }
-        },
-
-        created() {
-            this.loadFiles();
-        },
-
-        methods: {
-            deleteFile(id) {
-                this.$bvModal.msgBoxConfirm('Are you sure you want to delete this file?', {
-                    title: 'Deleting file',
-                    size: 'sm',
-                    buttonSize: 'sm',
-                    okVariant: 'danger',
-                    okTitle: 'Delete',
-                    cancelTitle: 'Cancel',
-                    footerClass: 'p-2',
-                    hideHeaderClose: true,
-                    centered: true
-                })
-                    .then(confirmed => {
-                        if (confirmed) {
-                            this.$http.delete('file/' + id)
-                                .then(response => {
-                                    this.$notify.success('File deleted');
-                                    this.$emit('fileDeleted', response.data.id);
-                                    window.location.reload();
-                                })
-                                .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
-                        } else {
-                            this.$notify.warning('No files deleted');
-                        }
-                    })
-                    .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
-            },
-
-            editFile(id) {
-                this.editingFileId = id;
-                this.$bvModal.show('editFile')
-            },
-
-            addStatus(status) {
-                this.$http.get('/file/' + this.fileForStatusChange.id)
-                    .then(response => Vue.set(this.files, this.files.indexOf(this.fileForStatusChange), response.data))
-                    .catch(error => this.$notify.alert('Could not update files. Please refresh the page.'))
-                    .then(() => this.$bvModal.hide('file-status-change'));
-
-            },
-
-            pushFile(file) {
-                this.files.push(file);
-            },
-
-            loadFiles() {
-                this.$http.get('file')
-                    .then(response => this.files = response.data)
-                    .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message));
-            },
-
-            downloadUrl(id) {
-                return this.$tools.routes.module.moduleUrl() + '/file/' + id + '/download?' + this.queryString;
-            },
-
-            presentSize(size) {
-                let i = size == 0 ? 0 : Math.floor( Math.log(size) / Math.log(1024) );
-                return ( size / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
-            },
-
-            presentUploadedBy(user) {
-                return user.data.first_name + ' ' + user.data.last_name;
-            },
-
-            changeStatus(file) {
-                this.fileForStatusChange = file;
-                this.$bvModal.show('file-status-change');
-            },
-
-            showComments(file) {
-                this.fileForComments = file;
-                this.$bvModal.show('comments');
-            }
-        },
-
-        computed: {
-            processedFiles() {
-                return this.files.map(file => {
-                    file.size = this.presentSize(file.size);
-                    file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
-                    return file;
-                })
-            },
-
-            statusChangeTitle() {
-                if(this.fileForStatusChange === null) {
-                    return 'No file selected.';
-                }
-                return 'Status of ' + this.fileForStatusChange.title
-            }
+            return 'Editing file ' + this.fileBeingEdited.title
         }
     }
+}
 </script>
 
 <style scoped>

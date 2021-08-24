@@ -200,8 +200,6 @@ class ModuleServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        $this->registerGlobalScript('modules/uploadfile/js/components.js');
-
         $this->app->make(CompletionConditionManager::class)->register(
             $this->alias(), 'number_of_files_submitted', NumberOfDocumentsSubmitted::class
         );
@@ -284,7 +282,7 @@ class ModuleServiceProvider extends ServiceProvider
                     )
             )->withField(
                 Field::select('statuses')->setLabel('Available Statuses')->setHint('A list of available statuses')
-                    ->setValue('Awaiting Approval')->setSelectOptions(
+                    ->setValue(['Awaiting Approval'])->setSelectOptions(
                         collect($this->app['config']->get($this->alias() . '.statuses'))->map(fn($item) => ['id' => $item, 'value' => $item])->toArray()
                     )
                     ->setMultiple(true)

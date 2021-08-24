@@ -178,7 +178,7 @@ export default {
                     description: file.description,
                     status: file.status,
                     'uploaded by': this.presentUploadedBy(file.uploaded_by),
-                    'uploaded at': file.hrUploadedAt = moment(file.created_at).fromNow(),
+                    'uploaded at': moment(file.created_at).fromNow(),
                     uploadedAtFormatted: moment(file.created_at).format('lll')
                 }
             });
