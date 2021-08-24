@@ -1,7 +1,7 @@
 <template>
     <div style="padding-top: 20px;">
-        <p-form-padding>
-            <p-api-form :schema="form" v-if="audience.length > 0" @submit="submit" buttonText="Upload">
+        <p-form-padding v-if="audience.length > 0">
+            <p-api-form :schema="form" @submit="submit" buttonText="Upload">
 
             </p-api-form>
         </p-form-padding>
