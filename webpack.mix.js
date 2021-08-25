@@ -12,5 +12,6 @@ if(!mix.inProduction()) {
 mix.webpackConfig({
     externals: {
         '@bristol-su/frontend-toolkit': 'Toolkit',
+        'vue': 'Vue',
     }
 });

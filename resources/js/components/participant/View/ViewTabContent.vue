@@ -1,52 +1,42 @@
 <template>
     <div>
         <p-table
-            :data="presentedFiles"
+            :items="presentedFiles"
             :columns="fields"
             v-if="presentedFiles.length > 0"
+            :editable="canUpdate"
+            :deletable="canDelete"
+            @delete="deleteFile($event)"
+            @edit="editFile($event)"
         >
-            <!--            <template v-slot:cell(created_at)="data">-->
-            <!--                <span @mouseenter="hover = data.item.id" @mouseleave="hover = null"-->
-            <!--                      style="margin: auto; width: 100%; height: 100%">{{(hover === data.item.id?data.item.uploadedAtFormatted:data.item.hrUploadedAt)}}</span>-->
-            <!--            </template>-->
-            <!--            <template v-slot:cell(actions)="data">-->
-            <!--                <a :href="downloadUrl(data.item.id)" v-if="canDownload">-->
-            <!--                    <b-button size="sm" variant="outline-info"><i class="fa fa-download"></i> Download</b-button>-->
-            <!--                </a>-->
-            <!--                <b-button @click="editFile(data.item.id)" size="sm" v-if="canUpdate" variant="outline-info"><i-->
-            <!--                        class="fa fa-edit"></i> Edit-->
-            <!--                </b-button>-->
-            <!--                <b-button @click="showComments(data.item.id)" size="sm" v-if="canSeeComments" variant="outline-info"><i-->
-            <!--                        class="fa fa-comments"></i> Comments-->
-            <!--                    <b-badge variant="secondary">{{data.item.comments.length}} <span class="sr-only">comments</span>-->
-            <!--                    </b-badge>-->
-            <!--                </b-button>-->
-            <!--                <b-button @click="deleteFile(data.item.id)" size="sm" v-if="canDelete" variant="outline-danger"><i-->
-            <!--                        class="fa fa-trash"></i> Delete-->
-            <!--                </b-button>-->
-            <!---->
-            <!--            </template>-->
+            <template slot="actions" slot-scope="slotProps">
+                <a :href="downloadUrl(slotProps.row)" v-if="canDownload"><i class="fa fa-download"></i> Download</a>
+                <a href="#" @click="showComments(slotProps.row)" v-if="canSeeComments"><i class="fa fa-comments"></i> Comments ({{slotProps.row.comments.length}})</a>
+            </template>
+
+            <template slot="col-uploaded at" slot-scope="slotProps">
+                <p-hover :activity-instance="slotProps.row['uploaded at']">
+                    <template #onHover>
+                        {{ slotProps.row['uploaded at formatted'] }}
+                    </template>
+                    {{ slotProps.row['uploaded at'] }}
+                </p-hover>
+            </template>
         </p-table>
         <div v-else>
             No files uploaded.
         </div>
 
-<!--        <b-modal id="editFile">-->
-<!--            <edit-file :file-id="editingFileId" @fileUpdated="$emit('fileUpdated', $event)"-->
-<!--                       v-if="editingFileId !== null"></edit-file>-->
+        <p-modal id="editFileModal">
+            <edit-file :file="fileBeingEdited" v-if="fileBeingEdited" @fileUpdated="markFileAsUpdated"></edit-file>
+        </p-modal>
 
-<!--            <template slot="modal-footer">-->
-<!--                <b-btn @click="$bvModal.hide('editFile')" variant="secondary">-->
-<!--                    Cancel-->
-<!--                </b-btn>-->
-<!--            </template>-->
-<!--        </b-modal>-->
-
-<!--        <b-modal id="showComments" title="Comments">-->
-<!--            <comments :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments"-->
-<!--                      :can-update-comments="canUpdateComments"-->
-<!--                      :file-id="commentingFileId" v-if="commentingFileId !== null"></comments>-->
-<!--        </b-modal>-->
+        <p-modal id="commentsModal" title="Comments">
+            <comments :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments"
+                      :can-update-comments="canUpdateComments"
+                      :file="fileBeingCommented" v-if="fileBeingCommented !== null"
+                    @commentUpdated="updateComments"></comments>
+        </p-modal>
     </div>
 </template>
 
@@ -113,75 +103,67 @@ export default {
     data() {
         return {
             hover: null,
-            editingFileId: null,
-            commentingFileId: null
+            fileBeingEdited: null,
+            fileBeingCommented: null
+        }
+    },
+
+    filters: {
+        size(size) {
+            let i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+            return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
         }
     },
 
     methods: {
-        presentSize(size) {
-            let i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
-            return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+
+        downloadUrl(file) {
+            return this.$tools.routes.query.addQueryStringToWebUrl(this.$tools.routes.module.moduleUrl() + '/' + (this.isOldFiles ? 'old-file' : 'file') + '/' + file.id + '/download');
         },
 
-        presentUploadedBy(user) {
-            return user.data.first_name + ' ' + user.data.last_name;
+        deleteFile(file) {
+            this.$ui.confirm.delete('Deleting file ' + file.title, 'Are you sure you want to delete this file?')
+                .then(() => {
+                    this.$http.delete('file/' + file.id)
+                        .then(response => {
+                            this.$notify.success('File deleted');
+                            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1);
+                        })
+                        .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
+                });
         },
 
-        downloadUrl(id) {
-            return this.$tools.routes.module.moduleUrl() + '/' + (this.isOldFiles ? 'old-file' : 'file') + '/' + id + '/download?' + this.queryString;
+        editFile(file) {
+            this.fileBeingEdited = file;
+            this.$ui.modal.show('editFileModal');
         },
 
-        deleteFile(id) {
-            this.$bvModal.msgBoxConfirm('Are you sure you want to delete this file?', {
-                title: 'Deleting file',
-                size: 'sm',
-                buttonSize: 'sm',
-                okVariant: 'danger',
-                okTitle: 'Delete',
-                cancelTitle: 'Cancel',
-                footerClass: 'p-2',
-                hideHeaderClose: true,
-                centered: true
-            })
-                .then(confirmed => {
-                    if (confirmed) {
-                        this.$http.delete('file/' + id)
-                            .then(response => {
-                                this.$notify.success('File deleted');
-                                this.$emit('fileDeleted', response.data.id);
-                            })
-                            .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
-                    } else {
-                        this.$notify.warning('No files deleted');
-                    }
-                })
-                .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
+        markFileAsUpdated(file) {
+            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1, file);
+            this.$ui.modal.hide('editFileModal');
+            this.fileBeingEdited = null;
         },
 
-        editFile(id) {
-            this.editingFileId = id;
-            this.$bvModal.show('editFile')
+        showComments(file) {
+            this.fileBeingCommented = file;
+            this.$ui.modal.show('commentsModal');
         },
 
-        showComments(id) {
-            this.commentingFileId = id;
-            this.$bvModal.show('showComments');
+        updateComments(comments) {
+            let file = this.fileBeingCommented;
+            file.comments = comments;
+            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1, file);
         }
     },
 
     computed: {
         presentedFiles() {
             return this.files.map(file => {
-                return {
-                    title: file.title,
-                    description: file.description,
-                    status: file.status,
-                    'uploaded by': this.presentUploadedBy(file.uploaded_by),
-                    'uploaded at': moment(file.created_at).fromNow(),
-                    uploadedAtFormatted: moment(file.created_at).format('lll')
-                }
-            });
+                file['uploaded by'] = file.uploaded_by.data.preferred_name ?? (file.uploaded_by.data.first_name + ' ' + file.uploaded_by.data.last_name);
+                file['uploaded at'] = moment(file.created_at).fromNow();
+                file['uploaded at formatted'] = moment(file.created_at).format('lll');
+                return file;
+            })
         },
         fields() {
             return [

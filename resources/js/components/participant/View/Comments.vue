@@ -11,19 +11,10 @@
         <div v-else>
             No comments have been left.
         </div>
-        
-        <b-form @submit.prevent="postComment" inline v-if="canAddComments">
-            <label class="sr-only" for="comment">Comment: </label>
-            <b-input
-                    id="comment"
-                    class="mb-2 mr-sm-2 mb-sm-0"
-                    placeholder="Leave a comment..."
-                    v-model="newComment"
-            ></b-input>
 
-            <b-button type="submit" variant="outline-success">Post Comment</b-button>
+        <p-api-form :schema="form" @submit="postComment" v-if="canAddComments" button-text="Post Comment">
 
-        </b-form>
+        </p-api-form>
     </div>
 </template>
 
@@ -33,8 +24,9 @@
         name: "Comments",
         components: {Comment},
         props: {
-            fileId: {
-                required: false
+            file: {
+                required: true,
+                type: Object
             },
             canAddComments: {
                 type: Boolean,
@@ -56,32 +48,48 @@
         data() {
             return {
                 comments: [],
-                newComment: ''
             }
         },
 
         created() {
             this.loadComments();
         },
-        
+
         methods: {
             loadComments() {
-                this.$http.get('/file/' + this.fileId + '/comment')
-                    .then(response => this.comments = response.data)
+                this.$http.get('/file/' + this.file.id + '/comment')
+                    .then(response => {
+                        this.comments = response.data;
+                        this.$emit('commentUpdated', response.data);
+                    })
                     .catch(error => this.$notify.alert('Could not load comments'));
             },
 
-            postComment() {
-                this.$http.post('/file/' + this.fileId + '/comment', {comment: this.newComment})
+            postComment(data) {
+                this.$http.post('/file/' + this.file.id + '/comment', {comment: data.comment})
                 .then(response => {
                     this.comments.push(response.data);
                     this.newComment = '';
+                    this.$emit('commentUpdated', this.comments);
                 })
                 .catch(error => this.$notify.alert('Could not post the comment'));
             }
         },
 
-        computed: {}
+        computed: {
+            form() {
+                return this.$tools.generator.form.newForm()
+                    .withGroup(this.$tools.generator.group.newGroup()
+                        .withField(
+                            this.$tools.generator.field.text('comment')
+                                .label('Your comment')
+                                .required(true)
+                        )
+                    )
+                    .generate()
+                    .asJson();
+            }
+        }
     }
 </script>
 

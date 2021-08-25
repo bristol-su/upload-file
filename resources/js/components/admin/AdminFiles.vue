@@ -6,7 +6,7 @@
         <p-table
             v-else
             :columns="columns"
-            :data="processedFiles"
+            :items="processedFiles"
             :editable="canUpdateFiles"
             :deletable="canDeleteFiles"
             @delete="deleteFile($event)"
@@ -35,22 +35,18 @@
         </p-table>
 
 
-<!--        <b-modal id="file-status-change" :title="statusChangeTitle" hide-footer>-->
-
-<!--        </b-modal>-->
-
-<!--        <b-modal id="comments" title="Comments" hide-footer>-->
-<!--            <comments :file-id="fileForComments.id" v-if="fileForComments !== null"-->
-<!--                      :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments"-->
-<!--                      :can-update-comments="canUpdateComments"></comments>-->
-<!--        </b-modal>-->
+        <p-modal id="commentsModal" title="Comments">
+            <comments :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments"
+                      :can-update-comments="canUpdateComments"
+                      :file="fileBeingCommented" v-if="fileBeingCommented !== null"
+                      @commentUpdated="updateComments"></comments>
+        </p-modal>
 
         <p-modal id="changeStatusModal" :title="changeStatusModalTitle">
-            Make me work
-<!--            <status-change :file="fileForStatusChange" v-if="fileForStatusChange !== null" :statuses="statuses"-->
-<!--                           @statusAdded="addNewStatusToFile">-->
+            <status-change :file="fileForStatusChange" v-if="fileForStatusChange !== null" :statuses="statuses"
+                           @statusAdded="addNewStatusToFile">
 
-<!--            </status-change>-->
+            </status-change>
         </p-modal>
 
         <p-modal id="editFileModal" title="Edit file">
@@ -68,7 +64,7 @@ import VUploadedForName from './VUploadedForName';
 import moment from 'moment';
 
 export default {
-    name: "UploadFile",
+    name: "AdminFiles",
 
     components: {
         VUploadedForName,
@@ -128,7 +124,7 @@ export default {
         return {
             files: [],
             fileForStatusChange: null,
-            fileForComments: null,
+            fileBeingCommented: null,
             columns: ['title', 'uploaded for', 'uploaded by', 'status', 'uploaded at'],
             fileBeingEdited: null,
             loading: false
@@ -141,7 +137,7 @@ export default {
 
     methods: {
         deleteFile(file) {
-            this.$ui.confirm.delete('Deleting file ' + file.title, 'Are you sure you want to delete this file?', this)
+            this.$ui.confirm.delete('Deleting file ' + file.title, 'Are you sure you want to delete this file?')
                 .then(() => {
                     this.$http.delete('file/' + file.id)
                         .then(response => {
@@ -168,8 +164,10 @@ export default {
             this.$ui.modal.show('changeStatusModal');
         },
 
-        addNewStatusToFile(file) {
-            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1, file);
+        addNewStatusToFile(status) {
+            this.fileForStatusChange.status = status.status;
+            this.fileForStatusChange.statuses.push(status);
+            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === this.fileForStatusChange.id)[0]), 1, this.fileForStatusChange);
             this.$ui.modal.hide('changeStatusModal');
             this.fileForStatusChange = null;
         },
@@ -178,7 +176,7 @@ export default {
             this.loading = true;
             this.$http.get('file')
                 .then(response => this.files = response.data)
-                .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message))
+                .catch(error => console.log(error) && this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message))
                 .then(() => this.loading = false);
         },
 
@@ -196,8 +194,14 @@ export default {
         },
 
         showComments(file) {
-            // this.fileForComments = file;
-            // this.$bvModal.show('comments');
+            this.fileBeingCommented = file;
+            this.$ui.modal.show('commentsModal');
+        },
+
+        updateComments(comments) {
+            let file = this.fileBeingCommented;
+            file.comments = comments;
+            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1, file);
         }
     },
 

@@ -1,8 +1,10 @@
 <template>
     <div style="padding-top: 20px;">
-        <p-api-form :schema="form" @submit="submit">
+        <p-form-padding>
+            <p-api-form :schema="form" @submit="submit">
 
-        </p-api-form>
+            </p-api-form>
+        </p-form-padding>
     </div>
 </template>
 
