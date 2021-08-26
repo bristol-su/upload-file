@@ -11,24 +11,24 @@
             :deletable="canDeleteFiles"
             @delete="deleteFile($event)"
             @edit="editFile($event)">
-            <template slot="col-uploaded for" slot-scope="slotProps">
-                <v-uploaded-for-name :activity-instance="slotProps.row['activity instance']"></v-uploaded-for-name>
+            <template #cell(uploaded_for)="{row}">
+                <v-uploaded-for-name :activity-instance="row.activity_instance"></v-uploaded-for-name>
             </template>
 
-            <template slot="col-uploaded at" slot-scope="slotProps">
-                <p-hover :activity-instance="slotProps.row['uploaded at']">
+            <template #cell(uploaded_at)="{row}">
+                <p-hover :activity-instance="row.uploaded_at">
                     <template #onHover>
-                        {{ slotProps.row['uploaded at formatted'] }}
+                        {{ row.uploaded_at_formatted }}
                     </template>
-                    {{ slotProps.row['uploaded at'] }}
+                    {{ row.uploaded_at }}
                 </p-hover>
             </template>
 
-            <template slot="actions" slot-scope="slotProps">
-                <a :href="downloadUrl(slotProps.row.id)" v-if="canDownload">Download</a>
-                <a href="#" @click.prevent="changeStatus(slotProps.row)" v-if="canChangeStatus">Change Status</a>
-                <a href="#" @click.prevent="showComments(slotProps.row)" v-if="canSeeComments">
-                    Comments ({{ slotProps.row.comments.length }})
+            <template #actions="{row}">
+                <a :href="downloadUrl(row.id)" v-if="canDownload">Download</a>
+                <a href="#" @click.prevent="changeStatus(row)" v-if="canChangeStatus">Change Status</a>
+                <a href="#" @click.prevent="showComments(row)" v-if="canSeeComments">
+                    Comments ({{ row.comments.length }})
                 </a>
             </template>
 
@@ -125,7 +125,13 @@ export default {
             files: [],
             fileForStatusChange: null,
             fileBeingCommented: null,
-            columns: ['title', 'uploaded for', 'uploaded by', 'status', 'uploaded at'],
+            columns: [
+                {key: 'title', label: 'Title'},
+                {key: 'uploaded_for', label: 'Uploaded For'},
+                {key: 'uploaded_by', label: 'Uploaded By'},
+                {key: 'status', label: 'Status'},
+                {key: 'uploaded_at', label: 'Uploaded At'},
+            ],
             fileBeingEdited: null,
             loading: false
         }
@@ -208,12 +214,10 @@ export default {
     computed: {
         processedFiles() {
             return this.files.map(file => {
-                file['uploaded for'] = null;
-                file['uploaded by'] = this.presentUploadedBy(file.uploaded_by);
-                file['uploaded at'] = moment(file.created_at).fromNow();
-                file['uploaded at formatted'] = moment(file.created_at).format('lll');
-                file['activity instance'] = file.activity_instance;
-
+                file.uploaded_for = null;
+                file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
+                file.uploaded_at = moment(file.created_at).fromNow();
+                file.uploaded_at_formatted = moment(file.created_at).format('lll');
                 return file;
             })
         },

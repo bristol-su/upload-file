@@ -14,12 +14,12 @@
                 <a href="#" @click="showComments(slotProps.row)" v-if="canSeeComments"><i class="fa fa-comments"></i> Comments ({{slotProps.row.comments.length}})</a>
             </template>
 
-            <template slot="col-uploaded at" slot-scope="slotProps">
-                <p-hover :activity-instance="slotProps.row['uploaded at']">
+            <template #cell(uploaded_at)="{row}">
+                <p-hover :activity-instance="row.uploaded_at">
                     <template #onHover>
-                        {{ slotProps.row['uploaded at formatted'] }}
+                        {{ row.uploaded_at_formatted }}
                     </template>
-                    {{ slotProps.row['uploaded at'] }}
+                    {{ row.uploaded_at }}
                 </p-hover>
             </template>
         </p-table>
@@ -159,15 +159,20 @@ export default {
     computed: {
         presentedFiles() {
             return this.files.map(file => {
-                file['uploaded by'] = file.uploaded_by.data.preferred_name ?? (file.uploaded_by.data.first_name + ' ' + file.uploaded_by.data.last_name);
-                file['uploaded at'] = moment(file.created_at).fromNow();
-                file['uploaded at formatted'] = moment(file.created_at).format('lll');
+                file.uploaded_by = file.uploaded_by.data.preferred_name ?? (file.uploaded_by.data.first_name + ' ' + file.uploaded_by.data.last_name);
+                file.uploaded_at = moment(file.created_at).fromNow();
+                file.uploaded_at_formatted = moment(file.created_at).format('lll');
                 return file;
             })
         },
         fields() {
             return [
-                'Title', 'Description', 'Status', 'Uploaded By', 'Uploaded At'];
+                {key: 'title', label: 'Title'},
+                {key: 'description', label: 'Description'},
+                {key: 'status', label: 'Status'},
+                {key: 'uploaded_by', label: 'Uploaded By'},
+                {key: 'uploaded_at', label: 'Uploaded At'}
+            ];
         }
     }
 }
