@@ -6,7 +6,7 @@
         <div v-else>Loading</div>
 
         <div>
-            <span>Uploaded By: {{file.uploaded_by.data.first_name}} {{file.uploaded_by.data.last_name}}</span>
+            <span>Uploaded By: {{file.uploaded_by}}</span>
         </div>
 
         <br/>
