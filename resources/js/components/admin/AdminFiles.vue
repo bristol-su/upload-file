@@ -25,10 +25,34 @@
             </template>
 
             <template #actions="{row}">
-                <a :href="downloadUrl(row.id)" v-if="canDownload">Download</a>
-                <a href="#" @click.prevent="changeStatus(row)" v-if="canChangeStatus">Change Status</a>
-                <a href="#" @click.prevent="showComments(row)" v-if="canSeeComments">
-                    Comments ({{ row.comments.length }})
+                <a :href="downloadUrl(row.id)" v-if="canDownload" class="text-primary hover:text-primary-dark">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                 content="Download File" v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            <span class="sr-only">Download</span>
+                        </span>
+                </a>
+                <a href="#" @click.prevent="changeStatus(row)" v-if="canChangeStatus" class="text-success hover:text-success-dark">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                             content="Change Status" v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </span>
+                    <span class="sr-only">Change Status</span>
+                </a>
+                <a href="#" @click.prevent="showComments(row)" v-if="canSeeComments" class="text-secondary hover:text-secondary-dark">
+                    <span class="flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" content="View Comments" v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                        </svg>
+                        ({{ row.comments.length }})
+                        <span class="sr-only">Comments</span>
+                    </span>
                 </a>
             </template>
 

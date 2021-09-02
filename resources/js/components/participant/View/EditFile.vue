@@ -33,13 +33,7 @@ export default {
 
     filters: {
         statusHistory(status) {
-            let text = 'Changed to ' + status.status + ' by ' + status.created_by.data.first_name + ' ' + status.created_by.data.last_name;
-            if (this.hover === status.id) {
-                text = text + ' on the ' + moment(status.created_at).format('lll');
-            } else {
-                text = text + ' ' + moment(status.created_at).fromNow();
-            }
-            return text;
+            return  'Changed to ' + status.status + ' by ' + status.created_by.data.first_name + ' ' + status.created_by.data.last_name + ' ' + moment(status.created_at).fromNow();
         }
     },
 
