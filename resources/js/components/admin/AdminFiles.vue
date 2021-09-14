@@ -15,7 +15,7 @@
                 <v-uploaded-for-name :activity-instance="row.activity_instance"></v-uploaded-for-name>
             </template>
 
-            <template #cell(uploaded_at)="{row}">
+            <template #cell(uploaded_at_name)="{row}">
                 <p-hover :activity-instance="row.uploaded_at">
                     <template #onHover>
                         {{ row.uploaded_at_formatted }}
@@ -152,7 +152,7 @@ export default {
             columns: [
                 {key: 'title', label: 'Title'},
                 {key: 'uploaded_for', label: 'Uploaded For'},
-                {key: 'uploaded_by', label: 'Uploaded By'},
+                {key: 'uploaded_by_name', label: 'Uploaded By'},
                 {key: 'status', label: 'Status'},
                 {key: 'uploaded_at', label: 'Uploaded At'},
             ],
@@ -200,6 +200,7 @@ export default {
             this.files.splice(this.files.indexOf(this.files.filter(f => f.id === this.fileForStatusChange.id)[0]), 1, this.fileForStatusChange);
             this.$ui.modal.hide('changeStatusModal');
             this.fileForStatusChange = null;
+            this.$notify.success('The status of the file has been updated');
         },
 
         loadFiles() {
@@ -220,7 +221,7 @@ export default {
         },
 
         presentUploadedBy(user) {
-            return user.data.first_name + ' ' + user.data.last_name;
+            return user.data.preferred_name ?? user.data.first_name + ' ' + user.data.last_name;
         },
 
         showComments(file) {
@@ -239,7 +240,7 @@ export default {
         processedFiles() {
             return this.files.map(file => {
                 file.uploaded_for = null;
-                file.uploaded_by = this.presentUploadedBy(file.uploaded_by);
+                file.uploaded_by_name = this.presentUploadedBy(file.uploaded_by);
                 file.uploaded_at = moment(file.created_at).fromNow();
                 file.uploaded_at_formatted = moment(file.created_at).format('lll');
                 return file;

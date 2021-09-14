@@ -176,7 +176,8 @@ export default {
     computed: {
         presentedFiles() {
             return this.files.map(file => {
-                file.uploaded_by = file.uploaded_by.data.preferred_name ?? (file.uploaded_by.data.first_name + ' ' + file.uploaded_by.data.last_name);
+
+                file.uploaded_by_name = file.uploaded_by.data.preferred_name ?? (file.uploaded_by.data.first_name + ' ' + file.uploaded_by.data.last_name);
                 file.uploaded_at = moment(file.created_at).fromNow();
                 file.uploaded_at_formatted = moment(file.created_at).format('lll');
                 return file;
@@ -187,7 +188,7 @@ export default {
                 {key: 'title', label: 'Title'},
                 {key: 'description', label: 'Description'},
                 {key: 'status', label: 'Status'},
-                {key: 'uploaded_by', label: 'Uploaded By'},
+                {key: 'uploaded_by_name', label: 'Uploaded By'},
                 {key: 'uploaded_at', label: 'Uploaded At'}
             ];
         }

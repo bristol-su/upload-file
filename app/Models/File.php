@@ -40,7 +40,10 @@ class File extends Model
 
     public function getUploadedByAttribute($uploadedById)
     {
-        return app()->make(UserRepository::class)->getById($uploadedById);
+        if($uploadedById) {
+            return app()->make(UserRepository::class)->getById($uploadedById);
+        }
+        return null;
     }
 
     public function scopeWithTag(Builder $query, string $tag)

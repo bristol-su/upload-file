@@ -1,11 +1,13 @@
 <template>
     <div>
-        <p-tabs>
+        <p-tabs ref="tabs">
             <p-tab title="New File" v-if="canUpload">
                 <upload-tab-content :allowed-extensions="allowedExtensions"
                                     :default-document-title="defaultDocumentTitle"
                                     :multiple-files="multipleFiles"
-                                    @file-uploaded="pushFile"></upload-tab-content>
+                                    @file-uploaded="pushFiles">
+
+                </upload-tab-content>
             </p-tab>
             <p-tab title="Saved Files" v-if="canView">
                 <view-tab-content v-if="!loadingFiles" :can-delete="canDelete" :can-download="canDownload" :can-see-comments="canSeeComments"
@@ -122,10 +124,12 @@ export default {
     },
 
     methods: {
+        pushFiles(files) {
+            files.forEach(file => this.pushFile(file));
+        },
         pushFile(file) {
-            this.$http.get('file/' + file.id)
-                .then(response => this.files.push(response.data))
-                .catch(error => window.location.reload());
+            this.files.push(file);
+            this.$refs.tabs.selectTab(1);
         },
 
         loadFiles() {
@@ -149,12 +153,8 @@ export default {
         },
 
         replaceFile(file) {
-            this.$http.get('file/' + file.id)
-                .then(response => {
-                    let index = this.files.map(data => data.id).indexOf(file.id);
-                    this.files[index] = response.data;
-                })
-                .catch(error => window.location.reload());
+            let index = this.files.map(data => data.id).indexOf(file.id);
+            this.files[index] = file;
         }
     }
 }

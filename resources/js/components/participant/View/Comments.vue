@@ -12,7 +12,7 @@
             No comments have been left.
         </div>
 
-        <p-api-form :schema="form" @submit="postComment" v-if="canAddComments" button-text="Post Comment">
+        <p-api-form ref="apiForm" :schema="form" @submit="postComment" v-if="canAddComments" button-text="Post Comment" :initial-data="{comment: ''}">
 
         </p-api-form>
     </div>
@@ -69,7 +69,7 @@ export default {
             this.$http.post('/file/' + this.file.id + '/comment', {comment: data.comment})
                 .then(response => {
                     this.comments.push(response.data);
-                    this.newComment = '';
+                    this.$refs.apiForm.reset();
                     this.$emit('commentUpdated', this.comments);
                 })
                 .catch(error => this.$notify.alert('Could not post the comment'));
