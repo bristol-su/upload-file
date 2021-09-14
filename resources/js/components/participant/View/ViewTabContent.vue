@@ -44,7 +44,7 @@
             No files uploaded.
         </div>
 
-        <p-modal id="editFileModal">
+        <p-modal id="editFileModal" :title="(fileBeingEdited ? fileBeingEdited.title : 'Edit file')">
             <edit-file :file="fileBeingEdited" v-if="fileBeingEdited" @fileUpdated="markFileAsUpdated"></edit-file>
         </p-modal>
 

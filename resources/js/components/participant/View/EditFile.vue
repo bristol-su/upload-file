@@ -39,7 +39,7 @@ export default {
 
     methods: {
         update(data) {
-            this.$http.put('file/' + this.file.id, data)
+            this.$http.put('file/' + this.file.id, {title: data.updated_title, description: data.updated_description})
                 .then(response => {
                     this.$notify.success('File updated');
                     let updatedFile = Object.assign({}, this.file);
@@ -58,13 +58,13 @@ export default {
                 .withGroup(
                     this.$tools.generator.group.newGroup()
                         .withField(
-                            this.$tools.generator.field.text('title')
+                            this.$tools.generator.field.text('updated_title')
                                 .label('Name of the document')
                                 .required(true)
                                 .value(this.file.title)
                         )
                         .withField(
-                            this.$tools.generator.field.text('description')
+                            this.$tools.generator.field.text('updated_description')
                                 .label('A description for the document')
                                 .required(false)
                                 .value(this.file.description)
