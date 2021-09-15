@@ -1,7 +1,7 @@
 <template>
     <div style="padding-top: 20px;">
         <p-form-padding>
-            <p-api-form :schema="form" @submit="submit">
+            <p-api-form :schema="form" @submit="submit" :busy="isLoading">
 
             </p-api-form>
         </p-form-padding>
@@ -32,6 +32,11 @@ export default {
         }
     },
 
+    data() {
+        return {
+        }
+    },
+
     methods: {
         submit(data) {
             let formData = new FormData();
@@ -44,7 +49,7 @@ export default {
             }
             formData.append('title', data.title);
             formData.append('description', data.description);
-            this.$http.post('file', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+            this.$http.post('file', formData, {headers: {'Content-Type': 'multipart/form-data'}, name: 'test'})
                 .then(response => {
                     this.$notify.success('File uploaded!');
                     this.$emit('file-uploaded', response.data);
@@ -55,6 +60,9 @@ export default {
     },
 
     computed: {
+        isLoading() {
+            return this.$isLoading('test');
+        },
         form() {
             return this.$tools.generator.form.newForm('Upload a new file')
                 .withGroup(
