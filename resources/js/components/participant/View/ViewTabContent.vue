@@ -32,12 +32,7 @@
             </template>
 
             <template #cell(uploaded_at)="{row}">
-                <p-hover :activity-instance="row.uploaded_at">
-                    <template #onHover>
-                        {{ row.uploaded_at_formatted }}
-                    </template>
-                    {{ row.uploaded_at }}
-                </p-hover>
+                <p-hover :before="row.uploaded_at" :after="row.uploaded_at_formatted"></p-hover>
             </template>
         </p-table>
         <div v-else>
