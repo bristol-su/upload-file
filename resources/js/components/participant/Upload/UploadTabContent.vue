@@ -1,7 +1,7 @@
 <template>
     <div style="padding-top: 20px;">
         <p-form-padding>
-            <p-api-form :schema="form" @submit="submit" :busy="isLoading">
+            <p-api-form :schema="form" @submit="submit" :busy="$isLoading('uploading-file')" busy-text="Uploading File">
 
             </p-api-form>
         </p-form-padding>
@@ -49,10 +49,11 @@ export default {
             }
             formData.append('title', data.title);
             formData.append('description', data.description);
-            this.$http.post('file', formData, {headers: {'Content-Type': 'multipart/form-data'}, name: 'test'})
+            this.$http.post('file', formData, {headers: {'Content-Type': 'multipart/form-data'}, name: 'uploading-file'})
                 .then(response => {
                     this.$notify.success('File uploaded!');
                     this.$emit('file-uploaded', response.data);
+                    this.$refs.form.reset();
                 })
                 .catch(error => this.$notify.alert('There was a problem uploading your file: ' + error.message));
 
@@ -60,9 +61,6 @@ export default {
     },
 
     computed: {
-        isLoading() {
-            return this.$isLoading('test');
-        },
         form() {
             return this.$tools.generator.form.newForm('Upload a new file')
                 .withGroup(
@@ -80,8 +78,9 @@ export default {
                         )
                         .withField(
                             this.$tools.generator.field.file('file')
-                                .label('The file(s) to upload')
+                                .label('The file' + (this.multipleFiles ? 's' : '') + ' to upload')
                                 .required(true)
+                                .multiple(this.multipleFiles)
                                 .hint('You can upload files of the type ' + this.allowedExtensionsText)
                         )
                 )

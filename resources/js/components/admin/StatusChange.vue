@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p-api-form @submit="createStatus" :schema="form">
+        <p-api-form @submit="createStatus" :schema="form" :busy="$isLoading('updating-status-file-' + file.id)" busy-text="Updating Status">
 
         </p-api-form>
         <br/><hr/><br/>
@@ -37,7 +37,7 @@
             createStatus(data) {
                 this.$http.post('file/' + this.file.id + '/status', {
                     status: data.status
-                })
+                }, {name: 'updating-status-file-' + file.id})
                 .then(response => {
                     this.$notify.success('Status change successful');
                     this.$emit('statusAdded', response.data);
@@ -71,9 +71,7 @@
                 return this.$tools.generator.form.newForm()
                     .withGroup(this.$tools.generator.group.newGroup()
                         .withField(selectField)
-                    )
-                    .generate()
-                    .asJson()
+                    );
             }
         }
     }

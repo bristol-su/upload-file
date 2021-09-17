@@ -10,20 +10,18 @@
                 </upload-tab-content>
             </p-tab>
             <p-tab title="Saved Files" v-if="canView">
-                <view-tab-content v-if="!loadingFiles" :can-delete="canDelete" :can-download="canDownload" :can-see-comments="canSeeComments"
-                                  :can-update="canUpdate" :files="files" :query-string="queryString"
+                <view-tab-content :loading="$isLoading('loading-files')" :can-delete="canDelete" :can-download="canDownload" :can-see-comments="canSeeComments"
+                                  :can-update="canUpdate" :files="files"
                                   :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
                                   :can-add-comments="canAddComments"
                                   @file-updated="replaceFile" @fileDeleted="popFile"
                                   :is-old-files="false"></view-tab-content>
-                <div v-else>Loading</div>
             </p-tab>
             <p-tab title="Old Files" v-if="oldFiles.length > 0">
-                <view-tab-content v-if="!loadingOldFiles" :can-delete="false" :can-download="true" :can-see-comments="true"
-                                  :can-update="false" :query-string="queryString" :files="oldFiles"
+                <view-tab-content :loading="$isLoading('loading-old-files')" :can-delete="false" :can-download="true" :can-see-comments="true"
+                                  :can-update="false" :files="oldFiles"
                                   :can-delete-comments="false"
                                   :can-update-comments="false" :can-add-comments="false" :is-old-files="true"/>
-                <div v-else>Loading</div>
             </p-tab>
         </p-tabs>
     </div>
@@ -42,6 +40,10 @@ export default {
     },
 
     props: {
+        showOldFiles: {
+            type: Boolean,
+            default: false
+        },
         canUpload: {
             type: Boolean,
             required: true,
@@ -102,19 +104,13 @@ export default {
             default: function () {
                 return [];
             }
-        },
-        queryString: {
-            type: String,
-            required: true
         }
     },
 
     data() {
         return {
             files: [],
-            oldFiles: [],
-            loadingFiles: false,
-            loadingOldFiles: false
+            oldFiles: []
         }
     },
 
@@ -133,19 +129,15 @@ export default {
         },
 
         loadFiles() {
-            this.loadingFiles = true;
-            this.$http.get('file')
+            this.$http.get('file', {name: 'loading-files'})
                 .then(response => this.files = response.data)
                 .catch(error => this.$notify.alert('Sorry, something went wrong retrieving files: ' + error.message))
-                .then(() => this.loadingFiles = false);
         },
 
         loadOldFiles() {
-            this.loadingOldFiles = true;
-            this.$http.get('file/old')
+            this.$http.get('file/old', {name: 'loading-old-files'})
                 .then(response => this.oldFiles = response.data)
                 .catch(error => this.$notify.alert('Sorry, something went wrong retrieving the old files: ' + error.message))
-                .then(() => this.loadingOldFiles = false);
         },
 
         popFile(id) {

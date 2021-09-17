@@ -19,7 +19,7 @@ class File extends Model
 
     protected $table = 'uploadfile_files';
 
-    protected $appends = ['status'];
+    protected $appends = ['status', 'activity_instance'];
 
     protected $fillable = [
         'title',
@@ -57,6 +57,16 @@ class File extends Model
             });
         return $query->whereIn('activity_instance_id', $activityInstanceIds->toArray())
             ->where('tags', 'LIKE', '%"' . $tag . '"%');
+    }
+
+    /**
+     * Get the activity instance
+     *
+     * @return ActivityInstance
+     */
+    public function getActivityInstanceAttribute()
+    {
+        return $this->activityInstance();
     }
 
     /**

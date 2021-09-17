@@ -1,10 +1,7 @@
 <template>
     <div>
-        <div v-if="loading">
-            Loading files
-        </div>
         <p-table
-            v-else
+            :busy="loading"
             :columns="columns"
             :items="processedFiles"
             :editable="canUpdateFiles"
@@ -98,6 +95,12 @@ export default {
     },
 
     props: {
+        loading: {type: Boolean, default: false},
+        files: {
+            required: false,
+            type: Array,
+            default: () => []
+        },
         canDownload: {
             required: true,
             type: Boolean,
@@ -146,33 +149,30 @@ export default {
 
     data() {
         return {
-            files: [],
             fileForStatusChange: null,
             fileBeingCommented: null,
             columns: [
                 {key: 'title', label: 'Title'},
+                {key: 'description', label: 'Description', truncateCell: 20},
                 {key: 'uploaded_for', label: 'Uploaded For'},
                 {key: 'uploaded_by_name', label: 'Uploaded By'},
                 {key: 'status', label: 'Status'},
                 {key: 'uploaded_at', label: 'Uploaded At'},
             ],
-            fileBeingEdited: null,
-            loading: false
+            fileBeingEdited: null
         }
     },
 
-    created() {
-        this.loadFiles();
-    },
+
 
     methods: {
         deleteFile(file) {
             this.$ui.confirm.delete('Deleting file ' + file.title, 'Are you sure you want to delete this file?')
                 .then(() => {
-                    this.$http.delete('file/' + file.id)
+                    this.$http.delete('file/' + file.id, {name: 'deleting-file-' + file.id})
                         .then(response => {
                             this.$notify.success('File deleted');
-                            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1);
+                            this.$emit('delete', file);
                         })
                         .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
                 });
@@ -184,7 +184,7 @@ export default {
         },
 
         markFileAsUpdated(file) {
-            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1, file);
+            this.$emit('update', this.files.filter(f => f.id === file.id)[0], file)
             this.$ui.modal.hide('editFileModal');
             this.fileBeingEdited = null;
         },
@@ -195,20 +195,13 @@ export default {
         },
 
         addNewStatusToFile(status) {
-            this.fileForStatusChange.status = status.status;
-            this.fileForStatusChange.statuses.push(status);
-            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === this.fileForStatusChange.id)[0]), 1, this.fileForStatusChange);
+            let updatedFile = _.cloneDeep(this.fileForStatusChange);
+            updatedFile.status = status.status;
+            updatedFile.statuses.push(status);
+            this.$emit('update', this.files.filter(f => f.id === updatedFile.id)[0], updatedFile);
             this.$ui.modal.hide('changeStatusModal');
             this.fileForStatusChange = null;
             this.$notify.success('The status of the file has been updated');
-        },
-
-        loadFiles() {
-            this.loading = true;
-            this.$http.get('file')
-                .then(response => this.files = response.data)
-                .catch(error => console.log(error) && this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message))
-                .then(() => this.loading = false);
         },
 
         downloadUrl(id) {
@@ -232,26 +225,30 @@ export default {
         updateComments(comments) {
             let file = this.fileBeingCommented;
             file.comments = comments;
-            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1, file);
+            this.$emit('update', this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), file);
         }
     },
 
     computed: {
         processedFiles() {
             return this.files.map(file => {
-                file.uploaded_for = null;
-                file.uploaded_by_name = this.presentUploadedBy(file.uploaded_by);
-                file.uploaded_at = moment(file.created_at).fromNow();
-                file.uploaded_at_formatted = moment(file.created_at).format('lll');
+                if(!file.hasOwnProperty('_table')) {
+                    file._table = {}
+                }
+                file._table.isDeleting = this.$isLoading('deleting-file-' + file.id);
+                file.uploaded_by_name = file.uploaded_by.data.preferred_name ?? (file.uploaded_by.data.first_name + ' ' + file.uploaded_by.data.last_name);
+                file.created_at_datetime = moment(file.created_at);
+                file.uploaded_at = file.created_at_datetime.fromNow();
+                file.uploaded_at_formatted = file.created_at_datetime.format('lll');
                 return file;
-            })
+            }).sort((a,b) => b.created_at_datetime - a.created_at_datetime)
         },
 
         changeStatusModalTitle() {
             if (this.fileForStatusChange === null) {
                 return 'No file selected.';
             }
-            return 'Status of ' + this.fileForStatusChange.title
+            return this.fileForStatusChange.title + ' - ' + this.fileForStatusChange.status
         },
         editFileModalTitle() {
             if (this.fileBeingEdited === null) {

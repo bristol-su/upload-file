@@ -1,7 +1,10 @@
 <template>
     <div style="padding-top: 20px;">
-        <p-form-padding v-if="audience.length > 0">
-            <p-api-form :schema="form" @submit="submit" buttonText="Upload">
+        <div v-if="$isLoading('getting-activity-instances')" class="text-center">
+            Loading
+        </div>
+        <p-form-padding v-else-if="audience.length > 0">
+            <p-api-form ref="form" :schema="form" @submit="submit" buttonText="Upload" :busy="$isLoading('uploading-file')" busy-text="Uploading File">
 
             </p-api-form>
         </p-form-padding>
@@ -48,7 +51,6 @@ export default {
 
     methods: {
         submit(data) {
-            console.log(data);
             let formData = new FormData();
             if(data.file.length > 0) {
                 for (let file of data.file) {
@@ -60,16 +62,17 @@ export default {
             formData.append('title', data.title);
             formData.append('description', data.description);
             formData.append('activity_instance_id', data.activity_instance_id);
-            this.$http.post('file', formData, {headers: {'Content-Type': 'multipart/form-data'}})
+            this.$http.post('file', formData, {headers: {'Content-Type': 'multipart/form-data'}, name: 'uploading-file'})
                 .then(response => {
+                    this.$emit('newFiles', response.data)
                     this.$notify.success('File uploaded!');
-                    window.location.reload();
+                    this.$refs.form.reset();
                 })
                 .catch(error => this.$notify.alert('There was a problem uploading your file: ' + error.message));
         },
 
         loadAudience() {
-            this.$http.get('/activity-instance')
+            this.$http.get('/activity-instance', {name: 'getting-activity-instances'})
                 .then(response => this.audience = response.data)
                 .catch(error => this.$notify.alert('Could not load the audience: ' + error.message));
         }
@@ -120,8 +123,9 @@ export default {
                         )
                         .withField(
                             this.$tools.generator.field.file('file')
-                                .label('The file(s) to upload')
+                                .label('The file' + (this.multipleFiles ? 's' : '') + ' to upload')
                                 .required(true)
+                                .multiple(this.multipleFiles)
                                 .hint('You can upload files of the type ' + this.allowedExtensionsText)
                         )
                 )

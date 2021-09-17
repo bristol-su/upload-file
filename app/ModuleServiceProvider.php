@@ -23,6 +23,7 @@ use FormSchema\Generator\Field;
 use FormSchema\Generator\Form as FormGenerator;
 use FormSchema\Generator\Group;
 use FormSchema\Schema\Form;
+use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Route;
 
@@ -199,6 +200,10 @@ class ModuleServiceProvider extends ServiceProvider
     public function boot()
     {
         parent::boot();
+
+        if (!app()->environment('production')) {
+            $this->app->make(Factory::class)->load($this->baseDirectory() . '/database/factories');
+        }
 
         $this->app->make(CompletionConditionManager::class)->register(
             $this->alias(), 'number_of_files_submitted', NumberOfDocumentsSubmitted::class

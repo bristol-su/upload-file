@@ -5,6 +5,7 @@
 @section('module-content')
     <p-page-content title="{{settings('title')}}" subtitle="{{settings('description')}}">
         <upload-file-root
+            :show-old-files="{{(count(settings('tags_to_merge', [])) > 0 ? 'true' : 'false' )}}"
             :can-upload="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.store')?'true':'false')}}"
             :can-download="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.download')?'true':'false')}}"
             :can-view="{{(BristolSU\Support\Permissions\Facade\PermissionTester::evaluate('uploadfile.file.index')?'true':'false')}}"

@@ -1,12 +1,12 @@
 <template>
     <div>
-        <p-api-form :schema="form" v-if="audience.length > 0" @submit="update">
+        <p-api-form :schema="form" v-if="audience.length > 0" @submit="update" :busy="$isLoading('updating-file-' + file.id)" busy-text="Updating File">
 
         </p-api-form>
         <div v-else>Loading</div>
 
         <div>
-            <span>Uploaded By: {{file.uploaded_by}}</span>
+            <span>Uploaded By: {{file.uploaded_by.data.first_name}} {{file.uploaded_by.data.last_name}}</span>
         </div>
 
         <br/>
@@ -59,7 +59,7 @@ export default {
         },
 
         update(data) {
-            this.$http.put('file/' + this.file.id, data)
+            this.$http.put('file/' + this.file.id, data, {name: 'updating-file-' + this.file.id})
                 .then(response => {
                     this.$notify.success('File updated');
                     let updatedFile = Object.assign({}, this.file);
@@ -95,7 +95,7 @@ export default {
             })
 
             this.audience.forEach(a => selectField.withOption(a))
-            return this.$tools.generator.form.newForm('Upload a new file')
+            return this.$tools.generator.form.newForm('Edit File')
                 .withGroup(
                     this.$tools.generator.group.newGroup()
                         .withField(selectField)
@@ -111,9 +111,7 @@ export default {
                                 .required(false)
                                 .value(this.file.description)
                         )
-                )
-                .generate()
-                .asJson();
+                );
         }
     }
 }

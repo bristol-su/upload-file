@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p-api-form :schema="form" @submit="update">
+        <p-api-form :schema="form" @submit="update" :busy="$isLoading('update-file-' + this.file.id)" busy-text="Updating File">
 
         </p-api-form>
         <div>
@@ -39,7 +39,7 @@ export default {
 
     methods: {
         update(data) {
-            this.$http.put('file/' + this.file.id, {title: data.updated_title, description: data.updated_description})
+            this.$http.put('file/' + this.file.id, {title: data.updated_title, description: data.updated_description}, {name: 'update-file-' + this.file.id})
                 .then(response => {
                     this.$notify.success('File updated');
                     let updatedFile = Object.assign({}, this.file);
@@ -69,9 +69,7 @@ export default {
                                 .required(false)
                                 .value(this.file.description)
                         )
-                )
-                .generate()
-                .asJson();
+                );
         }
     }
 }

@@ -15,6 +15,7 @@
     },
     "dependencies": {
         "@bristol-su/frontend-toolkit": "github:bristol-su/frontend-toolkit#PR-361",
-        "moment": "^2.24.0"
+        "moment": "^2.24.0",
+        "vue-select": "^3.13.0"
     }
 }
