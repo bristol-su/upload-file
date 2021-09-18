@@ -19,6 +19,7 @@ use BristolSU\Support\ActivityInstance\Contracts\ActivityInstanceResolver;
 use BristolSU\Support\Completion\Contracts\CompletionConditionManager;
 use BristolSU\Support\Module\ModuleServiceProvider as ServiceProvider;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
+use Faker\Generator;
 use FormSchema\Generator\Field;
 use FormSchema\Generator\Form as FormGenerator;
 use FormSchema\Generator\Group;
@@ -201,7 +202,7 @@ class ModuleServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        if (!app()->environment('production')) {
+        if (class_exists(\Faker\Factory::class) && !app()->environment('production')) {
             $this->app->make(Factory::class)->load($this->baseDirectory() . '/database/factories');
         }
 
