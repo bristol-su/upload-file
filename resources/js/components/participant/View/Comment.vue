@@ -86,7 +86,7 @@ export default {
         },
         updateComment(data) {
             this.$http.patch('/comment/' + this.comment.id, {
-                comment: data.comment
+                comment: data[this.fieldId + '-comment']
             }, {name: 'updating-comment-' + this.comment.id})
                 .then(response => {
                     this.$notify.success('Comment updated');

@@ -1,7 +1,7 @@
 <template>
     <div style="padding-top: 20px;">
         <p-form-padding>
-            <p-api-form :schema="form" @submit="submit" :busy="$isLoading('uploading-file')" busy-text="Uploading File">
+            <p-api-form :schema="form" ref="form" @submit="submit" :busy="$isLoading('uploading-file')" busy-text="Uploading File">
 
             </p-api-form>
         </p-form-padding>

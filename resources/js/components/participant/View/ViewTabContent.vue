@@ -188,7 +188,7 @@ export default {
         fields() {
             return [
                 {key: 'title', label: 'Title'},
-                {key: 'description', label: 'Description'},
+                {key: 'description', label: 'Description', truncateCell: 20},
                 {key: 'status', label: 'Status'},
                 {key: 'uploaded_by_name', label: 'Uploaded By'},
                 {key: 'uploaded_at', label: 'Uploaded At'}
