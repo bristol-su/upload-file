@@ -12,7 +12,7 @@ class OldFileControllerTest extends TestCase
 
     /** @test */
     public function it_returns_all_files_for_the_resource_with_the_tag_from_settings(){
-        factory(ModuleInstanceSetting::class)->create([
+        ModuleInstanceSetting::factory()->create([
             'module_instance_id' => $this->getModuleInstance()->id(),
             'key' => 'tags_to_merge',
             'value' => ['tag1', 'tag2'],
@@ -20,22 +20,22 @@ class OldFileControllerTest extends TestCase
         ]);
 
         $user = $this->getControlUser();
-        $activityInstance = factory(ActivityInstance::class)->create(['resource_id' => $user->id(), 'resource_type' => 'user']);
-        $activityInstanceOther = factory(ActivityInstance::class)->create(['resource_id' => $user->id(), 'resource_type' => 'group']);
+        $activityInstance = ActivityInstance::factory()->create(['resource_id' => $user->id(), 'resource_type' => 'user']);
+        $activityInstanceOther = ActivityInstance::factory()->create(['resource_id' => $user->id(), 'resource_type' => 'group']);
 
         // Should return all files with tags tag1 or tag2 that belong to the user
-        $files = factory(File::class, 3)->create(['activity_instance_id' => $this->getActivityInstance()->id, 'tags' => ['tag1']])
-            ->merge(factory(File::class, 3)->create(['activity_instance_id' => $activityInstance->id, 'tags' => ['tag1']]))
-            ->merge(factory(File::class, 3)->create(['activity_instance_id' => $activityInstance->id, 'tags' => ['tag2']]))
-            ->merge(factory(File::class, 3)->create(['activity_instance_id' => $this->getActivityInstance()->id, 'tags' => ['tag1', 'tag2']]))
-            ->merge(factory(File::class, 3)->create(['activity_instance_id' => $activityInstance->id, 'tags' => ['tag1', 'tag2']]));
+        $files = File::factory()->count(3)->create(['activity_instance_id' => $this->getActivityInstance()->id, 'tags' => ['tag1']])
+            ->merge(File::factory()->count(3)->create(['activity_instance_id' => $activityInstance->id, 'tags' => ['tag1']]))
+            ->merge(File::factory()->count(3)->create(['activity_instance_id' => $activityInstance->id, 'tags' => ['tag2']]))
+            ->merge(File::factory()->count(3)->create(['activity_instance_id' => $this->getActivityInstance()->id, 'tags' => ['tag1', 'tag2']]))
+            ->merge(File::factory()->count(3)->create(['activity_instance_id' => $activityInstance->id, 'tags' => ['tag1', 'tag2']]));
 
-        $otherFiles = factory(File::class, 3)->create(['activity_instance_id' => $activityInstanceOther->id, 'tags' => ['tag1']])
-            ->merge(factory(File::class, 3)->create(['activity_instance_id' => $activityInstanceOther->id, 'tags' => ['tag1', 'tag2']]))
-            ->merge(factory(File::class, 3)->create(['activity_instance_id' => $activityInstance->id, 'tags' => []]))
-            ->merge(factory(File::class, 3)->create(['activity_instance_id' => $this->getActivityInstance()->id, 'tags' => []]))
-            ->merge(factory(File::class, 3)->create(['activity_instance_id' => $activityInstance->id, 'tags' => ['tag12']]))
-            ->merge(factory(File::class, 3)->create(['activity_instance_id' => $this->getActivityInstance()->id, 'tags' => ['tag22']]));
+        $otherFiles = File::factory()->count(3)->create(['activity_instance_id' => $activityInstanceOther->id, 'tags' => ['tag1']])
+            ->merge(File::factory()->count(3)->create(['activity_instance_id' => $activityInstanceOther->id, 'tags' => ['tag1', 'tag2']]))
+            ->merge(File::factory()->count(3)->create(['activity_instance_id' => $activityInstance->id, 'tags' => []]))
+            ->merge(File::factory()->count(3)->create(['activity_instance_id' => $this->getActivityInstance()->id, 'tags' => []]))
+            ->merge(File::factory()->count(3)->create(['activity_instance_id' => $activityInstance->id, 'tags' => ['tag12']]))
+            ->merge(File::factory()->count(3)->create(['activity_instance_id' => $this->getActivityInstance()->id, 'tags' => ['tag22']]));
 
         $returnedFiles = $this->get($this->userApiUrl('/file/old'));
         $returnedFiles->assertJsonCount(15);

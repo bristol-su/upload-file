@@ -12,27 +12,27 @@ class StatusTest extends TestCase
 
     /** @test */
     public function a_file_status_can_be_created(){
-        $file = factory(File::class)->create();
+        $file = File::factory()->create();
         $user = $this->newUser();
-        
-        $status = factory(FileStatus::class)->create([
+
+        $status = FileStatus::factory()->create([
             'file_id' => $file->id,
             'created_by' => $user->id(),
             'status' => 'Awaiting Approval'
         ]);
-        
+
         $this->assertDatabaseHas('uploadfile_file_statuses', [
             'file_id' => $file->id,
             'created_by' => $user->id(),
             'status' => 'Awaiting Approval'
         ]);
     }
-    
+
     /** @test */
     public function a_status_belongs_to_a_file(){
-        $file = factory(File::class)->create();
+        $file = File::factory()->create();
 
-        $status = factory(FileStatus::class)->create([
+        $status = FileStatus::factory()->create([
             'file_id' => $file->id,
         ]);
 
@@ -44,7 +44,7 @@ class StatusTest extends TestCase
     public function created_by_attribute_returns_a_user(){
         $user = $this->newUser();
 
-        $status = factory(FileStatus::class)->create([
+        $status = FileStatus::factory()->create([
             'created_by' => $user->id()
         ]);
 

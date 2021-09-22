@@ -17,30 +17,30 @@ class StatusChangedTest extends TestCase
 
     /** @test */
     public function it_returns_a_set_of_usable_fields(){
-        $activityInstance = factory(ActivityInstance::class)->create();
-        $moduleInstance = factory(ModuleInstance::class)->create();
-        
-        $dataUser = factory(DataUser::class)->create([
+        $activityInstance = ActivityInstance::factory()->create();
+        $moduleInstance = ModuleInstance::factory()->create();
+
+        $dataUser = DataUser::factory()->create([
             'email' => 'someemail@example.com',
             'first_name' => 'FirstName',
             'last_name' => 'SomeThingElse',
             'preferred_name' => 'xyz Hi'
         ]);
-        $user = factory(User::class)->create(['data_provider_id' => $dataUser->id()]);
-        
+        $user = User::factory()->create(['data_provider_id' => $dataUser->id()]);
+
         $createdAt = Carbon::now()->subDay();
         $updatedAt = Carbon::now()->subHour()->subMinute();
-        
-        $file = factory(File::class)->create([
+
+        $file = File::factory()->create([
             'uploaded_by' => $user->id(),
             'module_instance_id' => $moduleInstance->id,
             'activity_instance_id' => $activityInstance->id,
             'created_at' => $createdAt,
             'updated_at' => $updatedAt
         ]);
-        factory(FileStatus::class)->create(['file_id' => $file->id, 'status' => 'Custom Status']);
+        FileStatus::factory()->create(['file_id' => $file->id, 'status' => 'Custom Status']);
         $event = new StatusChanged($file);
-        
+
         $this->assertEquals([
             'file_id' => $file->id,
             'title' => $file->title,
@@ -60,19 +60,19 @@ class StatusChangedTest extends TestCase
             'status' => 'Custom Status'
         ], $event->getFields());
     }
-    
+
     /** @test */
     public function it_returns_metadata_for_the_fields(){
-        $file = factory(File::class)->create();
+        $file = File::factory()->create();
 
         $event = new StatusChanged($file);
         $fields = array_keys($event->getFields());
-        
+
         foreach($fields as $field) {
             $this->assertArrayHasKey($field, StatusChanged::getFieldMetaData());
             $this->assertArrayHasKey('label', StatusChanged::getFieldMetaData()[$field]);
             $this->assertArrayHasKey('helptext', StatusChanged::getFieldMetaData()[$field]);
         }
     }
-    
+
 }

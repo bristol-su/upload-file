@@ -14,7 +14,7 @@
         "laravel-mix": "^6.0.27"
     },
     "dependencies": {
-        "@bristol-su/frontend-toolkit": "github:bristol-su/frontend-toolkit#PR-361",
+        "@bristol-su/frontend-toolkit": "^1.0.0",
         "moment": "^2.24.0",
         "vue-select": "^3.13.0"
     }

@@ -22,7 +22,7 @@ class FileControllerTest extends TestCase
     {
         $this->revokePermissionTo('uploadfile.file.index');
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id()]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id()]);
 
         $response = $this->getJson($this->userApiUrl('file'));
         $response->assertStatus(403);
@@ -33,7 +33,7 @@ class FileControllerTest extends TestCase
     {
         $this->givePermissionTo('uploadfile.file.index');
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id()]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id()]);
 
         $response = $this->getJson($this->userApiUrl('file'));
         $response->assertStatus(200);
@@ -44,13 +44,13 @@ class FileControllerTest extends TestCase
     {
         $this->bypassAuthorization();
 
-        $files = factory(File::class, 5)->create([
+        $files = File::factory()->count(5)->create([
             'activity_instance_id' => $this->getActivityInstance()->id,
             'module_instance_id' => $this->getModuleInstance()->id()
         ]);
-        factory(File::class, 2)->create(['module_instance_id' => $this->getModuleInstance()->id()]);
-        factory(File::class, 2)->create(['activity_instance_id' => $this->getActivityInstance()->id]);
-        factory(File::class, 2)->create();
+        File::factory()->count(2)->create(['module_instance_id' => $this->getModuleInstance()->id()]);
+        File::factory()->count(2)->create(['activity_instance_id' => $this->getActivityInstance()->id]);
+        File::factory()->count(2)->create();
 
         $response = $this->getJson($this->userApiUrl('/file'));
         $response->assertStatus(200);
@@ -71,7 +71,7 @@ class FileControllerTest extends TestCase
     {
         $this->revokePermissionTo('uploadfile.file.destroy');
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->idc]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->idc]);
 
         $response = $this->deleteJson($this->userApiUrl('file/' . $file->id));
         $response->assertStatus(403);
@@ -81,8 +81,8 @@ class FileControllerTest extends TestCase
     public function destroy_returns_a_403_if_the_file_does_not_belong_to_the_activity_instance(){
         $this->bypassAuthorization();
 
-        $activityInstance = factory(ActivityInstance::class)->create(['activity_id' => $this->getActivity()->id]);
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $activityInstance->id]);
+        $activityInstance = ActivityInstance::factory()->create(['activity_id' => $this->getActivity()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $activityInstance->id]);
 
         $response = $this->deleteJson($this->userApiUrl('/file/' . $file->id));
 
@@ -94,7 +94,7 @@ class FileControllerTest extends TestCase
     {
         $this->givePermissionTo('uploadfile.file.destroy');
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $response = $this->deleteJson($this->userApiUrl('file/' . $file->id));
         $response->assertStatus(200);
@@ -114,7 +114,7 @@ class FileControllerTest extends TestCase
     {
         $this->bypassAuthorization();
 
-        $file = factory(File::class)->create(['title' => 'SomeFile', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['title' => 'SomeFile', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $this->assertDatabaseHas('uploadfile_files', [
             'id' => $file->id,
@@ -136,7 +136,7 @@ class FileControllerTest extends TestCase
         $this->bypassAuthorization();
         $now = Carbon::now();
 
-        $file = factory(File::class)->create(['title' => 'SomeFile', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['title' => 'SomeFile', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         Carbon::setTestNow($now);
 
@@ -155,7 +155,7 @@ class FileControllerTest extends TestCase
         Event::fake(DocumentDeleted::class);
         $this->bypassAuthorization();
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
         $response = $this->deleteJson($this->userApiUrl('file/' . $file->id));
         $response->assertStatus(200);
 
@@ -163,13 +163,13 @@ class FileControllerTest extends TestCase
             return $event instanceof DocumentDeleted && $event->file->is($file);
         });
     }
-    
+
     /** @test */
     public function show_returns_403_if_permission_not_given()
     {
         $this->revokePermissionTo('uploadfile.file.index');
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $response = $this->getJson($this->userApiUrl('file/' . $file->id));
         $response->assertStatus(403);
@@ -179,20 +179,20 @@ class FileControllerTest extends TestCase
     public function show_returns_a_403_if_the_file_does_not_belong_to_the_activity_instance(){
         $this->bypassAuthorization();
 
-        $activityInstance = factory(ActivityInstance::class)->create(['activity_id' => $this->getActivity()->id]);
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $activityInstance->id]);
+        $activityInstance = ActivityInstance::factory()->create(['activity_id' => $this->getActivity()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $activityInstance->id]);
 
         $response = $this->getJson($this->userApiUrl('/file/' . $file->id));
 
         $response->assertStatus(403);
     }
-    
+
     /** @test */
     public function show_returns_200_if_permission_given()
     {
         $this->givePermissionTo('uploadfile.file.index');
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $response = $this->getJson($this->userApiUrl('file/' . $file->id));
         $response->assertStatus(200);
@@ -203,7 +203,7 @@ class FileControllerTest extends TestCase
     {
         $this->bypassAuthorization();
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $response = $this->getJson($this->userApiUrl('file/' . $file->id));
         $response->assertStatus(200);
@@ -230,7 +230,7 @@ class FileControllerTest extends TestCase
     {
         $this->revokePermissionTo('uploadfile.file.update');
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $response = $this->patchJson($this->userApiUrl('file/' . $file->id), [
             'title' => 'NewTitle', 'description' => 'NewDescription'
@@ -243,8 +243,8 @@ class FileControllerTest extends TestCase
     public function update_returns_a_403_if_the_file_does_not_belong_to_the_activity_instance(){
         $this->bypassAuthorization();
 
-        $activityInstance = factory(ActivityInstance::class)->create(['activity_id' => $this->getActivity()->id]);
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $activityInstance->id]);
+        $activityInstance = ActivityInstance::factory()->create(['activity_id' => $this->getActivity()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $activityInstance->id]);
 
         $response = $this->patchJson($this->userApiUrl('/file/' . $file->id), ['title' => 'TestTitle']);
 
@@ -256,7 +256,7 @@ class FileControllerTest extends TestCase
     {
         $this->givePermissionTo('uploadfile.file.update');
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $response = $this->patchJson($this->userApiUrl('file/' . $file->id), [
             'title' => 'NewTitle', 'description' => 'NewDescription'
@@ -269,7 +269,7 @@ class FileControllerTest extends TestCase
     {
         $this->givePermissionTo('uploadfile.file.update');
 
-        $file = factory(File::class)->create(['title' => 'OldTitle', 'description' => 'OldDescription', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['title' => 'OldTitle', 'description' => 'OldDescription', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $this->assertDatabaseHas('uploadfile_files', [
             'id' => $file->id, 'title' => 'OldTitle', 'description' => 'OldDescription'
@@ -290,7 +290,7 @@ class FileControllerTest extends TestCase
     {
         $this->givePermissionTo('uploadfile.file.update');
 
-        $file = factory(File::class)->create(['title' => 'OldTitle', 'description' => 'OldDescription', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['title' => 'OldTitle', 'description' => 'OldDescription', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $this->assertDatabaseHas('uploadfile_files', [
             'id' => $file->id, 'title' => 'OldTitle', 'description' => 'OldDescription'
@@ -311,7 +311,7 @@ class FileControllerTest extends TestCase
     {
         $this->givePermissionTo('uploadfile.file.update');
 
-        $file = factory(File::class)->create(['title' => 'OldTitle', 'description' => 'OldDescription', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['title' => 'OldTitle', 'description' => 'OldDescription', 'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $this->assertDatabaseHas('uploadfile_files', [
             'id' => $file->id, 'title' => 'OldTitle', 'description' => 'OldDescription'
@@ -332,7 +332,7 @@ class FileControllerTest extends TestCase
     {
         $this->givePermissionTo('uploadfile.file.update');
 
-        $file = factory(File::class)->create(['title' => 'OldTitle', 'description' => 'OldDescription',
+        $file = File::factory()->create(['title' => 'OldTitle', 'description' => 'OldDescription',
             'module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
 
         $response = $this->patchJson($this->userApiUrl('file/' . $file->id), [
@@ -352,7 +352,7 @@ class FileControllerTest extends TestCase
         Event::fake(DocumentUpdated::class);
         $this->bypassAuthorization();
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
         $response = $this->patchJson($this->userApiUrl('file/' . $file->id), [
             'title' => 'NewTitle', 'description' => 'NewDescription'
         ]);        $response->assertStatus(200);
@@ -368,19 +368,19 @@ class FileControllerTest extends TestCase
         ModuleInstanceSetting::create([
             'key' => 'allowed_extensions', 'value' => ['jpg', 'png'], 'module_instance_id' => $this->getModuleInstance()->id()
         ]);
-        
+
         $this->bypassAuthorization();
-        
+
         Storage::fake();
         $file = UploadedFile::fake()->create('filename.png', 58, 'image/png');
-        
+
         $response = $this->postJson($this->userApiUrl('/file'), [
             'file' => [$file],
             'title' => 'ATitle',
             'description' => 'ADescription'
         ]);
         $response->assertStatus(200);
-        
+
         $this->assertDatabaseHas('uploadfile_files', [
             'title' => 'ATitle',
             'description' => 'ADescription',
@@ -390,12 +390,12 @@ class FileControllerTest extends TestCase
             'activity_instance_id' => $this->getActivityInstance()->id,
             'module_instance_id' => $this->getModuleInstance()->id()
         ]);
-        
+
         $file = File::where('title', 'ATitle')->get()->first();
         $this->assertInstanceOf(File::class, $file);
-        
+
         Storage::assertExists($file->path);
-        
+
     }
 
     /** @test */
@@ -404,7 +404,7 @@ class FileControllerTest extends TestCase
         ModuleInstanceSetting::create([
             'key' => 'allowed_extensions', 'value' => ['jpg', 'png'], 'module_instance_id' => $this->getModuleInstance()->id()
         ]);
-        
+
         $this->bypassAuthorization();
 
         Storage::fake();
@@ -432,7 +432,7 @@ class FileControllerTest extends TestCase
         ModuleInstanceSetting::create([
             'key' => 'allowed_extensions', 'value' => ['jpg', 'png'], 'module_instance_id' => $this->getModuleInstance()->id()
         ]);
-        
+
         $this->bypassAuthorization();
 
         Storage::fake();
@@ -459,7 +459,7 @@ class FileControllerTest extends TestCase
             'filename' => 'filename2.png',
             'mime' => 'image/png',
         ]);
-        
+
         $this->assertDatabaseHas('uploadfile_files', [
             'title' => 'ATitle',
             'description' => 'ADescription',
@@ -481,7 +481,7 @@ class FileControllerTest extends TestCase
 
         $files = File::where('title', 'ATitle')->get();
         $this->assertCount(2, $files);
-        
+
         $this->assertInstanceOf(File::class, $files[0]);
         Storage::assertExists($files[0]->path);
         $this->assertInstanceOf(File::class, $files[1]);
@@ -550,7 +550,7 @@ class FileControllerTest extends TestCase
 
         $fileMeta = File::where('title', 'ATitle')->get()->first();
         $this->assertInstanceOf(File::class, $fileMeta);
-        
+
         Event::assertDispatched(DocumentUploaded::class, function($event) use ($fileMeta) {
             return $event instanceof DocumentUploaded && $event->file->is($fileMeta);
         });
@@ -577,7 +577,7 @@ class FileControllerTest extends TestCase
             'description' => 'ADescription'
         ]);
         $response->assertStatus(200);
-        
+
         $files = File::where('title', 'ATitle')->get();
         $this->assertCount(2, $files);
 
@@ -585,15 +585,15 @@ class FileControllerTest extends TestCase
             return $event instanceof DocumentUploaded && ($event->file->is($files[0]) || $event->file->is($files[1]));
         });
     }
-    
+
     /** @test */
     public function store_returns_422_if_file_type_not_allowed(){
         Event::fake(DocumentUploaded::class);
-        
+
         ModuleInstanceSetting::create([
             'key' => 'allowed_extensions', 'value' => [], 'module_instance_id' => $this->getModuleInstance()->id()
         ]);
-        
+
         $this->bypassAuthorization();
 
         Storage::fake();
@@ -604,13 +604,13 @@ class FileControllerTest extends TestCase
             'title' => 'ATitle',
             'description' => 'ADescription'
         ]);
-        
+
         $response->assertStatus(422);
-        
+
         $response->assertJsonValidationErrors(['file.0' => 'file of type:']);
 
     }
-    
-    
+
+
 
 }

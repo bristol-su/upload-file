@@ -14,10 +14,10 @@ class NumberOfDocumentsSubmittedTest extends TestCase
 
     /** @test */
     public function isComplete_returns_true_if_the_number_of_documents_submitted_is_greater_than_the_number_of_required_documents(){
-        $moduleInstance = factory(ModuleInstance::class)->create();
-        $activityInstance = factory(ActivityInstance::class)->create();
+        $moduleInstance = ModuleInstance::factory()->create();
+        $activityInstance = ActivityInstance::factory()->create();
 
-        $pageViews = factory(File::class, 5)->create([
+        $pageViews = File::factory()->count(5)->create([
             'module_instance_id' => $moduleInstance->id,
             'activity_instance_id' => $activityInstance->id
         ]);
@@ -30,10 +30,10 @@ class NumberOfDocumentsSubmittedTest extends TestCase
 
     /** @test */
     public function isComplete_returns_false_if_the_number_of_documents_submitted_is_less_than_the_number_of_required_documents(){
-        $moduleInstance = factory(ModuleInstance::class)->create();
-        $activityInstance = factory(ActivityInstance::class)->create();
+        $moduleInstance = ModuleInstance::factory()->create();
+        $activityInstance = ActivityInstance::factory()->create();
 
-        $pageViews = factory(File::class, 5)->create([
+        $pageViews = File::factory()->count(5)->create([
             'module_instance_id' => $moduleInstance->id,
             'activity_instance_id' => $activityInstance->id
         ]);
@@ -46,10 +46,10 @@ class NumberOfDocumentsSubmittedTest extends TestCase
 
     /** @test */
     public function isComplete_returns_true_if_the_number_of_documents_submitted_is_equal_to_the_number_of_required_documents(){
-        $moduleInstance = factory(ModuleInstance::class)->create();
-        $activityInstance = factory(ActivityInstance::class)->create();
+        $moduleInstance = ModuleInstance::factory()->create();
+        $activityInstance = ActivityInstance::factory()->create();
 
-        $pageViews = factory(File::class, 5)->create([
+        $pageViews = File::factory()->count(5)->create([
             'module_instance_id' => $moduleInstance->id,
             'activity_instance_id' => $activityInstance->id
         ]);
@@ -62,10 +62,10 @@ class NumberOfDocumentsSubmittedTest extends TestCase
 
     /** @test */
     public function percentage_returns_100_if_the_documents_submitted_are_equal_to_the_required_number(){
-        $moduleInstance = factory(ModuleInstance::class)->create();
-        $activityInstance = factory(ActivityInstance::class)->create();
+        $moduleInstance = ModuleInstance::factory()->create();
+        $activityInstance = ActivityInstance::factory()->create();
 
-        $pageViews = factory(File::class, 5)->create([
+        $pageViews = File::factory()->count(5)->create([
             'module_instance_id' => $moduleInstance->id,
             'activity_instance_id' => $activityInstance->id
         ]);
@@ -78,10 +78,10 @@ class NumberOfDocumentsSubmittedTest extends TestCase
 
     /** @test */
     public function percentage_returns_100_if_the_documents_submitted_are_greater_than_the_required_number(){
-        $moduleInstance = factory(ModuleInstance::class)->create();
-        $activityInstance = factory(ActivityInstance::class)->create();
+        $moduleInstance = ModuleInstance::factory()->create();
+        $activityInstance = ActivityInstance::factory()->create();
 
-        $pageViews = factory(File::class, 10)->create([
+        $pageViews = File::factory()->count(10)->create([
             'module_instance_id' => $moduleInstance->id,
             'activity_instance_id' => $activityInstance->id
         ]);
@@ -94,8 +94,8 @@ class NumberOfDocumentsSubmittedTest extends TestCase
 
     /** @test */
     public function percentage_returns_0_if_the_documents_submitted_are_zero(){
-        $moduleInstance = factory(ModuleInstance::class)->create();
-        $activityInstance = factory(ActivityInstance::class)->create();
+        $moduleInstance = ModuleInstance::factory()->create();
+        $activityInstance = ActivityInstance::factory()->create();
 
         $condition = new NumberOfDocumentsSubmitted('uploadfile');
         $this->assertEquals(0,
@@ -105,10 +105,10 @@ class NumberOfDocumentsSubmittedTest extends TestCase
 
     /** @test */
     public function percentage_returns_50_if_the_documents_submitted_are_half_the_required_required_documents(){
-        $moduleInstance = factory(ModuleInstance::class)->create();
-        $activityInstance = factory(ActivityInstance::class)->create();
+        $moduleInstance = ModuleInstance::factory()->create();
+        $activityInstance = ActivityInstance::factory()->create();
 
-        $pageViews = factory(File::class, 5)->create([
+        $pageViews = File::factory()->count(5)->create([
             'module_instance_id' => $moduleInstance->id,
             'activity_instance_id' => $activityInstance->id
         ]);
@@ -121,10 +121,10 @@ class NumberOfDocumentsSubmittedTest extends TestCase
 
     /** @test */
     public function percentage_returns_75_if_the_documents_submitted_are_three_quarters_the_required_required_documents(){
-        $moduleInstance = factory(ModuleInstance::class)->create();
-        $activityInstance = factory(ActivityInstance::class)->create();
+        $moduleInstance = ModuleInstance::factory()->create();
+        $activityInstance = ActivityInstance::factory()->create();
 
-        $pageViews = factory(File::class, 3)->create([
+        $pageViews = File::factory()->count(3)->create([
             'module_instance_id' => $moduleInstance->id,
             'activity_instance_id' => $activityInstance->id
         ]);
@@ -154,5 +154,5 @@ class NumberOfDocumentsSubmittedTest extends TestCase
     public function options_returns_a_form_schema(){
         $this->assertInstanceOf(Form::class, (new NumberOfDocumentsSubmitted('uploadfile'))->options());
     }
-    
+
 }

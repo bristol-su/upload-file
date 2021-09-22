@@ -8,6 +8,8 @@ use BristolSU\Support\Authentication\HasResource;
 use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
 use BristolSU\Support\ModuleInstance\Contracts\ModuleInstanceRepository;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
+use Database\UploadFile\Factories\FileFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,7 +17,7 @@ use Illuminate\Support\Facades\Config;
 
 class File extends Model
 {
-    use SoftDeletes, HasResource;
+    use SoftDeletes, HasResource, HasFactory;
 
     protected $table = 'uploadfile_files';
 
@@ -120,6 +122,11 @@ class File extends Model
     protected function serializeDate(\DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
+    }
+
+    protected static function newFactory()
+    {
+        return new FileFactory();
     }
 
 }

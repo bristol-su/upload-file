@@ -17,38 +17,38 @@ class CommentDeletedTest extends TestCase
 
     /** @test */
     public function it_returns_a_set_of_usable_fields(){
-        $activityInstance = factory(ActivityInstance::class)->create();
-        $moduleInstance = factory(ModuleInstance::class)->create();
-        
-        $dataUser1 = factory(DataUser::class)->create([
+        $activityInstance = ActivityInstance::factory()->create();
+        $moduleInstance = ModuleInstance::factory()->create();
+
+        $dataUser1 = DataUser::factory()->create([
             'email' => 'someemail@example.com',
             'first_name' => 'FirstName',
             'last_name' => 'SomeThingElse',
             'preferred_name' => 'xyz Hi'
         ]);
-        $user1 = factory(User::class)->create(['data_provider_id' => $dataUser1->id()]);
+        $user1 = User::factory()->create(['data_provider_id' => $dataUser1->id()]);
 
-        $dataUser2 = factory(DataUser::class)->create([
+        $dataUser2 = DataUser::factory()->create([
             'email' => 'someemail2@example.com',
             'first_name' => 'FirstName2',
             'last_name' => 'SomeThingElse2',
             'preferred_name' => 'xyz Hi2'
         ]);
-        $user2 = factory(User::class)->create(['data_provider_id' => $dataUser2->id()]);
-        
+        $user2 = User::factory()->create(['data_provider_id' => $dataUser2->id()]);
+
         $createdAt = Carbon::now()->subDay();
         $updatedAt = Carbon::now()->subHour()->subMinute();
         $deletedAt = Carbon::now()->subHour()->subMinutes(10);
-        
-        $file = factory(File::class)->create([
+
+        $file = File::factory()->create([
             'uploaded_by' => $user1->id(),
             'module_instance_id' => $moduleInstance->id,
             'activity_instance_id' => $activityInstance->id,
             'created_at' => $createdAt,
             'updated_at' => $updatedAt,
         ]);
-        
-        $comment = factory(Comment::class)->create([
+
+        $comment = Comment::factory()->create([
             'file_id' => $file->id,
             'posted_by' => $user2->id(),
             'comment' => 'A Test Comment',
@@ -56,9 +56,9 @@ class CommentDeletedTest extends TestCase
             'updated_at' => $updatedAt,
             'deleted_at' => $deletedAt
         ]);
-        
+
         $event = new CommentDeleted($comment);
-        
+
         $this->assertEquals([
             'file_id' => $file->id,
             'file_title' => $file->title,
@@ -87,19 +87,19 @@ class CommentDeletedTest extends TestCase
             'comment_deleted_at' => $deletedAt->format('Y-m-d H:i:s')
         ], $event->getFields());
     }
-    
+
     /** @test */
     public function it_returns_metadata_for_the_fields(){
-        $comment = factory(Comment::class)->create();
+        $comment = Comment::factory()->create();
         $comment->delete();
         $event = new CommentDeleted($comment);
         $fields = array_keys($event->getFields());
-        
+
         foreach($fields as $field) {
             $this->assertArrayHasKey($field, CommentDeleted::getFieldMetaData());
             $this->assertArrayHasKey('label', CommentDeleted::getFieldMetaData()[$field]);
             $this->assertArrayHasKey('helptext', CommentDeleted::getFieldMetaData()[$field]);
         }
     }
-    
+
 }
