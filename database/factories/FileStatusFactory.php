@@ -2,13 +2,13 @@
 
 namespace Database\UploadFile\Factories;
 
-use BristolSU\Service\Typeform\Models\TypeformAuthCode;
+use BristolSU\Module\UploadFile\Models\FileStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class FileStatusFactory extends Factory
 {
 
-    protected $model = TypeformAuthCode::class;
+    protected $model = FileStatus::class;
 
     public function definition()
     {

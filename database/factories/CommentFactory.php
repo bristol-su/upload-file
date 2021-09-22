@@ -3,7 +3,6 @@
 namespace Database\UploadFile\Factories;
 
 use BristolSU\Module\UploadFile\Models\Comment;
-use BristolSU\Service\Typeform\Models\TypeformAuthCode;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CommentFactory extends Factory

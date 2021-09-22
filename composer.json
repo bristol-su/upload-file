@@ -20,7 +20,8 @@
     },
     "autoload": {
         "psr-4": {
-            "BristolSU\\Module\\UploadFile\\": "app/"
+            "BristolSU\\Module\\UploadFile\\": "app/",
+            "Database\\UploadFile\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {

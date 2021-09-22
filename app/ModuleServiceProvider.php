@@ -202,10 +202,6 @@ class ModuleServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        if (class_exists(\Faker\Factory::class) && !app()->environment('production')) {
-            $this->app->make(Factory::class)->load($this->baseDirectory() . '/database/factories');
-        }
-
         $this->app->make(CompletionConditionManager::class)->register(
             $this->alias(), 'number_of_files_submitted', NumberOfDocumentsSubmitted::class
         );
