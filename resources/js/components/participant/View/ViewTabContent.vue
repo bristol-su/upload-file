@@ -1,192 +1,201 @@
 <template>
     <div>
-        <b-table :fields="fields" :items="presentedFiles" v-if="presentedFiles.length > 0">
-            <template v-slot:cell(created_at)="data">
-                <span @mouseenter="hover = data.item.id" @mouseleave="hover = null"
-                      style="margin: auto; width: 100%; height: 100%">{{(hover === data.item.id?data.item.uploadedAtFormatted:data.item.hrUploadedAt)}}</span>
-            </template>
-            <template v-slot:cell(actions)="data">
-                <a :href="downloadUrl(data.item.id)" v-if="canDownload">
-                    <b-button size="sm" variant="outline-info"><i class="fa fa-download"></i> Download</b-button>
+        <p-table
+          :busy="loading"
+          :items="presentedFiles"
+          :columns="fields"
+          :editable="canUpdate"
+          :deletable="canDelete"
+          @delete="deleteFile($event)"
+          @edit="editFile($event)"
+        >
+            <template slot="actions" slot-scope="slotProps">
+                <a :href="downloadUrl(slotProps.row)" v-if="canDownload" class="text-primary hover:text-primary-dark">
+                     <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                                 stroke="currentColor"
+                                 content="Download File"
+                                 v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                            </svg>
+                            <span class="sr-only">Download</span>
+                        </span>
                 </a>
-                <b-button @click="editFile(data.item.id)" size="sm" v-if="canUpdate" variant="outline-info"><i
-                        class="fa fa-edit"></i> Edit
-                </b-button>
-                <b-button @click="showComments(data.item.id)" size="sm" v-if="canSeeComments" variant="outline-info"><i
-                        class="fa fa-comments"></i> Comments
-                    <b-badge variant="secondary">{{data.item.comments.length}} <span class="sr-only">comments</span>
-                    </b-badge>
-                </b-button>
-                <b-button @click="deleteFile(data.item.id)" size="sm" v-if="canDelete" variant="outline-danger"><i
-                        class="fa fa-trash"></i> Delete
-                </b-button>
-
+                <a href="#" @click="showComments(slotProps.row)" v-if="canSeeComments"
+                   class="text=primary hover:text-secondary-dark">
+                    <span class="flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor" content="View Comments"
+                             v-tippy="{ arrow: true, animation: 'fade', placement: 'top-start', arrow: true, interactive: true}">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+                        </svg>
+                        ({{ slotProps.row.comments.length }})
+                        <span class="sr-only">Comments</span>
+                    </span>
+                </a>
             </template>
-        </b-table>
-        <div v-else>
-            No files uploaded.
-        </div>
 
-        <b-modal id="editFile">
-            <edit-file :file-id="editingFileId" @fileUpdated="$emit('fileUpdated', $event)"
-                       v-if="editingFileId !== null"></edit-file>
-
-            <template slot="modal-footer">
-                <b-btn @click="$bvModal.hide('editFile')" variant="secondary">
-                    Cancel
-                </b-btn>
+            <template #cell(uploaded_at)="{row}">
+                <p-hover :text="row.uploaded_at" :hover-text="row.uploaded_at_formatted"></p-hover>
             </template>
-        </b-modal>
+        </p-table>
 
-        <b-modal id="showComments" title="Comments">
-            <comments :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
-                      :file-id="commentingFileId" v-if="commentingFileId !== null"></comments>
-        </b-modal>
+        <p-modal id="editFileModal" :title="(fileBeingEdited ? fileBeingEdited.title : 'Edit file')">
+            <edit-file :file="fileBeingEdited" v-if="fileBeingEdited" @fileUpdated="markFileAsUpdated"></edit-file>
+        </p-modal>
+
+        <p-modal id="commentsModal" title="Comments">
+            <comments :can-add-comments="canAddComments" :can-delete-comments="canDeleteComments"
+                      :can-update-comments="canUpdateComments"
+                      :file="fileBeingCommented" v-if="fileBeingCommented !== null"
+                      @commentUpdated="updateComments"></comments>
+        </p-modal>
     </div>
 </template>
 
 <script>
-    import moment from 'moment';
-    import EditFile from './EditFile';
-    import Comments from './Comments';
+import moment from 'moment';
+import EditFile from './EditFile';
+import Comments from './Comments';
 
-    export default {
-        name: "ViewTabContent",
-        components: {Comments, EditFile},
-        props: {
-            files: {
-                type: Array,
-                default: function () {
-                    return [];
-                }
-            },
-            canDownload: {
-                type: Boolean,
-                required: true,
-                default: false
-            },
-            canUpdate: {
-                type: Boolean,
-                required: true,
-                default: false
-            },
-            canDelete: {
-                type: Boolean,
-                required: true,
-                default: false
-            },
-            canSeeComments: {
-                type: Boolean,
-                required: true,
-                default: false
-            },
-            canAddComments: {
-                type: Boolean,
-                required: true,
-                default: false
-            },
-            canDeleteComments: {
-                type: Boolean,
-                required: true,
-                default: false
-            },
-            canUpdateComments: {
-                type: Boolean,
-                required: true,
-                default: false
-            },
-            queryString: {
-                type: String,
-                required: true
-            },
-            isOldFiles: {
-                type: Boolean,
-                default: false
+export default {
+    name: "ViewTabContent",
+    components: {Comments, EditFile},
+    props: {
+        files: {
+            type: Array,
+            default: function () {
+                return [];
             }
         },
+        canDownload: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        canUpdate: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        canDelete: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        canSeeComments: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        canAddComments: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        canDeleteComments: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        canUpdateComments: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        isOldFiles: {
+            type: Boolean,
+            default: false
+        },
+        loading: {
+            type: Boolean,
+            default: false
+        }
+    },
 
-        data() {
-            return {
-                hover: null,
-                editingFileId: null,
-                commentingFileId: null
-            }
+    data() {
+        return {
+            fileBeingEdited: null,
+            fileBeingCommented: null
+        }
+    },
+
+    filters: {
+        size(size) {
+            let i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
+            return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+        }
+    },
+
+    methods: {
+
+        downloadUrl(file) {
+            return this.$tools.routes.query.addQueryStringToWebUrl(this.$tools.routes.module.moduleUrl() + '/' + (this.isOldFiles ? 'old-file' : 'file') + '/' + file.id + '/download');
         },
 
-        methods: {
-            presentSize(size) {
-                let i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
-                return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
-            },
-
-            presentUploadedBy(user) {
-                return user.data.first_name + ' ' + user.data.last_name;
-            },
-
-            downloadUrl(id) {
-                return this.$url + '/' + (this.isOldFiles ? 'old-file' : 'file') + '/' + id + '/download?' + this.queryString;
-            },
-
-            deleteFile(id) {
-                this.$bvModal.msgBoxConfirm('Are you sure you want to delete this file?', {
-                    title: 'Deleting file',
-                    size: 'sm',
-                    buttonSize: 'sm',
-                    okVariant: 'danger',
-                    okTitle: 'Delete',
-                    cancelTitle: 'Cancel',
-                    footerClass: 'p-2',
-                    hideHeaderClose: true,
-                    centered: true
-                })
-                    .then(confirmed => {
-                        if (confirmed) {
-                            this.$http.delete('file/' + id)
-                                .then(response => {
-                                    this.$notify.success('File deleted');
-                                    this.$emit('fileDeleted', response.data.id);
-                                })
-                                .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
-                        } else {
-                            this.$notify.warning('No files deleted');
-                        }
+        deleteFile(file) {
+            this.$ui.confirm.delete('Deleting file ' + file.title, 'Are you sure you want to delete this file?')
+              .then(() => {
+                  this.$http.delete('file/' + file.id, {name: 'deleting-file-' + file.id})
+                    .then(response => {
+                        this.$notify.success('File deleted');
+                        this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1);
                     })
                     .catch(error => this.$notify.alert('Could not delete file: ' + error.message));
-            },
-
-            editFile(id) {
-                this.editingFileId = id;
-                this.$bvModal.show('editFile')
-            },
-
-            showComments(id) {
-                this.commentingFileId = id;
-                this.$bvModal.show('showComments');
-            }
-
+              });
         },
 
-        computed: {
-            presentedFiles() {
-                let newFiles = [];
-                this.files.forEach(file => {
-                    let newFile = JSON.parse(JSON.stringify(file));
-                    newFile.hrSize = this.presentSize(newFile.size);
-                    newFile.uploadedByName = this.presentUploadedBy(newFile.uploaded_by);
-                    newFile.hrUploadedAt = moment(newFile.created_at).fromNow();
-                    newFile.uploadedAtFormatted = moment(newFile.created_at).format('lll');
-                    newFiles.push(newFile);
-                });
-                return newFiles;
-            },
-            fields() {
-                return ['title', 'description', 'status', {
-                    key: 'uploadedByName',
-                    label: 'Uploaded By'
-                }, {key: 'created_at', label: 'Uploaded At'}, 'actions'];
-            }
+        editFile(file) {
+            this.fileBeingEdited = file;
+            this.$ui.modal.show('editFileModal');
+        },
+
+        markFileAsUpdated(file) {
+            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1, file);
+            this.$ui.modal.hide('editFileModal');
+            this.fileBeingEdited = null;
+        },
+
+        showComments(file) {
+            this.fileBeingCommented = file;
+            this.$ui.modal.show('commentsModal');
+        },
+
+        updateComments(comments) {
+            let file = this.fileBeingCommented;
+            file.comments = comments;
+            this.files.splice(this.files.indexOf(this.files.filter(f => f.id === file.id)[0]), 1, file);
+        }
+    },
+
+    computed: {
+        presentedFiles() {
+            return this.files.map(file => {
+                if(!file.hasOwnProperty('_table')) {
+                    file._table = {}
+                }
+                file._table.isDeleting = this.$isLoading('deleting-file-' + file.id);
+                file.uploaded_by_name = file.uploaded_by.data.preferred_name ?? (file.uploaded_by.data.first_name + ' ' + file.uploaded_by.data.last_name);
+                file.created_at_datetime = moment(file.created_at);
+                file.uploaded_at = file.created_at_datetime.fromNow();
+                file.uploaded_at_formatted = file.created_at_datetime.format('lll');
+                return file;
+            }).sort((a,b) => b.created_at_datetime - a.created_at_datetime)
+        },
+        fields() {
+            return [
+                {key: 'title', label: 'Title'},
+                {key: 'description', label: 'Description', truncateCell: 20},
+                {key: 'status', label: 'Status'},
+                {key: 'uploaded_by_name', label: 'Uploaded By'},
+                {key: 'uploaded_at', label: 'Uploaded At'}
+            ];
         }
     }
+}
 </script>
 
 <style scoped>

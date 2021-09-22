@@ -1,102 +1,129 @@
 <template>
     <div>
-        <div v-if="comments.length > 0">
-            <ul class="commentList">
+        <div v-if="$isLoading('loading-comments')">
+            Loading comments
+        </div>
+        <div v-else class="pt-3">
+            <ul class="commentList" v-if="comments.length > 0">
                 <li v-for="comment in comments" v-if="comments.length > 0">
-                    <comment :comment="comment" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments" @updated="loadComments"></comment>
+                    <comment :comment="comment" :can-delete-comments="canDeleteComments" :can-update-comments="canUpdateComments"
+                             @updated="updateComment(comment, $event)"
+                            @deleted="deleteComment(comment)"></comment>
                     <hr/>
                 </li>
             </ul>
-        </div>
-        <div v-else>
-            No comments have been left.
-        </div>
-        
-        <b-form @submit.prevent="postComment" inline v-if="canAddComments">
-            <label class="sr-only" for="comment">Comment: </label>
-            <b-input
-                    id="comment"
-                    class="mb-2 mr-sm-2 mb-sm-0"
-                    placeholder="Leave a comment..."
-                    v-model="newComment"
-            ></b-input>
+            <div v-else>
+                No comments have been left.
+            </div>
+            <p-api-form ref="apiForm" :schema="form" @submit="postComment" v-if="canAddComments" button-text="Post Comment" :initial-data="{comment: ''}"
+                        :busy="$isLoading('posting-comment')" busy-text="Posting comment">
 
-            <b-button type="submit" variant="outline-success">Post Comment</b-button>
+            </p-api-form>
+        </div>
 
-        </b-form>
     </div>
 </template>
 
 <script>
-    import Comment from './Comment';
-    export default {
-        name: "Comments",
-        components: {Comment},
-        props: {
-            fileId: {
-                required: false
-            },
-            canAddComments: {
-                type: Boolean,
-                required: true,
-                default: false
-            },
-            canDeleteComments: {
-                type: Boolean,
-                required: true,
-                default: false
-            },
-            canUpdateComments: {
-                type: Boolean,
-                required: true,
-                default: false
-            },
+import Comment from './Comment';
+export default {
+    name: "Comments",
+    components: {Comment},
+    props: {
+        file: {
+            required: true,
+            type: Object
+        },
+        canAddComments: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        canDeleteComments: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        canUpdateComments: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+    },
+
+    data() {
+        return {
+            comments: [],
+        }
+    },
+
+    created() {
+        this.loadComments();
+    },
+
+    methods: {
+        updateComment(comment, updates) {
+            this.comments.splice(
+                this.comments.indexOf(comment),
+                1,
+                updates
+            );
+        },
+        deleteComment(comment) {
+            this.comments.splice(
+                this.comments.indexOf(comment),
+                1
+            );
+        },
+        loadComments() {
+            this.$http.get('/file/' + this.file.id + '/comment', {name: 'loading-comments'})
+                .then(response => {
+                    this.comments = response.data;
+                    this.$emit('commentUpdated', response.data);
+                })
+                .catch(error => this.$notify.alert('Could not load comments'));
         },
 
-        data() {
-            return {
-                comments: [],
-                newComment: ''
-            }
-        },
-
-        created() {
-            this.loadComments();
-        },
-        
-        methods: {
-            loadComments() {
-                this.$http.get('/file/' + this.fileId + '/comment')
-                    .then(response => this.comments = response.data)
-                    .catch(error => this.$notify.alert('Could not load comments'));
-            },
-
-            postComment() {
-                this.$http.post('/file/' + this.fileId + '/comment', {comment: this.newComment})
+        postComment(data) {
+            this.$http.post('/file/' + this.file.id + '/comment', {comment: data.comment}, {name: 'posting-comment'})
                 .then(response => {
                     this.comments.push(response.data);
-                    this.newComment = '';
+                    this.$refs.apiForm.reset();
+                    this.$emit('commentUpdated', this.comments);
                 })
                 .catch(error => this.$notify.alert('Could not post the comment'));
-            }
-        },
+        }
+    },
 
-        computed: {}
+    computed: {
+        form() {
+            return this.$tools.generator.form.newForm()
+                .withGroup(this.$tools.generator.group.newGroup()
+                    .withField(
+                        this.$tools.generator.field.textArea('comment')
+                            .label('Your comment')
+                            .required(true)
+                    )
+                )
+                .generate()
+                .asJson();
+        }
     }
+}
 </script>
 
 <style scoped>
 
-    .commentList {
-        padding: 0;
-        list-style: none;
-        overflow: auto;
-    }
+.commentList {
+    padding: 0;
+    list-style: none;
+    overflow: auto;
+}
 
-    .commentList li {
-        margin: 0;
-        margin-top: 10px;
-    }
+.commentList li {
+    margin: 0;
+    margin-top: 10px;
+}
 
 
 </style>

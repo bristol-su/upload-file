@@ -8,6 +8,8 @@ use BristolSU\Support\Authentication\HasResource;
 use BristolSU\ControlDB\Contracts\Repositories\User as UserRepository;
 use BristolSU\Support\ModuleInstance\Contracts\ModuleInstanceRepository;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
+use Database\UploadFile\Factories\FileFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,11 +17,11 @@ use Illuminate\Support\Facades\Config;
 
 class File extends Model
 {
-    use SoftDeletes, HasResource;
+    use SoftDeletes, HasResource, HasFactory;
 
     protected $table = 'uploadfile_files';
 
-    protected $appends = ['status'];
+    protected $appends = ['status', 'activity_instance'];
 
     protected $fillable = [
         'title',
@@ -40,7 +42,10 @@ class File extends Model
 
     public function getUploadedByAttribute($uploadedById)
     {
-        return app()->make(UserRepository::class)->getById($uploadedById);
+        if($uploadedById) {
+            return app()->make(UserRepository::class)->getById($uploadedById);
+        }
+        return null;
     }
 
     public function scopeWithTag(Builder $query, string $tag)
@@ -54,6 +59,16 @@ class File extends Model
             });
         return $query->whereIn('activity_instance_id', $activityInstanceIds->toArray())
             ->where('tags', 'LIKE', '%"' . $tag . '"%');
+    }
+
+    /**
+     * Get the activity instance
+     *
+     * @return ActivityInstance
+     */
+    public function getActivityInstanceAttribute()
+    {
+        return $this->activityInstance();
     }
 
     /**
@@ -107,6 +122,11 @@ class File extends Model
     protected function serializeDate(\DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
+    }
+
+    protected static function newFactory()
+    {
+        return new FileFactory();
     }
 
 }

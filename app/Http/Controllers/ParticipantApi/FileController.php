@@ -35,7 +35,7 @@ class FileController extends Controller
                 'size' => $file->getSize(),
                 'uploaded_by' => $authentication->getUser()->id(),
                 'tags' => settings('new_tags', [])
-            ]));
+            ])->load(['statuses', 'comments']));
 
             event(new DocumentUploaded($tempFileMeta));
         }
@@ -56,12 +56,12 @@ class FileController extends Controller
         if((int) $file->activity_instance_id !== (int) app(ActivityInstanceResolver::class)->getActivityInstance()->id) {
             throw new AuthorizationException();
         }
-                
+
         $file->delete();
         $file->refresh();
 
         event(new DocumentDeleted($file));
-        
+
         return $file->refresh();
     }
 
@@ -72,7 +72,7 @@ class FileController extends Controller
         if((int) $file->activity_instance_id !== (int) app(ActivityInstanceResolver::class)->getActivityInstance()->id) {
             throw new AuthorizationException();
         }
-        
+
         return $file->load('statuses');
     }
 
@@ -83,14 +83,16 @@ class FileController extends Controller
         if((int) $file->activity_instance_id !== (int) app(ActivityInstanceResolver::class)->getActivityInstance()->id) {
             throw new AuthorizationException();
         }
-        
+
         $file->title = $request->input('title', $file->title);
         $file->description = $request->input('description', $file->description);
 
         $file->save();
-            
+
+        $file->load(['statuses', 'comments']);
+
         event(new DocumentUpdated($file));
-        
+
         return $file;
     }
 

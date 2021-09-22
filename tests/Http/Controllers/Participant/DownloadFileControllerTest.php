@@ -17,7 +17,7 @@ class DownloadFileControllerTest extends TestCase
     {
         $this->revokePermissionTo('uploadfile.file.download');
 
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id()]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id()]);
 
         $response = $this->get($this->userUrl('/file/' . $file->id . '/download'));
         $response->assertStatus(403);
@@ -36,7 +36,7 @@ class DownloadFileControllerTest extends TestCase
     public function a_404_code_is_returned_if_the_file_is_not_found_in_storage()
     {
         $this->bypassAuthorization();
-        $file = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id()]);
+        $file = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id()]);
 
         $response = $this->get($this->userUrl('/file/' . $file->id . '/download'));
         $response->assertStatus(404);
@@ -52,7 +52,7 @@ class DownloadFileControllerTest extends TestCase
 
         $this->assertNotEquals('TestFilename.png', $path);
 
-        $file = factory(File::class)->create([
+        $file = File::factory()->create([
             'path' => $path,
             'filename' => 'TestFilename.png',
             'module_instance_id' => $this->getModuleInstance()->id()
@@ -70,13 +70,13 @@ class DownloadFileControllerTest extends TestCase
     public function a_403_code_is_returned_if_the_permission_is_not_owned_for_old_files()
     {
         $this->revokePermissionTo('uploadfile.file.download');
-        $oldModuleInstance = factory(ModuleInstance::class)->create();
-        $oldActivityInstance = factory(ActivityInstance::class)->create([
+        $oldModuleInstance = ModuleInstance::factory()->create();
+        $oldActivityInstance = ActivityInstance::factory()->create([
             'activity_id' => $oldModuleInstance->activity->id,
             'resource_type' => 'user',
             'resource_id' => $this->getControlUser()->id()
         ]);
-        $file = factory(File::class)->create(['module_instance_id' => $oldModuleInstance->id, 'activity_instance_id' => $oldActivityInstance->id]);
+        $file = File::factory()->create(['module_instance_id' => $oldModuleInstance->id, 'activity_instance_id' => $oldActivityInstance->id]);
 
         $response = $this->get($this->userUrl('/old-file/' . $file->id . '/download'));
         $response->assertStatus(403);
@@ -95,13 +95,13 @@ class DownloadFileControllerTest extends TestCase
     public function a_404_code_is_returned_if_the_file_is_not_found_in_storage_for_old_files()
     {
         $this->bypassAuthorization();
-        $oldModuleInstance = factory(ModuleInstance::class)->create();
-        $oldActivityInstance = factory(ActivityInstance::class)->create([
+        $oldModuleInstance = ModuleInstance::factory()->create();
+        $oldActivityInstance = ActivityInstance::factory()->create([
             'activity_id' => $oldModuleInstance->activity->id,
             'resource_type' => 'user',
             'resource_id' => $this->getControlUser()->id()
         ]);
-        $file = factory(File::class)->create(['module_instance_id' => $oldModuleInstance->id, 'activity_instance_id' => $oldActivityInstance->id]);
+        $file = File::factory()->create(['module_instance_id' => $oldModuleInstance->id, 'activity_instance_id' => $oldActivityInstance->id]);
 
         $response = $this->get($this->userUrl('/old-file/' . $file->id . '/download'));
         $response->assertStatus(404);
@@ -117,19 +117,19 @@ class DownloadFileControllerTest extends TestCase
 
         $this->assertNotEquals('TestFilename.png', $path);
 
-        $oldModuleInstance = factory(ModuleInstance::class)->create();
-        $oldActivityInstance = factory(ActivityInstance::class)->create([
+        $oldModuleInstance = ModuleInstance::factory()->create();
+        $oldActivityInstance = ActivityInstance::factory()->create([
             'activity_id' => $oldModuleInstance->activity->id,
             'resource_type' => 'user',
             'resource_id' => $this->getControlUser()->id()
         ]);
-        $file = factory(File::class)->create([
+        $file = File::factory()->create([
             'module_instance_id' => $oldModuleInstance->id,
             'activity_instance_id' => $oldActivityInstance->id,
             'path' => $path,
             'filename' => 'TestFilename.png'
         ]);
-        
+
         $response = $this->get($this->userUrl('/old-file/' . $file->id . '/download'));
 
 
@@ -142,13 +142,13 @@ class DownloadFileControllerTest extends TestCase
     public function a_404_code_is_returned_if_the_file_is_not_in_the_current_module_instance()
     {
         $this->bypassAuthorization();
-        $oldModuleInstance = factory(ModuleInstance::class)->create();
-        $oldActivityInstance = factory(ActivityInstance::class)->create([
+        $oldModuleInstance = ModuleInstance::factory()->create();
+        $oldActivityInstance = ActivityInstance::factory()->create([
             'activity_id' => $oldModuleInstance->activity->id,
             'resource_type' => 'user',
             'resource_id' => $this->getControlUser()->id()
         ]);
-        $file = factory(File::class)->create(['module_instance_id' => $oldModuleInstance->id, 'activity_instance_id' => $oldActivityInstance->id]);
+        $file = File::factory()->create(['module_instance_id' => $oldModuleInstance->id, 'activity_instance_id' => $oldActivityInstance->id]);
 
         $response = $this->get($this->userUrl('/file/' . $file->id . '/download'));
         $response->assertStatus(404);
@@ -159,13 +159,13 @@ class DownloadFileControllerTest extends TestCase
     {
         $oldUser = $this->newUser();
         $this->bypassAuthorization();
-        $oldModuleInstance = factory(ModuleInstance::class)->create();
-        $oldActivityInstance = factory(ActivityInstance::class)->create([
+        $oldModuleInstance = ModuleInstance::factory()->create();
+        $oldActivityInstance = ActivityInstance::factory()->create([
             'activity_id' => $oldModuleInstance->activity->id,
             'resource_type' => 'user',
             'resource_id' => $oldUser->id()
         ]);
-        $file = factory(File::class)->create(['module_instance_id' => $oldModuleInstance->id, 'activity_instance_id' => $oldActivityInstance->id]);
+        $file = File::factory()->create(['module_instance_id' => $oldModuleInstance->id, 'activity_instance_id' => $oldActivityInstance->id]);
 
         $response = $this->get($this->userUrl('/old-file/' . $file->id . '/download'));
         $response->assertStatus(404);

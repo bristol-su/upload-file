@@ -1,134 +1,120 @@
 <template>
     <div>
-        <b-form @reset.prevent="loadFile" @submit.prevent="update" v-if="file !== null">
-            <b-form-group
-                    id="for-label"
-                    label-for="on-behalf-of"
-                    description="Who is the document being uploaded on behalf of?"
-            >
-                <audience id="on-behalf-of" v-model="file.activity_instance_id"></audience>
+        <p-api-form :schema="form" v-if="audience.length > 0" @submit="update" :busy="$isLoading('updating-file-' + file.id)" busy-text="Updating File">
 
-            </b-form-group>
-            
-            <b-form-group
-                    description="A name for the file."
-                    id="title-label"
-                    label="Title:"
-                    label-for="title"
-            >
-                <b-form-input
-                        id="title"
-                        placeholder="File Name"
-                        required
-                        type="text"
-                        v-model="file.title"
-                ></b-form-input>
-            </b-form-group>
+        </p-api-form>
+        <div v-else>Loading</div>
 
-            <b-form-group
-                    description="A description of the file."
-                    id="description-label"
-                    label="Description:"
-                    label-for="description"
-            >
-                <b-form-textarea
-                        id="description"
-                        placeholder="File Description"
-                        required
-                        rows="4"
-                        v-model="file.description"
-                ></b-form-textarea>
-            </b-form-group>
-
-            <div>
-                <span>Uploaded By: {{file.uploaded_by.data.first_name}} {{file.uploaded_by.data.last_name}}</span>
-            </div>
-
-            <br/>
-            <div>
-                <span>Status: {{file.status}}</span>
-            </div>
-            <br/>
-
-            <b-list-group v-if="file.statuses.length > 0">
-                <b-list-group-item
-                        :key="status.id"
-                        @mouseenter="hover=status.id"
-                        @mouseleave="hover = null"
-                        v-for="status in file.statuses"
-                >
-                    {{statusText(status)}}
-                </b-list-group-item>
-            </b-list-group>
-            <div style="text-align: right;">
-                <b-button type="submit" variant="primary">Submit</b-button>
-                <b-button type="reset" variant="danger">Reset</b-button>
-            </div>
-
-        </b-form>
-        <div v-else>
-            Loading...
+        <div>
+            <span>Uploaded By: {{file.uploaded_by.data.first_name}} {{file.uploaded_by.data.last_name}}</span>
         </div>
+
+        <br/>
+        <div>
+            <span>Status: {{file.status}}</span>
+        </div>
+        <br/>
+
+        <ul>
+            <li v-for="status in file.statuses">{{status | statusHistory}}</li>
+        </ul>
     </div>
 </template>
 
 <script>
-    import moment from 'moment';
-    import Audience from './Audience';
+import moment from 'moment';
+import Audience from './Audience';
 
-    export default {
-        name: "EditFile",
-        components: {Audience},
-        props: {
-            fileId: {
-                required: true,
-                type: Number
-            }
+export default {
+    name: "EditFile",
+    components: {Audience},
+    props: {
+        file: {
+            required: true,
+            type: Object
+        }
+    },
+
+    data() {
+        return {
+            audience: []
+        }
+    },
+
+    created() {
+        this.loadAudience();
+    },
+
+    filters: {
+        statusHistory(status) {
+            return 'Changed to ' + status.status + ' by ' + status.created_by.data.first_name + ' ' + status.created_by.data.last_name + ' ' + moment(status.created_at).fromNow();
+        }
+    },
+
+    methods: {
+        loadAudience() {
+            this.$http.get('/activity-instance')
+                .then(response => this.audience = response.data)
+                .catch(error => this.$notify.alert('Could not load the audience: ' + error.message));
         },
 
-        data() {
-            return {
-                file: null,
-                hover: null
-            }
-        },
-
-        created() {
-            this.loadFile();
-        },
-
-        methods: {
-            loadFile() {
-                this.$http.get('file/' + this.fileId)
-                    .then(response => this.file = response.data)
-                    .catch(error => this.$notify.alert('Could not load the file:' + error.message));
-            },
-
-            statusText(status) {
-                let text = 'Changed to ' + status.status + ' by ' + status.created_by.data.first_name + ' ' + status.created_by.data.last_name;
-                if (this.hover === status.id) {
-                    text = text + ' on the ' + moment(status.created_at).format('lll');
-                } else {
-                    text = text + ' ' + moment(status.created_at).fromNow();
-                }
-                return text;
-            },
-
-            update() {
-                this.$http.put('file/' + this.file.id, {
-                    title: this.file.title, description: this.file.description, activity_instance_id: this.file.activity_instance_id
+        update(data) {
+            this.$http.put('file/' + this.file.id, data, {name: 'updating-file-' + this.file.id})
+                .then(response => {
+                    this.$notify.success('File updated');
+                    let updatedFile = Object.assign({}, this.file);
+                    updatedFile.title = response.data.title;
+                    updatedFile.description = response.data.description;
+                    updatedFile.activity_instance_id = response.data.activity_instance_id;
+                    this.$emit('fileUpdated', updatedFile);
                 })
-                    .then(response => {
-                        this.$notify.success('File updated');
-                        this.$emit('fileUpdated', response.data);
-                        window.location.reload();
-                    })
-                    .catch(error => this.$notify.alert('File could not be updated: ' + error.message));
-            }
-        },
+                .catch(error => this.$notify.alert('File could not be updated: ' + error.message));
+        }
+    },
 
-        computed: {}
+    computed: {
+        form() {
+            let selectField = this.$tools.generator.field.select('activity_instance_id')
+                .label('Upload for')
+                .hint('Who is the document being uploaded on behalf of?')
+                .required(true)
+                .value(this.file.activity_instance.id);
+            this.audience.forEach(a => {
+                let label = '';
+                if(a.resource_type === 'user') {
+                    label = a.participant.data.first_name + ' ' + a.participant.data.last_name + ' (' + a.name + ')';
+                }
+                if(a.resource_type === 'group') {
+                    label = a.participant.data.name + ' (' + a.name + ')';
+                }
+                if(a.resource_type === 'role') {
+                    label = a.participant.data.role_name + ' (' + a.name + ')';
+                }
+
+                selectField.withOption(a.id, label);
+            })
+
+            this.audience.forEach(a => selectField.withOption(a))
+            return this.$tools.generator.form.newForm('Edit File')
+                .withGroup(
+                    this.$tools.generator.group.newGroup()
+                        .withField(selectField)
+                        .withField(
+                            this.$tools.generator.field.text('title')
+                                .label('Name of the document')
+                                .required(true)
+                                .value(this.file.title)
+                        )
+                        .withField(
+                            this.$tools.generator.field.text('description')
+                                .label('A description for the document')
+                                .required(false)
+                                .value(this.file.description)
+                        )
+                );
+        }
     }
+}
 </script>
 
 <style scoped>

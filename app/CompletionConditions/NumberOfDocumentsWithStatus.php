@@ -28,7 +28,7 @@ class NumberOfDocumentsWithStatus extends CompletionCondition
         $percentage = (int) round(($count/$needed) * 100, 0);
 
         if($percentage > 100) {
-            return 100; 
+            return 100;
         }
         return $percentage;
     }
@@ -37,13 +37,13 @@ class NumberOfDocumentsWithStatus extends CompletionCondition
     public function options(): Form
     {
         return \FormSchema\Generator\Form::make()->withField(
-            \FormSchema\Generator\Field::input('number_of_files')->inputType('number')->label('Number of Files')
-                ->required(true)->default(1)->hint('The number of files that must be submitted')
-                ->help('The number of documents that need to be submitted for the module to be marked as complete.')
+            \FormSchema\Generator\Field::number('number_of_files')->setLabel('Number of Files')
+                ->setRequired(true)->setValue(1)->setHint('The number of files that must be submitted')
+                ->setTooltip('The number of documents that need to be submitted for the module to be marked as complete.')
         )->withField(
-            \FormSchema\Generator\Field::input('status')->inputType('text')->label('Status')
-                ->required(true)->default('Awaiting Approval')->hint('The status the files must be')
-                ->help('The status of the files. The module will be complete when the number of files submitted have this status.')
+            \FormSchema\Generator\Field::textInput('status')->setLabel('Status')
+                ->setRequired(true)->setValue('Awaiting Approval')->setHint('The status the files must be')
+                ->setTooltip('The status of the files. The module will be complete when the number of files submitted have this status.')
         )->getSchema();
     }
 
@@ -61,5 +61,5 @@ class NumberOfDocumentsWithStatus extends CompletionCondition
     {
         return 'number_of_files_submitted_with_status';
     }
-    
+
 }

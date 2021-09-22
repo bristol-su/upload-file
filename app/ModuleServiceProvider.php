@@ -19,10 +19,12 @@ use BristolSU\Support\ActivityInstance\Contracts\ActivityInstanceResolver;
 use BristolSU\Support\Completion\Contracts\CompletionConditionManager;
 use BristolSU\Support\Module\ModuleServiceProvider as ServiceProvider;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
+use Faker\Generator;
 use FormSchema\Generator\Field;
 use FormSchema\Generator\Form as FormGenerator;
 use FormSchema\Generator\Group;
 use FormSchema\Schema\Form;
+use Illuminate\Database\Eloquent\Factory;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Route;
 
@@ -181,11 +183,6 @@ class ModuleServiceProvider extends ServiceProvider
 
     ];
 
-    public function alias(): string
-    {
-        return 'uploadfile';
-    }
-
     public function namespace()
     {
         return null;
@@ -205,8 +202,6 @@ class ModuleServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        $this->registerGlobalScript('modules/uploadfile/js/components.js');
-
         $this->app->make(CompletionConditionManager::class)->register(
             $this->alias(), 'number_of_files_submitted', NumberOfDocumentsSubmitted::class
         );
@@ -214,41 +209,46 @@ class ModuleServiceProvider extends ServiceProvider
             $this->alias(), 'number_of_files_submitted_with_status', NumberOfDocumentsWithStatus::class
         );
 
-        Route::bind('uploadfile_file', function($id) {
+        Route::bind('uploadfile_file', function ($id) {
             $file = File::findOrFail($id);
-            if(request()->route('module_instance_slug') && (int) $file->module_instance_id === request()->route('module_instance_slug')->id()) {
+            if (request()->route('module_instance_slug') && (int)$file->module_instance_id === request()->route('module_instance_slug')->id()) {
                 return $file;
             }
             throw (new ModelNotFoundException)->setModel(File::class);
         });
 
-        Route::bind('uploadfile_old_file', function($id) {
+        Route::bind('uploadfile_old_file', function ($id) {
             $file = File::findOrFail($id);
 
             $currentActivityInstance = app(ActivityInstanceResolver::class)->getActivityInstance();
             $fileActivityInstance = $file->activityInstance();
-            if($currentActivityInstance->resource_type === $fileActivityInstance->resource_type
-                && (int) $currentActivityInstance->resource_id === (int) $fileActivityInstance->resource_id) {
+            if ($currentActivityInstance->resource_type === $fileActivityInstance->resource_type
+                && (int)$currentActivityInstance->resource_id === (int)$fileActivityInstance->resource_id) {
                 return $file;
             }
             throw (new ModelNotFoundException)->setModel(File::class);
         });
 
-        Route::bind('uploadfile_file_status', function($id) {
+        Route::bind('uploadfile_file_status', function ($id) {
             $fileStatus = FileStatus::findOrFail($id);
-            if(request()->route('module_instance_slug') && (int) $fileStatus->file->module_instance_id === request()->route('module_instance_slug')->id()) {
+            if (request()->route('module_instance_slug') && (int)$fileStatus->file->module_instance_id === request()->route('module_instance_slug')->id()) {
                 return $fileStatus;
             }
             throw (new ModelNotFoundException)->setModel(FileStatus::class);
         });
 
-        Route::bind('uploadfile_comment', function($id) {
+        Route::bind('uploadfile_comment', function ($id) {
             $comment = Comment::findOrFail($id);
-            if(request()->route('module_instance_slug') && (int) $comment->file->module_instance_id === request()->route('module_instance_slug')->id()) {
+            if (request()->route('module_instance_slug') && (int)$comment->file->module_instance_id === request()->route('module_instance_slug')->id()) {
                 return $comment;
             }
             throw (new ModelNotFoundException)->setModel(Comment::class);
         });
+    }
+
+    public function alias(): string
+    {
+        return 'uploadfile';
     }
 
     public function settings(): Form
@@ -256,34 +256,44 @@ class ModuleServiceProvider extends ServiceProvider
 
         return FormGenerator::make()->withGroup(
             Group::make('Page Design')->withField(
-                Field::input('title')->inputType('text')->label('Module Title')->default('Page Title')
+                Field::textInput('title')
+                    ->setLabel('Module Title')
+                    ->setValue('Page Title')
+                    ->setHint('This will appear at the top of the page')
             )->withField(
-                Field::textArea('description')->label('Description')->hint('This will appear at the top of the page')->rows(4)->default('Description')
+                Field::textArea('description')->setLabel('Description')->setHint('This will appear at the top of the page')->setValue('Description')
             )
         )->withGroup(
             Group::make('New Documents')->withField(
-                Field::input('document_title')->inputType('text')->label('Default document title')->hint('This will be the default title of a new file')->default('Document')
+                Field::textInput('document_title')->setLabel('Default document title')->setHint('This will be the setValue title of a new file')->setValue('Document')
             )->withField(
-                Field::switch('multiple_files')->label('Multiple Files')->hint('Should multiple files be able to be uploaded at the same time?')
-                    ->textOn('Allow')->textOff('Do not allow')->default(true)
+                Field::switch('multiple_files')->setLabel('Multiple Files')->setHint('Should multiple files be able to be uploaded at the same time?')
+                    ->setOnText('Allow')->setOffText('Do not allow')->setValue(true)
             )->withField(
-                Field::checkList('allowed_extensions')->label('Allowed file types')->hint('Which file types can be uploaded?')
-                    ->listBox(true)->values($this->app['config']->get($this->alias() . '.file_types'))
-		                ->default(['doc', 'docx', 'odt', 'rtf', 'txt', 'csv', 'ppt', 'pptx', 'pdf', 'xls'])
+                Field::checkList('allowed_extensions')->setLabel('Allowed file types')->setHint('Which file types can be uploaded?')
+                    ->setOptions(
+                        collect($this->app['config']->get($this->alias() . '.file_types'))->map(fn($item) => ['id' => $item['value'], 'text' => $item['name']])->toArray()
+                    )
+                    ->setValue(['doc', 'docx', 'odt', 'rtf', 'txt', 'csv', 'ppt', 'pptx', 'pdf', 'xls'])
             )
         )->withGroup(
             Group::make('Status Changes')->withField(
-                Field::input('initial_status')->inputType('select')->label('Initial Status')->hint('What status should all new files have?')
-                        ->default('Awaiting Approval')->values($this->app['config']->get($this->alias() . '.statuses'))
+                Field::select('initial_status')->setLabel('Initial Status')->setHint('What status should all new files have?')
+                    ->setValue('Awaiting Approval')->setSelectOptions(
+                        collect($this->app['config']->get($this->alias() . '.statuses'))->map(fn($item) => ['id' => $item, 'value' => $item])->toArray()
+                    )
             )->withField(
-                Field::checkList('statuses')->label('Available Statuses')->hint('A list of available statuses')
-                    ->listBox(true)->values($this->app['config']->get($this->alias() . '.statuses'))
+                Field::select('statuses')->setLabel('Available Statuses')->setHint('A list of available statuses')
+                    ->setValue(['Awaiting Approval'])->setSelectOptions(
+                        collect($this->app['config']->get($this->alias() . '.statuses'))->map(fn($item) => ['id' => $item, 'value' => $item])->toArray()
+                    )
+                    ->setMultiple(true)
             )
         )->withGroup(
             Group::make('Tags')->withField(
-                Field::make(TagList::class, 'new_tags')->label('New Tags')->hint('What tags should we assign when a new document is uploaded?')
+                Field::tags('new_tags')->setLabel('New Tags')->setHint('What tags should we assign when a new document is uploaded?')
             )->withField(
-                Field::make(TagList::class, 'tags_to_merge')->label('Tags to merge')->hint('Any files with these tags will also be shown to the user')
+                Field::tags('tags_to_merge')->setLabel('Tags to merge')->setHint('Any files with these tags will also be shown to the user')
             )
         )->getSchema();
     }

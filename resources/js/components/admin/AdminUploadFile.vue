@@ -1,138 +1,139 @@
 <template>
     <div style="padding-top: 20px;">
-        <b-form>
-            <b-form @submit.prevent="submit" @reset="reset">
-                <b-form-group
-                        id="for-label"
-                        label-for="on-behalf-of"
-                        description="Who is the document being uploaded on behalf of?"
-                >
-                    <audience id="on-behalf-of" v-model="activity_instance_id"></audience>
+        <div v-if="$isLoading('getting-activity-instances')" class="text-center">
+            Loading
+        </div>
+        <p-form-padding v-else-if="audience.length > 0">
+            <p-api-form ref="form" :schema="form" @submit="submit" buttonText="Upload" :busy="$isLoading('uploading-file')" busy-text="Uploading File">
 
-                </b-form-group>
-                
-                <b-form-group
-                        id="title-label"
-                        label-for="title"
-                        description="Name of the document."
-                >
-                    <b-form-input
-                            id="title"
-                            v-model="title"
-                            type="text"
-                            required
-                    ></b-form-input>
-                </b-form-group>
-                <b-form-group
-                        id="description-label"
-                        label-for="title"
-                        description="Description of the document."
-                >
-                    <b-form-input
-                            id="description"
-                            v-model="description"
-                            type="text"
-                    ></b-form-input>
-                </b-form-group>
-
-                <b-form-group
-                        id="file-label"
-                        label-for="file"
-                        :description="'You can upload files of the type: ' + allowedExtensionsText"
-                >
-                    <b-form-file
-                            v-model="file"
-                            id="file"
-                            :state="Boolean(file)"
-                            :placeholder="'Choose a file or drop it here' + (multipleFiles?'. You can select multiple files at the same time.':'')"
-                            drop-placeholder="Drop file here..."
-                            :multiple="multipleFiles"
-                    />
-                </b-form-group>
-
-                <b-button type="submit" variant="primary">Upload</b-button>
-                <b-button type="reset" variant="danger">Reset</b-button>
-            </b-form>
-        </b-form>
+            </p-api-form>
+        </p-form-padding>
+        <div v-else>
+            There is no-one you can upload a file on behalf of.
+        </div>
     </div>
 </template>
 
 <script>
-    import Audience from './Audience';
-    export default {
-        name: "AdminUploadFile",
-        components: {Audience},
-        props: {
-            defaultDocumentTitle: {
-                required: false,
-                default: '',
-                type: String
-            },
-            multipleFiles: {
-                required: false,
-                default: true,
-                type: Boolean
-            },
-            allowedExtensions: {
-                required: false,
-                type: Array,
-                default: function() {
-                    return [];
-                }
-            }
+import Audience from './Audience';
+export default {
+    name: "AdminUploadFile",
+    components: {Audience},
+    props: {
+        defaultDocumentTitle: {
+            required: false,
+            default: '',
+            type: String
         },
-
-        data() {
-            return {
-                title: "",
-                file: null,
-                description: '',
-                activity_instance_id: null
-            }
+        multipleFiles: {
+            required: false,
+            default: true,
+            type: Boolean
         },
-
-        created() {
-            this.title = this.defaultDocumentTitle
-        },
-
-        methods: {
-            submit() {
-                let formData = new FormData();
-                if(Array.isArray(this.file)) {
-                    for(let file of this.file) {
-                        formData.append('file[]', file)
-                    }
-                } else {
-                    formData.append('file[]', this.file);
-                }
-                formData.append('title', this.title);
-                formData.append('description', this.description);
-                formData.append('activity_instance_id', this.activity_instance_id);
-                this.$http.post('file', formData, {headers: {'Content-Type': 'multipart/form-data'}})
-                    .then(response => {
-                        this.$notify.success('File uploaded!');
-                        this.reset();
-                        window.location.reload();
-                    })
-                    .catch(error => this.$notify.alert('There was a problem uploading your file: ' + error.message));
-
-            },
-
-            reset() {
-                this.title = this.defaultDocumentTitle;
-                this.file = null;
-            }
-        },
-
-        computed: {
-            allowedExtensionsText() {
-                if(this.allowedExtensions.length === 0) {
-                    return 'None';
-                }
-                return this.allowedExtensions.map(ext => '.' + ext).join(', ');
+        allowedExtensions: {
+            required: false,
+            type: Array,
+            default: function() {
+                return [];
             }
         }
+    },
+
+    data() {
+        return {
+            audience: []
+        }
+    },
+
+    created() {
+        this.loadAudience();
+    },
+
+    methods: {
+        submit(data) {
+            let formData = new FormData();
+            if(data.file.length > 0) {
+                for (let file of data.file) {
+                    formData.append('file[]', file)
+                }
+            } else {
+                formData.append('file[]', data.file[0]);
+            }
+            formData.append('title', data.title);
+            formData.append('description', data.description);
+            formData.append('activity_instance_id', data.activity_instance_id);
+            this.$http.post('file', formData, {headers: {'Content-Type': 'multipart/form-data'}, name: 'uploading-file'})
+                .then(response => {
+                    this.$emit('newFiles', response.data)
+                    this.$notify.success('File uploaded!');
+                    this.$refs.form.reset();
+                })
+                .catch(error => this.$notify.alert('There was a problem uploading your file: ' + error.message));
+        },
+
+        loadAudience() {
+            this.$http.get('/activity-instance', {name: 'getting-activity-instances'})
+                .then(response => this.audience = response.data)
+                .catch(error => this.$notify.alert('Could not load the audience: ' + error.message));
+        }
+    },
+
+    computed: {
+        allowedExtensionsText() {
+            if(this.allowedExtensions.length === 0) {
+                return 'None';
+            }
+            return this.allowedExtensions.map(ext => '.' + ext).join(', ');
+        },
+        form() {
+            let selectField = this.$tools.generator.field.select('activity_instance_id')
+                .label('Upload for')
+                .hint('Who is the document being uploaded on behalf of?')
+                .required(true);
+            this.audience.forEach(a => {
+                let label = '';
+                if(a.resource_type === 'user') {
+                    label = a.participant.data.first_name + ' ' + a.participant.data.last_name + ' (' + a.name + ')';
+                }
+                if(a.resource_type === 'group') {
+                    label = a.participant.data.name + ' (' + a.name + ')';
+                }
+                if(a.resource_type === 'role') {
+                    label = a.participant.data.role_name + ' (' + a.name + ')';
+                }
+
+                selectField.withOption(a.id, label);
+            })
+
+            // this.audience.forEach(a => selectField.withOption(a))
+            return this.$tools.generator.form.newForm('Upload a new file')
+                .withGroup(
+                    this.$tools.generator.group.newGroup()
+                        .withField(selectField)
+                        .withField(
+                            this.$tools.generator.field.text('title')
+                                .label('Name of the document')
+                                .required(true)
+                                .value(this.defaultDocumentTitle)
+                        )
+                        .withField(
+                            this.$tools.generator.field.text('description')
+                                .label('A description for the document')
+                                .required(false)
+                        )
+                        .withField(
+                            this.$tools.generator.field.file('file')
+                                .label('The file' + (this.multipleFiles ? 's' : '') + ' to upload')
+                                .required(true)
+                                .multiple(this.multipleFiles)
+                                .hint('You can upload files of the type ' + this.allowedExtensionsText)
+                        )
+                )
+                .generate()
+                .asJson();
+        }
     }
+}
 </script>
 
 <style scoped>

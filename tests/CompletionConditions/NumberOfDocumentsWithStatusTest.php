@@ -12,15 +12,15 @@ use FormSchema\Schema\Form;
 
 class NumberOfDocumentsWithStatusTest extends TestCase
 {
-    
+
     /** @test */
     public function isComplete_returns_true_if_the_number_of_documents_of_the_correct_status_is_greater_than_the_required_documents(){
-        $file1 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file2 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file3 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        factory(FileStatus::class)->create(['file_id' => $file1->id, 'status' => 'Approved']);
-        factory(FileStatus::class)->create(['file_id' => $file2->id, 'status' => 'Approved']);
-        factory(FileStatus::class)->create(['file_id' => $file3->id, 'status' => 'Approved']);
+        $file1 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file2 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file3 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        FileStatus::factory()->create(['file_id' => $file1->id, 'status' => 'Approved']);
+        FileStatus::factory()->create(['file_id' => $file2->id, 'status' => 'Approved']);
+        FileStatus::factory()->create(['file_id' => $file3->id, 'status' => 'Approved']);
 
         $condition = new NumberOfDocumentsWithStatus('uploadfile');
         $this->assertTrue(
@@ -30,12 +30,12 @@ class NumberOfDocumentsWithStatusTest extends TestCase
 
     /** @test */
     public function isComplete_returns_true_if_the_number_of_documents_of_the_correct_status_is_equal_to_the_required_documents(){
-        $file1 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file2 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file3 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        factory(FileStatus::class)->create(['file_id' => $file1->id, 'status' => 'Rejected']);
-        factory(FileStatus::class)->create(['file_id' => $file2->id, 'status' => 'Rejected']);
-        factory(FileStatus::class)->create(['file_id' => $file3->id, 'status' => 'Rejected']);
+        $file1 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file2 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file3 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        FileStatus::factory()->create(['file_id' => $file1->id, 'status' => 'Rejected']);
+        FileStatus::factory()->create(['file_id' => $file2->id, 'status' => 'Rejected']);
+        FileStatus::factory()->create(['file_id' => $file3->id, 'status' => 'Rejected']);
 
         $condition = new NumberOfDocumentsWithStatus('uploadfile');
         $this->assertTrue(
@@ -45,42 +45,42 @@ class NumberOfDocumentsWithStatusTest extends TestCase
 
     /** @test */
     public function isComplete_returns_false_if_the_number_of_documents_of_the_correct_status_is_less_than_the_required_documents(){
-        $file1 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file2 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file3 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        factory(FileStatus::class)->create(['file_id' => $file1->id, 'status' => 'Rejected']);
-        factory(FileStatus::class)->create(['file_id' => $file2->id, 'status' => 'Rejected']);
-        factory(FileStatus::class)->create(['file_id' => $file3->id, 'status' => 'Rejected']);
+        $file1 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file2 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file3 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        FileStatus::factory()->create(['file_id' => $file1->id, 'status' => 'Rejected']);
+        FileStatus::factory()->create(['file_id' => $file2->id, 'status' => 'Rejected']);
+        FileStatus::factory()->create(['file_id' => $file3->id, 'status' => 'Rejected']);
 
         $condition = new NumberOfDocumentsWithStatus('uploadfile');
         $this->assertFalse(
             $condition->isComplete(['number_of_files' => 4, 'status' => 'Rejected'], $this->getActivityInstance(), $this->getModuleInstance())
         );
     }
-    
+
     /** @test */
     public function isComplete_distinguishes_between_statuses(){
-        $file1 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file2 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file3 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        factory(FileStatus::class)->create(['file_id' => $file1->id, 'status' => 'Rejected']);
-        factory(FileStatus::class)->create(['file_id' => $file2->id, 'status' => 'Rejected']);
-        factory(FileStatus::class)->create(['file_id' => $file3->id, 'status' => 'Approved']);
+        $file1 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file2 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file3 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        FileStatus::factory()->create(['file_id' => $file1->id, 'status' => 'Rejected']);
+        FileStatus::factory()->create(['file_id' => $file2->id, 'status' => 'Rejected']);
+        FileStatus::factory()->create(['file_id' => $file3->id, 'status' => 'Approved']);
 
         $condition = new NumberOfDocumentsWithStatus('uploadfile');
         $this->assertFalse(
             $condition->isComplete(['number_of_files' => 3, 'status' => 'Rejected'], $this->getActivityInstance(), $this->getModuleInstance())
         );
     }
-    
+
     /** @test */
     public function percentage_returns_100_if_the_documents_submitted_are_equal_to_the_required_number(){
-        $file1 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file2 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file3 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        factory(FileStatus::class)->create(['file_id' => $file1->id, 'status' => 'Approved']);
-        factory(FileStatus::class)->create(['file_id' => $file2->id, 'status' => 'Approved']);
-        factory(FileStatus::class)->create(['file_id' => $file3->id, 'status' => 'Approved']);
+        $file1 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file2 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file3 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        FileStatus::factory()->create(['file_id' => $file1->id, 'status' => 'Approved']);
+        FileStatus::factory()->create(['file_id' => $file2->id, 'status' => 'Approved']);
+        FileStatus::factory()->create(['file_id' => $file3->id, 'status' => 'Approved']);
 
         $condition = new NumberOfDocumentsWithStatus('uploadfile');
         $this->assertEquals(100,
@@ -90,12 +90,12 @@ class NumberOfDocumentsWithStatusTest extends TestCase
 
     /** @test */
     public function percentage_returns_100_if_the_documents_submitted_are_greater_than_the_required_number(){
-        $file1 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file2 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file3 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        factory(FileStatus::class)->create(['file_id' => $file1->id, 'status' => 'Approved']);
-        factory(FileStatus::class)->create(['file_id' => $file2->id, 'status' => 'Approved']);
-        factory(FileStatus::class)->create(['file_id' => $file3->id, 'status' => 'Approved']);
+        $file1 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file2 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file3 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        FileStatus::factory()->create(['file_id' => $file1->id, 'status' => 'Approved']);
+        FileStatus::factory()->create(['file_id' => $file2->id, 'status' => 'Approved']);
+        FileStatus::factory()->create(['file_id' => $file3->id, 'status' => 'Approved']);
 
         $condition = new NumberOfDocumentsWithStatus('uploadfile');
         $this->assertEquals(100,
@@ -105,14 +105,14 @@ class NumberOfDocumentsWithStatusTest extends TestCase
 
     /** @test */
     public function percentage_returns_75_if_the_documents_submitted_are_less_than_the_required_number_by_3_of_4(){
-        $file1 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file2 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file3 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        $file4 = factory(File::class)->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
-        factory(FileStatus::class)->create(['file_id' => $file1->id, 'status' => 'Approved']);
-        factory(FileStatus::class)->create(['file_id' => $file2->id, 'status' => 'Approved']);
-        factory(FileStatus::class)->create(['file_id' => $file3->id, 'status' => 'Rejected']);
-        factory(FileStatus::class)->create(['file_id' => $file4->id, 'status' => 'Approved']);
+        $file1 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file2 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file3 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        $file4 = File::factory()->create(['module_instance_id' => $this->getModuleInstance()->id(), 'activity_instance_id' => $this->getActivityInstance()->id]);
+        FileStatus::factory()->create(['file_id' => $file1->id, 'status' => 'Approved']);
+        FileStatus::factory()->create(['file_id' => $file2->id, 'status' => 'Approved']);
+        FileStatus::factory()->create(['file_id' => $file3->id, 'status' => 'Rejected']);
+        FileStatus::factory()->create(['file_id' => $file4->id, 'status' => 'Approved']);
 
         $condition = new NumberOfDocumentsWithStatus('uploadfile');
         $this->assertEquals(75,
@@ -147,5 +147,5 @@ class NumberOfDocumentsWithStatusTest extends TestCase
     public function options_returns_a_form_schema(){
         $this->assertInstanceOf(Form::class, (new NumberOfDocumentsWithStatus('uploadfile'))->options());
     }
-    
+
 }
