@@ -30,7 +30,7 @@
             },
             identifier() {
                 if(this.resourceType === 'user') {
-                    return this.participant.data.preferred_name ?? (this.participant.data.first_name + ' ' + this.particiant.data.last_name);
+                    return this.participant.data.preferred_name ?? (this.participant.data.first_name + ' ' + this.participant.data.last_name);
                 }
                 if(this.resourceType === 'group') {
                     return this.participant.data.name;
