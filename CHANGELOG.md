@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - (18/10/2021)
+
 ### Changed
 - Upgraded to SDK v5.0.1
 - Redesign for new UI kit
