@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Testing\AssertableJsonString;
 
 class FileControllerTest extends TestCase
 {
@@ -46,9 +47,33 @@ class FileControllerTest extends TestCase
         $response = $this->getJson($this->adminApiUrl('/file'));
 
         $response->assertStatus(200);
-        $response->assertJsonCount(5);
+        $response->assertJsonCount(5, 'data');
         foreach($files as $file) {
-            $response->assertJsonFragment([
+            $fragment = new AssertableJsonString($response->decodeResponseJson()->json('data'));
+            $fragment->assertFragment([
+                'title' => $file->title,
+                'description' => $file->description,
+                'filename' => $file->filename
+            ]);
+        }
+    }
+
+    /** @test */
+    public function index_paginates_through_the_files(){
+        $this->bypassAuthorization();
+
+        $files = File::factory()->count(10)->create([
+            'module_instance_id' => $this->getModuleInstance()->id()
+        ]);
+
+        $response = $this->getJson($this->adminApiUrl('/file?page=2&per_page=5'));
+
+        $response->assertStatus(200);
+        $response->assertJsonCount(5, 'data');
+        $files = $files->slice(5);
+        foreach($files as $file) {
+            $fragment = new AssertableJsonString($response->decodeResponseJson()->json('data'));
+            $fragment->assertFragment([
                 'title' => $file->title,
                 'description' => $file->description,
                 'filename' => $file->filename
