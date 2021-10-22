@@ -19,22 +19,19 @@ use Illuminate\Support\Arr;
 class FileController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('admin.file.index');
-        
-        return File::forModuleInstance()->with(['statuses', 'comments'])->get()->map(function(File $file) {
-            $activityInstance = $file->activityInstance();
-            $file = $file->toArray();
-            $file['activity_instance'] = $activityInstance;
-            return $file;
-        });
+
+        return File::forModuleInstance()->with(['statuses', 'comments'])->paginate(
+            $request->input('per_page', 5), ['*'], 'page', $request->input('page', 1)
+        );
     }
 
     public function show(Activity $activity, ModuleInstance $moduleInstance, File $file)
     {
         $this->authorize('admin.file.index');
-        
+
         return $file->load(['statuses', 'comments']);
     }
 
@@ -90,5 +87,5 @@ class FileController extends Controller
 
         return $file;
     }
-    
+
 }

@@ -5,7 +5,9 @@
             :columns="columns"
             :items="processedFiles"
             :editable="canUpdateFiles"
+            :total-count="totalFileCount"
             :deletable="canDeleteFiles"
+            @changePage="$emit('changePage', $event)"
             @delete="deleteFile($event)"
             @edit="editFile($event)">
             <template #cell(uploaded_for)="{row}">
@@ -144,6 +146,9 @@ export default {
             type: Boolean,
             required: false,
             default: false
+        },
+        totalFileCount: {
+            type: Number, required: false, default: 0
         }
     },
 
