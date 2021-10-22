@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Admin side now uses pagination
+
 ## [3.0.0] - (18/10/2021)
 
 ### Changed
