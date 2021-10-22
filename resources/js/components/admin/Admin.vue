@@ -10,9 +10,11 @@
                 :can-download="canDownload"
                 :can-delete-files="canDeleteFiles"
                 :can-update-files="canUpdateFiles"
+                @changePage="changePage"
                 :loading="$isLoading('loading-files')"
                 @delete="deleteFile"
                 @update="updateFile"
+                :total-file-count="total"
                 :files="files
 "
                 :statuses="statuses"></admin-files>
@@ -112,7 +114,10 @@ export default {
     },
     data() {
         return {
-            files: []
+            files: [],
+            perPage: 5,
+            page: 1,
+            total: 0
         }
     },
     created() {
@@ -121,8 +126,13 @@ export default {
 
     methods: {
         loadFiles() {
-            this.$http.get('file', {name: 'loading-files'})
-                .then(response => this.files = response.data)
+            this.$http.get('file', {name: 'loading-files', params: {per_page: this.perPage, page: this.page}})
+                .then(response => {
+                    this.files = response.data.data;
+                    this.total = response.data.total;
+                    this.perPage = response.data.per_page;
+                    this.page = response.data.current_page;
+                })
                 .catch(error => this.$notify.alert('Sorry, something went wrong retrieving your files: ' + error.message));
         },
         deleteFile(file) {
@@ -141,6 +151,11 @@ export default {
         pushFiles(files) {
             files.forEach(file => this.files.push(file));
         },
+        changePage(pageSizes) {
+            this.page = pageSizes.page;
+            this.perPage = pageSizes.size;
+            this.loadFiles();
+        }
     }
 }
 </script>
