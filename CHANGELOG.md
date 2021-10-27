@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.2] - (27/10/2021)
+
+### Fixed
+- Approvals not working due to js bug
+
+## [3.0.1] - (22/10/2021)
+
 ### Changed
 - Admin side now uses pagination
 

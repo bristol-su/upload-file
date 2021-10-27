@@ -37,7 +37,7 @@
             createStatus(data) {
                 this.$http.post('file/' + this.file.id + '/status', {
                     status: data.status
-                }, {name: 'updating-status-file-' + file.id})
+                }, {name: 'updating-status-file-' + this.file.id})
                 .then(response => {
                     this.$notify.success('Status change successful');
                     this.$emit('statusAdded', response.data);
