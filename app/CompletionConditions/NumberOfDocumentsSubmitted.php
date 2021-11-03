@@ -13,7 +13,7 @@ class NumberOfDocumentsSubmitted extends CompletionCondition
 
     public function isComplete($settings, ActivityInstance $activityInstance, ModuleInstance $moduleInstance): bool
     {
-        return File::forResource($activityInstance->id, $moduleInstance->id())->count() >= $settings['number_of_files'];
+        return File::forResource($activityInstance->id, $moduleInstance->id())->count() >= ($settings['number_of_files'] ?? 1);
     }
 
     public function percentage($settings, ActivityInstance $activityInstance, ModuleInstance $moduleInstance): int

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Exception thrown when data not given to completion condition
+
 ## [3.0.2] - (27/10/2021)
 
 ### Fixed
