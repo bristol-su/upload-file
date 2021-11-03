@@ -14,16 +14,16 @@ class NumberOfDocumentsWithStatus extends CompletionCondition
     public function isComplete($settings, ActivityInstance $activityInstance, ModuleInstance $moduleInstance): bool
     {
         return File::forResource($activityInstance->id, $moduleInstance->id())->get()->filter(function(File $file) use ($settings) {
-            return $file->status === $settings['status'] ?? 'Approved';
-        })->count() >= $settings['number_of_files'] ?? 1;
+            return $file->status === data_get($settings, 'status', 'Approved');
+        })->count() >= data_get($settings, 'number_of_files', 1);
     }
 
     public function percentage($settings, ActivityInstance $activityInstance, ModuleInstance $moduleInstance): int
     {
         $count = File::forResource($activityInstance->id, $moduleInstance->id())->get()->filter(function(File $file) use ($settings) {
-            return $file->status === $settings['status'] ?? 'Approved';
+            return $file->status === data_get($settings, 'status', 'Approved');
         })->count();
-        $needed = ( $settings['number_of_files'] ?? 1);
+        $needed = data_get($settings, 'number_of_files', 1);
 
         $percentage = (int) round(($count/$needed) * 100, 0);
 
