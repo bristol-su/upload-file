@@ -6,6 +6,7 @@
           :columns="fields"
           :editable="canUpdate"
           :deletable="canDelete"
+          :actions="true"
           @delete="deleteFile($event)"
           @edit="editFile($event)"
         >

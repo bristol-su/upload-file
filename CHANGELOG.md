@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Exception thrown when data not given to completion condition
+- Actions not showing on table if edit and delete are hidden
 
 ## [3.0.2] - (27/10/2021)
 

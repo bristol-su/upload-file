@@ -5,6 +5,7 @@
             :columns="columns"
             :items="processedFiles"
             :editable="canUpdateFiles"
+            :actions="true"
             :total-count="totalFileCount"
             :deletable="canDeleteFiles"
             @changePage="$emit('changePage', $event)"
