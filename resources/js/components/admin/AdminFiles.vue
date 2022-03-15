@@ -1,5 +1,7 @@
 <template>
     <div>
+        <p-text-input id="search" label="Search" hint="Search for a group or file name" @input="$emit('search', $event)" :value="searchString"></p-text-input>
+        <p-button button-text="Search" variant="secondary" @click="$emit('searchNow')"></p-button>
         <p-table
             :busy="loading"
             :columns="columns"
@@ -98,6 +100,7 @@ export default {
     },
 
     props: {
+        searchString: {type: String, default: null, required: false},
         loading: {type: Boolean, default: false},
         files: {
             required: false,

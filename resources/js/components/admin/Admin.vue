@@ -13,10 +13,12 @@
                 @changePage="changePage"
                 :loading="$isLoading('loading-files')"
                 @delete="deleteFile"
+                @searchNow="loadFiles"
                 @update="updateFile"
+                @search="searchString = $event"
+                :search-string="searchString"
                 :total-file-count="total"
-                :files="files
-"
+                :files="files"
                 :statuses="statuses"></admin-files>
         </p-tab>
         <p-tab title="Upload a File" v-if="canAddFile">
@@ -117,7 +119,8 @@ export default {
             files: [],
             perPage: 5,
             page: 1,
-            total: 0
+            total: 0,
+            searchString: null
         }
     },
     created() {
@@ -125,8 +128,18 @@ export default {
     },
 
     methods: {
+        search() {
+
+        },
         loadFiles() {
-            this.$http.get('file', {name: 'loading-files', params: {per_page: this.perPage, page: this.page}})
+            let params = {
+                per_page: this.perPage, page: this.page
+            };
+            if(this.searchString) {
+                params.search = this.searchString;
+            }
+            console.log(params);
+            this.$http.get('file', {name: 'loading-files', params: params})
                 .then(response => {
                     this.files = response.data.data;
                     this.total = response.data.total;

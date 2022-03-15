@@ -2,6 +2,9 @@
 
 namespace BristolSU\Module\UploadFile\Http\Controllers\AdminApi;
 
+use BristolSU\ControlDB\Contracts\Repositories\DataGroup;
+use BristolSU\ControlDB\Contracts\Models\Group;
+use BristolSU\Module\DataEntry\Models\ActivityInstance;
 use BristolSU\Module\UploadFile\Events\DocumentDeleted;
 use BristolSU\Module\UploadFile\Events\DocumentUpdated;
 use BristolSU\Module\UploadFile\Events\DocumentUploaded;
@@ -13,6 +16,7 @@ use BristolSU\Support\ActivityInstance\Contracts\ActivityInstanceResolver;
 use BristolSU\Support\Authentication\Contracts\Authentication;
 use BristolSU\Support\ModuleInstance\ModuleInstance;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -23,9 +27,30 @@ class FileController extends Controller
     {
         $this->authorize('admin.file.index');
 
-        return File::forModuleInstance()->with(['statuses', 'comments'])->paginate(
-            $request->input('per_page', 5), ['*'], 'page', $request->input('page', 1)
-        );
+        $resourceIds = [];
+        if ($request->has('search')) {
+            $resourceIds = ActivityInstance::where('resource_type', 'group')
+                ->whereIn('resource_id',
+                    array_merge($resourceIds, app(DataGroup::class)->getAllWhere(['name' => $request->input('search')])
+                    ->map(fn(\BristolSU\ControlDB\Contracts\Models\DataGroup $group) => $group->group())
+                    ->map(fn(Group $group) => $group->id())
+                    ->toArray())
+                )
+                ->pluck('id')
+                ->unique()
+                ->values()->toArray();
+        }
+        return File::forModuleInstance()
+            ->with(['statuses', 'comments'])
+            ->when($request->has('search'), fn(Builder $query) => $query->where(function (Builder $query) use ($request, $resourceIds) {
+                $query->where('title', 'LIKE', '%' . $request->input('search') . '%')
+                    ->orWhere('description', 'LIKE', '%' . $request->input('search') . '%')
+                    ->orWhere('filename', 'LIKE', '%' . $request->input('search') . '%')
+                    ->orWhereIn('activity_instance_id', $resourceIds);
+            })
+            )->paginate(
+                $request->input('per_page', 25), ['*'], 'page', $request->input('page', 1)
+            );
     }
 
     public function show(Activity $activity, ModuleInstance $moduleInstance, File $file)
