@@ -138,6 +138,7 @@ export default {
             this.$http.get('file/old', {name: 'loading-old-files'})
                 .then(response => this.oldFiles = response.data)
                 .catch(error => this.$notify.alert('Sorry, something went wrong retrieving the old files: ' + error.message))
+                .finally(() => this.$refs.tabs.loadTabs());
         },
 
         popFile(id) {
