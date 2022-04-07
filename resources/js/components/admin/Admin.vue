@@ -154,9 +154,9 @@ export default {
                 1
             )
         },
-        updateFile(file,update) {
+        updateFile(index,update) {
             this.files.splice(
-                this.files.indexOf(file),
+                index,
                 1,
                 update
             )
