@@ -79,7 +79,6 @@ export default {
             this.$http.get('/file/' + this.file.id + '/comment', {name: 'loading-comments'})
                 .then(response => {
                     this.comments = response.data;
-                    this.$emit('commentUpdated', response.data);
                 })
                 .catch(error => this.$notify.alert('Could not load comments'));
         },
