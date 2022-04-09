@@ -20,7 +20,7 @@
     },
     "dependencies": {
         "@bristol-su/frontend-toolkit": "^1.0.0",
-        "moment": "^2.24.0",
+        "moment": "^2.29.2",
         "vue-select": "^3.13.0"
     }
 }
