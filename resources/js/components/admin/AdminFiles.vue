@@ -207,7 +207,7 @@ export default {
             let updatedFile = _.cloneDeep(this.fileForStatusChange);
             updatedFile.status = status.status;
             updatedFile.statuses.push(status);
-            this.$emit('update', this.files.filter(f => f.id === updatedFile.id)[0], updatedFile);
+            this.$emit('update',this.files.indexOf(this.files.filter(f => f.id === updatedFile.id)[0]), updatedFile);
             this.$ui.modal.hide('changeStatusModal');
             this.fileForStatusChange = null;
             this.$notify.success('The status of the file has been updated');
