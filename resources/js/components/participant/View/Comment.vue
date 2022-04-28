@@ -87,18 +87,19 @@ export default {
             this.editing = true;
         },
         copyComment() {
+            let self = this;
             // navigator clipboard api needs a secure context (https)
             if (navigator.clipboard && window.isSecureContext) {
                 // navigator clipboard api method'
                 navigator.clipboard.writeText(this.comment.comment).then(function() {
-                    this.$notify.success('Comment copied');
+                    self.$notify.success('Comment copied');
                 }, function() {
-                    this.$notify.error('Comment could not be copied');
+                    self.$notify.error('Comment could not be copied');
                 });
             } else {
                 // text area method
                 let textArea = document.createElement("textarea");
-                textArea.value = this.comment.comment;
+                textArea.value = self.comment.comment;
                 // make the textarea out of viewport
                 textArea.style.position = "fixed";
                 textArea.style.left = "-999999px";
@@ -111,8 +112,8 @@ export default {
                     document.execCommand('copy') ? res() : rej();
                     textArea.remove();
                 })
-                    .then(() => this.$notify.success('Comment copied'))
-                    .catch(() => this.$notify.error('Comment could not be copied'));
+                    .then(() => self.$notify.success('Comment copied'))
+                    .catch(() => self.$notify.error('Comment could not be copied'));
             }
 
 
