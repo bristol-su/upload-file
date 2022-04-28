@@ -19,7 +19,7 @@
 
                 </p-api-form>
 
-                <p v-else>{{ comment.comment }}</p>
+                <p v-else v-html="comment.comment"></p>
 
             </div>
             <div>

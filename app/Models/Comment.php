@@ -42,6 +42,11 @@ class Comment extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
+    public function getCommentAttribute()
+    {
+        return nl2br($this->attributes['comment']);
+    }
+
     protected static function newFactory()
     {
         return new CommentFactory();
