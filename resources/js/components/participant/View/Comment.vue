@@ -96,27 +96,7 @@ export default {
                 }, function() {
                     self.$notify.error('Comment could not be copied');
                 });
-            } else {
-                // text area method
-                let textArea = document.createElement("textarea");
-                textArea.value = self.comment.comment;
-                // make the textarea out of viewport
-                textArea.style.position = "fixed";
-                textArea.style.left = "-999999px";
-                textArea.style.top = "-999999px";
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                return new Promise((res, rej) => {
-                    // here the magic happens
-                    document.execCommand('copy') ? res() : rej();
-                    textArea.remove();
-                })
-                    .then(() => self.$notify.success('Comment copied'))
-                    .catch(() => self.$notify.error('Comment could not be copied'));
             }
-
-
         },
         updateComment(data) {
             this.$http.patch('/comment/' + this.comment.id, {
