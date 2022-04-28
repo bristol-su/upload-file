@@ -27,6 +27,8 @@
                     class="fa fa-trash"></i><span class="sr-only">Delete Comment</span></a>
                 <a role="button" href="#" @click="editComment" v-if="ownsComment && canUpdateComments"><i
                     class="fa fa-edit"></i><span class="sr-only">Edit Comment</span></a>
+                <a role="button" href="#" @click="copyComment"><i
+                    class="fa fa-copy"></i><span class="sr-only">Copy Comment</span></a>
             </div>
         </div>
     </div>
@@ -83,6 +85,37 @@ export default {
         },
         editComment() {
             this.editing = true;
+        },
+        copyComment() {
+            // navigator clipboard api needs a secure context (https)
+            if (navigator.clipboard && window.isSecureContext) {
+                // navigator clipboard api method'
+                navigator.clipboard.writeText(this.comment.comment).then(function() {
+                    this.$notify.success('Comment copied');
+                }, function() {
+                    this.$notify.error('Comment could not be copied');
+                });
+            } else {
+                // text area method
+                let textArea = document.createElement("textarea");
+                textArea.value = this.comment.comment;
+                // make the textarea out of viewport
+                textArea.style.position = "fixed";
+                textArea.style.left = "-999999px";
+                textArea.style.top = "-999999px";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                return new Promise((res, rej) => {
+                    // here the magic happens
+                    document.execCommand('copy') ? res() : rej();
+                    textArea.remove();
+                })
+                    .then(() => this.$notify.success('Comment copied'))
+                    .catch(() => this.$notify.error('Comment could not be copied'));
+            }
+
+
         },
         updateComment(data) {
             this.$http.patch('/comment/' + this.comment.id, {
