@@ -75,6 +75,18 @@ export default {
             this.$http.get('/activity-instance', {name: 'getting-activity-instances'})
                 .then(response => this.audience = response.data)
                 .catch(error => this.$notify.alert('Could not load the audience: ' + error.message));
+        },
+        calculateNameFromAudience(a) {
+            if(a.resource_type === 'user') {
+                return a.participant.data.first_name + ' ' + a.participant.data.last_name;
+            }
+            if(a.resource_type === 'group') {
+                return a.participant.data.name;
+            }
+            if(a.resource_type === 'role') {
+                return a.participant.data.role_name;
+            }
+            return null;
         }
     },
 
@@ -90,20 +102,11 @@ export default {
                 .label('Upload for')
                 .hint('Who is the document being uploaded on behalf of?')
                 .required(true);
-            this.audience.forEach(a => {
-                let label = '';
-                if(a.resource_type === 'user') {
-                    label = a.participant.data.first_name + ' ' + a.participant.data.last_name + ' (' + a.name + ')';
-                }
-                if(a.resource_type === 'group') {
-                    label = a.participant.data.name + ' (' + a.name + ')';
-                }
-                if(a.resource_type === 'role') {
-                    label = a.participant.data.role_name + ' (' + a.name + ')';
-                }
-
-                selectField.withOption(a.id, label);
-            })
+            this.audience.sort((a, b) => {
+                let nameA = this.calculateNameFromAudience(a);
+                let nameB = this.calculateNameFromAudience(b);
+                return (nameA < nameB) ? -1 : ((nameA > nameB) ? 1 : 0);
+            }).forEach(a => selectField.withOption(a.id, this.calculateNameFromAudience(a) + ' (' + a.name + ')'))
 
             // this.audience.forEach(a => selectField.withOption(a))
             return this.$tools.generator.form.newForm('Upload a new file')
