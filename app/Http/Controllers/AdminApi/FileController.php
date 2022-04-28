@@ -27,6 +27,9 @@ class FileController extends Controller
     {
         $this->authorize('admin.file.index');
 
+        $orderBy = $request->input('order_by', 'created_at');
+        $orderDirection = $request->input('direction', 'desc');
+
         $resourceIds = [];
         if ($request->has('search')) {
             $resourceIds = ActivityInstance::where('resource_type', 'group')
@@ -47,8 +50,9 @@ class FileController extends Controller
                     ->orWhere('description', 'LIKE', '%' . $request->input('search') . '%')
                     ->orWhere('filename', 'LIKE', '%' . $request->input('search') . '%')
                     ->orWhereIn('activity_instance_id', $resourceIds);
-            })
-            )->paginate(
+            }))
+            ->orderBy($orderBy, $orderDirection)
+            ->paginate(
                 $request->input('per_page', 25), ['*'], 'page', $request->input('page', 1)
             );
     }

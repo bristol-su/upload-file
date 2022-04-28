@@ -82,6 +82,54 @@ class FileControllerTest extends TestCase
     }
 
     /** @test */
+    public function index_orders_the_results_by_created_at(){
+        $this->bypassAuthorization();
+
+        $file1 = File::factory()->create(['created_at' => Carbon::now()->subDay(), 'module_instance_id' => $this->getModuleInstance()->id()]);
+        $file2 = File::factory()->create(['created_at' => Carbon::now()->subDays(2), 'module_instance_id' => $this->getModuleInstance()->id()]);
+        $file3 = File::factory()->create(['created_at' => Carbon::now()->subHours(3), 'module_instance_id' => $this->getModuleInstance()->id()]);
+        $file4 = File::factory()->create(['created_at' => Carbon::now()->subHours(6), 'module_instance_id' => $this->getModuleInstance()->id()]);
+
+        $response = $this->getJson($this->adminApiUrl('/file?page=1&per_page=4'));
+
+        $response->assertStatus(200);
+        $response->assertJsonCount(4, 'data');
+
+        foreach([$file3, $file4, $file1, $file2] as $file) {
+            $fragment = new AssertableJsonString($response->decodeResponseJson()->json('data'));
+            $fragment->assertFragment([
+                'title' => $file->title,
+                'description' => $file->description,
+                'filename' => $file->filename
+            ]);
+        }
+    }
+
+    /** @test */
+    public function index_can_have_the_direction_order_changed(){
+        $this->bypassAuthorization();
+
+        $file1 = File::factory()->create(['created_at' => Carbon::now()->subDay(), 'module_instance_id' => $this->getModuleInstance()->id()]);
+        $file2 = File::factory()->create(['created_at' => Carbon::now()->subDays(2), 'module_instance_id' => $this->getModuleInstance()->id()]);
+        $file3 = File::factory()->create(['created_at' => Carbon::now()->subHours(3), 'module_instance_id' => $this->getModuleInstance()->id()]);
+        $file4 = File::factory()->create(['created_at' => Carbon::now()->subHours(6), 'module_instance_id' => $this->getModuleInstance()->id()]);
+
+        $response = $this->getJson($this->adminApiUrl('/file?page=1&per_page=4&order_by=created_at&direction=asc'));
+
+        $response->assertStatus(200);
+        $response->assertJsonCount(4, 'data');
+
+        foreach([$file2, $file1, $file4, $file3] as $file) {
+            $fragment = new AssertableJsonString($response->decodeResponseJson()->json('data'));
+            $fragment->assertFragment([
+                'title' => $file->title,
+                'description' => $file->description,
+                'filename' => $file->filename
+            ]);
+        }
+    }
+
+    /** @test */
     public function show_returns_a_403_error_if_the_permission_is_not_owned(){
         $this->revokePermissionTo('uploadfile.admin.file.index');
 
@@ -105,6 +153,7 @@ class FileControllerTest extends TestCase
         $response->assertStatus(200);
     }
 
+
     /** @test */
     public function show_returns_the_file(){
         $this->givePermissionTo('uploadfile.admin.file.index');
@@ -121,7 +170,6 @@ class FileControllerTest extends TestCase
             'title' => $file->title
         ]);
     }
-
 
     /** @test */
     public function store_allows_a_single_file_to_be_uploaded()
@@ -367,6 +415,8 @@ class FileControllerTest extends TestCase
         });
     }
 
+
+
     /** @test */
     public function store_returns_422_if_file_type_not_allowed(){
         Event::fake(DocumentUploaded::class);
@@ -392,8 +442,6 @@ class FileControllerTest extends TestCase
         $response->assertJsonValidationErrors(['file.0' => 'file of type:']);
 
     }
-
-
 
     /** @test */
     public function update_returns_403_if_permission_not_given()
@@ -611,6 +659,5 @@ class FileControllerTest extends TestCase
             return $event instanceof DocumentDeleted && $event->file->is($file);
         });
     }
-
 
 }
